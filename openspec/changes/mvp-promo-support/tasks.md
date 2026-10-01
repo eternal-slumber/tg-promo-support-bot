@@ -9,10 +9,10 @@
 
 ## 2. Domain и PostgreSQL data model
 
-- [ ] 2.1 Создать enums для ticket status, close reason, message author/direction, delivery status и decision type; проверить Pest unit tests на допустимые значения и переходы lifecycle.
-- [ ] 2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с безопасной `redaction_types` metadata, внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests и отсутствие поля для raw message body.
-- [ ] 2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `waiting_for_user` и `closed`.
-- [ ] 2.4 Реализовать sanitizer до persistence для card-like sequences, контекстных SMS/OTP-кодов и явно обозначенных паролей; проверить unit dataset для evaluation case №22, OTP/password context, обычных дат/сумм/количеств без ложного маскирования и сохранения телефонного номера.
+- [x] 2.1 Создать enums для ticket status, close reason, message author/direction, delivery status и decision type; проверить Pest unit tests на допустимые значения и переходы lifecycle.
+- [x] 2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с безопасной `redaction_types` metadata, внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests и отсутствие поля для raw message body.
+- [x] 2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `waiting_for_user` и `closed`.
+- [x] 2.4 Реализовать sanitizer до persistence для card-like sequences, контекстных SMS/OTP-кодов и явно обозначенных паролей; проверить unit dataset для evaluation case №22, OTP/password context, обычных дат/сумм/количеств без ложного маскирования и сохранения телефонного номера.
 
 ## 3. Telegram ingestion
 
