@@ -1,0 +1,109 @@
+schema: spec-driven
+
+context: |
+  Project: M-Social AI Engineer test assignment.
+
+  Goal:
+  Build an MVP support system for the fictional promotional campaign
+  "Вкусная осень".
+
+  Required product capabilities:
+  - Telegram bot receives participant questions.
+  - The bot answers questions when the answer is supported by promo-rules.md.
+  - Questions requiring participant-specific data or information absent
+    from the rules are escalated to a human operator.
+  - The participant is informed when a question is escalated.
+  - Operator replies are delivered back to the participant in Telegram.
+  - Operators have a web panel with ticket queue and conversation history.
+  - Operators can reply to and close tickets.
+  - The system provides statistics:
+    - questions resolved by the bot;
+    - questions escalated to operators;
+    - average operator response time.
+
+  Required technology:
+  - PHP
+  - Laravel
+  - PostgreSQL
+  - Docker Compose
+  - Telegram Bot API
+  - LLM provider via an application abstraction
+
+  Frontend:
+  - Blade
+  - Livewire
+  - Tailwind CSS
+  - Vite
+  - Do not introduce React, Vue or a separate SPA unless a specification
+    explicitly requires it.
+
+  Knowledge source:
+  - docs/assignment/promo-rules.md is the only factual source of truth
+    about the promotion.
+  - The application must not invent participant, receipt, prize or account data.
+  - docs/assignment/requests.md is the evaluation dataset supplied with
+    the assignment.
+
+  Engineering principles:
+  - Keep the MVP intentionally small.
+  - Prefer explicit domain/application services over business logic
+    in controllers.
+  - Keep Telegram, LLM and persistence concerns separated.
+  - External integrations should be behind application boundaries
+    where this improves testability.
+  - Prefer deterministic application logic around nondeterministic LLM output.
+  - LLM output used by the application should be structured and validated.
+  - Fail safely: when an LLM decision cannot be trusted or processed,
+    escalate instead of hallucinating an answer.
+  - Do not add infrastructure without a concrete MVP requirement.
+  - Do not invent requirements missing from the assignment.
+  - Record ambiguous product decisions as explicit assumptions.
+  - Code, database and API identifiers are written in English.
+  - OpenSpec planning artifacts are written in Russian.
+
+rules:
+  proposal:
+    - Clearly separate source requirements, assumptions and implementation choices.
+    - State the user problem and MVP boundaries.
+    - Explicitly identify out-of-scope functionality.
+    - Do not design unnecessary infrastructure.
+
+  specs:
+    - Express requirements as observable system behavior.
+    - Every behavioral requirement must have testable scenarios.
+    - Use Given / When / Then semantics for scenarios.
+    - Cover happy paths and important failure paths.
+    - Cover bot answer, escalation, operator reply and ticket closing flows.
+    - Cover LLM failure and invalid structured output.
+    - Cover prompt-injection behavior.
+    - Never assume access to participant-specific data unless explicitly provided.
+
+  design:
+    - Describe component responsibilities and major data flows.
+    - Include the PostgreSQL data model and relationships.
+    - Describe Laravel application boundaries.
+    - Describe Telegram and LLM adapters.
+    - Document important architecture decisions and rejected alternatives.
+    - Identify transaction boundaries where relevant.
+    - Define Telegram update idempotency.
+    - Explain how statistics are calculated.
+    - Keep the design proportional to an MVP.
+
+  tasks:
+    - Break implementation into small independently verifiable steps.
+    - Order tasks by dependency.
+    - Include tests alongside the behavior they verify.
+    - Every task should have a concrete completion condition.
+    - Do not combine the entire MVP into one task.
+    - Do not implement functionality not represented by the active specs.
+
+operations:
+  apply:
+    guidance:
+      - Read all artifacts of the active change before modifying code.
+      - Implement only behavior covered by the active change.
+      - Follow existing Laravel project conventions.
+      - Run relevant automated tests before marking a task complete.
+      - Do not silently modify requirements to match an implementation shortcut.
+      - If implementation reveals a specification problem, update the OpenSpec
+        artifacts explicitly before proceeding.
