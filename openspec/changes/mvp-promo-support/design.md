@@ -67,7 +67,9 @@ Telegram update
   -> BEGIN
   -> INSERT telegram_updates ON UNIQUE(update_id)
   -> upsert participant
-  -> redact sensitive sequences and INSERT inbound message
+  -> detect and redact sensitive values in memory
+  -> discard raw body and INSERT only redacted inbound message + safe metadata
+  -> if redaction occurred: create pending safety notification
   -> if active ticket exists: attach message to ticket
   -> COMMIT
   -> dispatch AI job afterCommit only when no active ticket exists
@@ -115,6 +117,7 @@ messages
   direction: inbound | outbound
   author: participant | bot | operator | system
   body (redacted application text)
+  redaction_types JSONB NULL
   delivery_status: pending | sent | failed | NULL
   telegram_message_id NULL
   delivered_at NULL
@@ -218,15 +221,29 @@ Telegram update ID обеспечивает идемпотентность по�
 
 Livewire отображает очередь, историю, форму ответа, delivery state, ручное закрытие и три метрики. Достаточно server-driven navigation и refresh/polling; WebSockets и SPA отклонены. User-provided text выводится только через escaped Blade syntax, без raw HTML.
 
-Точная верстка и формулировки Telegram-сообщений не являются domain contract. Presentation concept: уведомление показывает `Номер обращения: #...`, ответ начинается с привязки к ticket, а optional цитата короткая и redacted.
+Точная верстка и формулировки Telegram-сообщений не являются domain contract. Presentation concepts:
+
+- `/start` кратко сообщает не отправлять банковские карты, пароли и SMS-коды и объясняет, что поддержка акции их не запрашивает;
+- уведомление об эскалации показывает `Номер обращения: #...` и может повторить сокращённое safety warning, если это не перегружает сообщение;
+- повтор safety warning при эскалации рекомендован, но не является обязательным для каждого сообщения;
+- ответ оператора начинается с привязки к ticket, а optional цитата короткая и redacted;
+- уведомление о сработавшем redaction не повторяет скрытое значение и говорит только, что чувствительные данные удалены и не нужны для поддержки.
 
 ### 10. Sanitization и privacy
 
-До persistence message body проходит узкий sanitizer для последовательностей, похожих на платёжную карту: пробелы/дефисы нормализуются для проверки, последовательности 13–19 цифр маскируются целиком либо оставляют только безопасный хвост. Для снижения false positive предпочтительна проверка Luhn; evaluation case `2200 1234 5678 9012` также должен редактироваться даже при невалидном Luhn, поэтому формат банковской группы `4x4` маскируется независимо.
+Sanitizer вызывается в webhook use case до открытия persistence path для message body. Raw body существует только в памяти текущего запроса, после sanitization не передаётся дальше и не включается в сохранённый raw Telegram payload или queue payload. В PostgreSQL сохраняются только redacted body и optional `redaction_types` со значениями из закрытого списка `payment_card`, `otp`, `password`; исходные значения в metadata отсутствуют.
 
-В PostgreSQL сохраняется redacted body, а не полный raw Telegram payload. Metadata update/message IDs сохраняется отдельно. Номера телефонов могут оставаться в истории как добровольно переданный идентификатор обращения, но application logs не включают message body, prompt, access tokens или provider response.
+Минимальные detection rules MVP:
 
-Один sanitizer применяется перед persistence, поэтому LLM, операторская панель, Telegram quote и логи не получают исходный номер карты. Это намеренно минимальная стратегия, а не общая классификация всех персональных данных.
+- **Payment card:** маскировать группы вида `4x4`, включая evaluation case `2200 1234 5678 9012`; для непрерывных или иначе сгруппированных последовательностей 13–19 цифр использовать форму и Luhn как сигналы, не маскируя любое длинное число безусловно.
+- **OTP/SMS code:** маскировать короткое числовое или буквенно-числовое значение только рядом с явными маркерами `SMS`, `OTP`, `код из SMS`, `одноразовый код` и близкими вариантами.
+- **Password:** маскировать значение только рядом с явными маркерами `пароль`, `password`, `pwd` и близкими вариантами; сам несекретный контекст сохранять.
+- **Ordinary numeric text:** даты, суммы, количество товаров, номера обращений и другие числа без card-like формы или sensitive context оставлять без изменений.
+- **Phone:** автоматически не маскировать, поскольку участник может использовать номер как идентификатор аккаунта; при этом application logs содержат только технические IDs/status/error codes и никогда не содержат message body.
+
+Один и тот же redacted body используется для persistence, LLM input, operator UI и Telegram quote. Логи получают только update/message/ticket IDs, redaction types и безопасные error codes. При наличии `redaction_types` после commit создаётся отдельное pending Telegram notification без исходного значения.
+
+Стратегия намеренно не является универсальной DLP: она покрывает три явно заданных класса, сохраняет обычный числовой текст и допускает дальнейшее расширение только по подтверждённым evaluation/production случаям.
 
 ### 11. Statistics calculations
 
@@ -240,7 +257,7 @@ Provisional определения из specs реализуются обычн�
 
 ### 12. Transaction boundaries summary
 
-1. **Ingestion:** unique update + participant + redacted inbound message; commit; dispatch after commit.
+1. **Ingestion:** unique update + participant + redacted inbound message + safe redaction metadata и optional safety notification; commit; dispatch jobs after commit.
 2. **Decision application:** lock message + unique decision + ticket/outbound messages; commit; dispatch delivery after commit.
 3. **Operator reply:** validate ticket + save pending outbound message and first response timestamp; commit; dispatch delivery.
 4. **Delivery success:** lock message + mark sent; для operator reply перевести ticket в waiting and set generation marker; commit; dispatch delayed auto-close.
@@ -254,8 +271,9 @@ External HTTP calls never выполняются внутри DB-транзак�
 - **LLM outage or malformed response** -> database queue retries with backoff and idempotent `llm_failure` fallback.
 - **Duplicate updates/jobs** -> unique update ID, unique decision per message, partial unique active-ticket index and state checks under row locks.
 - **Telegram ambiguous timeout** -> persisted delivery state and retry; residual duplicate-delivery risk documented.
-- **Sensitive data leakage** -> redact before persistence, avoid raw payload and body logging, escape operator UI, keep secrets in environment-backed config.
-- **Over-redaction** -> deliberately narrow card patterns; operators may lose a numeric identifier that resembles a card, accepted for MVP safety.
+- **Sensitive data leakage** -> redact before persistence, discard raw body, reuse only redacted text downstream, avoid body logging, escape operator UI and keep secrets in environment-backed config.
+- **Over-redaction** -> contextual OTP/password rules and card-shape checks preserve ordinary numeric text; grouped `4x4` sequences intentionally prefer safety.
+- **Under-redaction outside known patterns** -> MVP covers only cards, explicit OTP/SMS codes and explicit passwords; universal DLP is deliberately rejected until real cases justify it.
 - **Database queue contention** -> acceptable for pilot volume; move to Redis only after measured throughput or latency problems.
 - **Provisional metric semantics change** -> metrics isolated behind deterministic queries over existing timestamps and relations.
 

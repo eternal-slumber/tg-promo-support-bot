@@ -10,36 +10,38 @@
 ## 2. Domain и PostgreSQL data model
 
 - [ ] 2.1 Создать enums для ticket status, close reason, message author/direction, delivery status и decision type; проверить Pest unit tests на допустимые значения и переходы lifecycle.
-- [ ] 2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests.
+- [ ] 2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с безопасной `redaction_types` metadata, внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests и отсутствие поля для raw message body.
 - [ ] 2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `waiting_for_user` и `closed`.
-- [ ] 2.4 Реализовать sanitizer банковских последовательностей до persistence, включая evaluation case №22, и проверить unit dataset для grouped/plain card-like values, безопасного текста и отсутствия исходного номера в результате.
+- [ ] 2.4 Реализовать sanitizer до persistence для card-like sequences, контекстных SMS/OTP-кодов и явно обозначенных паролей; проверить unit dataset для evaluation case №22, OTP/password context, обычных дат/сумм/количеств без ложного маскирования и сохранения телефонного номера.
 
 ## 3. Telegram ingestion
 
 - [ ] 3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых message/callback полей; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.
-- [ ] 3.2 Сохранять unique Telegram update, participant и redacted inbound message одной транзакцией, dispatch AI job через `afterCommit()`, и проверить, что message существует до запуска job.
-- [ ] 3.3 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job или статистический результат.
-- [ ] 3.4 Для participant с `open` или `waiting_for_user` прикреплять новое сообщение к существующему ticket без AI-routing, а после `closed` запускать обычную классификацию; проверить все три feature scenarios.
+- [ ] 3.2 Обработать `/start` отдельным safety message о картах, паролях и SMS-кодах без жёсткой фиксации точной формулировки; проверить acceptance test всех четырёх смысловых пунктов предупреждения.
+- [ ] 3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, dispatch jobs через `afterCommit()`, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.
+- [ ] 3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.
+- [ ] 3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.
+- [ ] 3.6 Для participant с `open` или `waiting_for_user` прикреплять новое redacted сообщение к существующему ticket без AI-routing, а после `closed` запускать обычную классификацию; проверить все три feature scenarios.
 
 ## 4. LLM boundary и grounded support
 
 - [ ] 4.1 Создать LLM contract, typed decision DTO и validator для `answer`, `escalate`, `mixed`, `refuse`; проверить unit tests для валидных, неполных, неизвестных и противоречивых structured outputs.
 - [ ] 4.2 Добавить отдельные versioned prompt files и loader единственного factual source `docs/assignment/promo-rules.md`; проверить, что decision сохраняет source hash, но не полный runtime system prompt.
-- [ ] 4.3 Реализовать один provider adapter через Laravel HTTP client с explicit connect/response timeout и безопасным error mapping; проверить exact endpoint fakes, `Http::preventStrayRequests()`, timeout, 429 и 5xx без реальной сети.
+- [ ] 4.3 Реализовать один provider adapter через Laravel HTTP client с explicit connect/response timeout и безопасным error mapping; проверить exact endpoint fakes, `Http::preventStrayRequests()`, timeout, 429, 5xx и получение только redacted participant text без реальной сети.
 - [ ] 4.4 Реализовать `ProcessIncomingMessage` с queue attempts/backoff и early exit при существующем decision; проверить временный сбой с успешным retry и повтор job после сохранённого decision без второго LLM-вызова.
 - [ ] 4.5 Применять валидный decision в короткой транзакции: grounded answer без ticket, unknown/participant-specific/off-topic escalation, mixed answer плюс один ticket и adversarial safe refusal; проверить acceptance cases для каждого варианта, включая requests №7, №12, №16, №23, №24 и №25.
 - [ ] 4.6 Реализовать идемпотентный fallback после исчерпания retry с decision/ticket reason `llm_failure`; проверить timeout, invalid output и exhausted retries без потери message, второго ticket, второго ответа или двойного учёта.
 
 ## 5. Telegram delivery
 
-- [ ] 5.1 Создать Telegram adapter для text messages, inline callbacks и callback acknowledgement с explicit timeout/error mapping; проверить HTTP fakes и отсутствие секретов/message body в логируемом контексте.
-- [ ] 5.2 Реализовать presentation builder с номером ticket, короткой redacted quote и actions `Проблема решена` / `Не решило мою проблему`; проверить, что длинный текст обрезается и card value не повторяется.
+- [ ] 5.1 Создать Telegram adapter для text messages, inline callbacks и callback acknowledgement с explicit timeout/error mapping; проверить HTTP fakes и отсутствие секретов, raw body, телефонов и sensitive values в логируемом контексте.
+- [ ] 5.2 Реализовать presentation builders для номера ticket, короткой redacted quote, redaction notification и actions `Проблема решена` / `Не решило мою проблему`; разрешить optional краткий safety reminder при эскалации и проверить, что он не обязателен, длинный текст обрезается, а hidden values не повторяются.
 - [ ] 5.3 Реализовать `DeliverTelegramMessage` для переходов `pending -> sent|failed`, сохранения Telegram message ID и повторной отправки того же record; проверить success, permanent failure и retry уже `sent` сообщения как no-op.
 
 ## 6. Operator authentication и UI
 
 - [ ] 6.1 Реализовать session login для заранее созданного operator account без self-registration и ролей; проверить guest redirect, успешный login и отсутствие публичного registration endpoint.
-- [ ] 6.2 Реализовать Livewire queue и conversation history с escaped participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets и отсутствие raw HTML rendering.
+- [ ] 6.2 Реализовать Livewire queue и conversation history с escaped redacted participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets, отсутствие raw HTML и отсутствие исходных card/OTP/password values.
 - [ ] 6.3 Реализовать ответ оператора: сохранить `pending` message и первый response timestamp, dispatch delivery after commit, а после успешной доставки перевести `open -> waiting_for_user`; проверить DB, queue и Telegram side effects вместе.
 - [ ] 6.4 Показывать failed delivery оператору и разрешать повторную отправку того же message record; проверить, что ошибка Telegram не удаляет ответ и не переводит ticket в `waiting_for_user`.
 
@@ -58,7 +60,7 @@
 ## 9. Evaluation и документация поведения
 
 - [ ] 9.1 Создать повторяемый evaluation runner для всех 25 сообщений из `docs/assignment/requests.md` через тот же application boundary и проверить, что отчёт содержит вопрос, ответ, признак эскалации, оценку и комментарий для всех 25 строк.
-- [ ] 9.2 Зафиксировать результаты evaluation, спорные mixed/off-topic cases и изменения prompt в требуемой таблице; проверить наличие строк 1–25 и отсутствие неотредактированных чувствительных данных.
+- [ ] 9.2 Зафиксировать результаты evaluation, спорные mixed/off-topic cases и изменения prompt в требуемой таблице; проверить наличие строк 1–25, redaction case №22 и отсутствие raw card/OTP/password values.
 - [ ] 9.3 Обновить README инструкцией запуска с нуля, assumptions, provisional definitions, известными ограничениями и production follow-ups; проверить команды README в чистом Docker Compose запуске.
 - [ ] 9.4 Добавить схему PostgreSQL и краткое объяснение ключей, partial unique active-ticket constraint, transactions и delivery state; сверить диаграмму с фактическими migrations.
 
@@ -67,4 +69,4 @@
 - [ ] 10.1 Запустить узкие Pest feature/unit suites каждого capability, затем полный `php artisan test --compact`, и устранить только дефекты поведения этого change.
 - [ ] 10.2 Запустить `vendor/bin/pint --dirty --format agent`, `npm run build` и `openspec validate mvp-promo-support --strict`; проверить успешное завершение всех команд.
 - [ ] 10.3 Выполнить Docker smoke flow: принять grounded question, создать escalation, ответить оператором, обработать resolved/unresolved и auto-close, затем сверить три метрики и delivery states.
-- [ ] 10.4 Проверить repository secrets scan и итоговый diff: отсутствуют реальные Telegram/LLM keys, raw card value, незаявленная инфраструктура и функциональность вне specs.
+- [ ] 10.4 Проверить repository secrets scan и итоговый diff: отсутствуют реальные Telegram/LLM keys, raw card/OTP/password values, sensitive message bodies в logging paths, незаявленная инфраструктура и функциональность вне specs.
