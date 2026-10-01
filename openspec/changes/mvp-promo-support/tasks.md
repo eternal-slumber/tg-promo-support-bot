@@ -16,10 +16,10 @@
 
 ## 3. Telegram ingestion
 
-- [ ] 3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых message/callback полей; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.
-- [ ] 3.2 Обработать `/start` отдельным safety message о картах, паролях и SMS-кодах без жёсткой фиксации точной формулировки; проверить acceptance test всех четырёх смысловых пунктов предупреждения.
-- [ ] 3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, dispatch jobs через `afterCommit()`, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.
-- [ ] 3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.
+- [x] 3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых message/callback полей; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.
+- [x] 3.2 Обработать `/start` отдельным safety message о картах, паролях и SMS-кодах без жёсткой фиксации точной формулировки; проверить acceptance test всех четырёх смысловых пунктов предупреждения.
+- [x] 3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, dispatch jobs через `afterCommit()`, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.
+- [x] 3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.
 - [ ] 3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.
 - [ ] 3.6 Для participant с `open` или `waiting_for_user` прикреплять новое redacted сообщение к существующему ticket без AI-routing, а после `closed` запускать обычную классификацию; проверить все три feature scenarios.
 
