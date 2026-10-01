@@ -21,11 +21,16 @@ use App\Services\SupportLlmClient;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Schema;
 use Mockery;
 use Throwable;
 
 uses(LazilyRefreshDatabase::class);
+
+beforeEach(function (): void {
+    Queue::fake();
+});
 
 test('persists a grounded answer without creating a ticket', function () {
     $message = Message::factory()->create(['body' => 'кефир участвует?']);

@@ -4,6 +4,7 @@ use App\Data\TelegramUpdateData;
 use App\Enums\MessageAuthor;
 use App\Enums\TelegramUpdateKind;
 use App\Enums\TicketStatus;
+use App\Jobs\DeliverTelegramMessage;
 use App\Jobs\ProcessIncomingMessage;
 use App\Models\Message;
 use App\Models\TelegramParticipant;
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\Schema;
 uses(LazilyRefreshDatabase::class);
 
 test('persists a valid text update and queues only its message id', function () {
-    Queue::fake([ProcessIncomingMessage::class]);
+    Queue::fake();
     Http::preventStrayRequests();
 
     $this->postJson(route('telegram.webhook'), telegramTextUpdate(1001, 2001, 3001, 4001, 'Когда будут результаты?'))
@@ -65,7 +66,7 @@ test('reuses an existing participant and updates its chat id', function () {
 });
 
 test('redacts sensitive text before it reaches persistence or the queued job', function () {
-    Queue::fake([ProcessIncomingMessage::class]);
+    Queue::fake();
     Http::preventStrayRequests();
     $card = '2200 1234 5678 9012';
 
@@ -89,7 +90,7 @@ test('redacts sensitive text before it reaches persistence or the queued job', f
 });
 
 test('creates one redaction notification for multiple hidden values', function () {
-    Queue::fake([ProcessIncomingMessage::class]);
+    Queue::fake();
     Http::preventStrayRequests();
 
     $this->postJson(
@@ -160,7 +161,7 @@ test('returns predictable responses for malformed and unsupported updates', func
 });
 
 test('does not queue normal processing for the start command', function () {
-    Queue::fake([ProcessIncomingMessage::class]);
+    Queue::fake();
     Http::preventStrayRequests();
 
     $this->postJson(route('telegram.webhook'), telegramTextUpdate(1009, 2009, 3009, 4009, '/start'))
@@ -171,7 +172,8 @@ test('does not queue normal processing for the start command', function () {
     expect($warning->body)->toContain('банковских карт', 'пароли', 'коды из SMS', 'не нужны')
         ->and(Message::query()->count())->toBe(2);
 
-    Queue::assertNothingPushed();
+    Queue::assertNotPushed(ProcessIncomingMessage::class);
+    Queue::assertPushed(DeliverTelegramMessage::class, 1);
 });
 
 test('attaches a message to an open ticket without queuing normal processing', function () {

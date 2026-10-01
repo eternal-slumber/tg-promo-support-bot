@@ -8,6 +8,7 @@ use App\Enums\DeliveryStatus;
 use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
 use App\Enums\TelegramUpdateKind;
+use App\Jobs\DeliverTelegramMessage;
 use App\Jobs\ProcessIncomingMessage;
 use App\Models\Message;
 use App\Models\TelegramParticipant;
@@ -139,7 +140,7 @@ class TelegramIngestionService
         MessageAuthor $author,
         string $body,
     ): void {
-        Message::query()->create([
+        $message = Message::query()->create([
             'participant_id' => $participant->id,
             'ticket_id' => $ticketId,
             'direction' => MessageDirection::Outbound,
@@ -147,6 +148,8 @@ class TelegramIngestionService
             'body' => $body,
             'delivery_status' => DeliveryStatus::Pending,
         ]);
+
+        DeliverTelegramMessage::dispatch($message->id)->afterCommit();
     }
 
     private function isStartCommand(string $text): bool

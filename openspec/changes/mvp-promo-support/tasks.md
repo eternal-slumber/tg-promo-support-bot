@@ -34,9 +34,9 @@
 
 ## 5. Telegram delivery
 
-- [ ] 5.1 Создать Telegram adapter для text messages, inline callbacks и callback acknowledgement с explicit timeout/error mapping; проверить HTTP fakes и отсутствие секретов, raw body, телефонов и sensitive values в логируемом контексте.
-- [ ] 5.2 Реализовать presentation builders для номера ticket, короткой redacted quote, redaction notification и actions `Проблема решена` / `Не решило мою проблему`; разрешить optional краткий safety reminder при эскалации и проверить, что он не обязателен, длинный текст обрезается, а hidden values не повторяются.
-- [ ] 5.3 Реализовать `DeliverTelegramMessage` для переходов `pending -> sent|failed`, сохранения Telegram message ID и повторной отправки того же record; проверить success, permanent failure и retry уже `sent` сообщения как no-op.
+- [x] 5.1 Создать Telegram adapter для text messages, inline callbacks и callback acknowledgement с explicit timeout/error mapping; проверить HTTP fakes и отсутствие секретов, raw body, телефонов и sensitive values в логируемом контексте.
+- [x] 5.2 Реализовать presentation builders для номера ticket, короткой redacted quote, redaction notification и actions `Проблема решена` / `Не решило мою проблему`; разрешить optional краткий safety reminder при эскалации и проверить, что он не обязателен, длинный текст обрезается, а hidden values не повторяются.
+- [x] 5.3 Реализовать `DeliverTelegramMessage` для переходов `pending -> sent|failed`, сохранения Telegram message ID и повторной отправки того же record; проверить success, permanent failure и retry уже `sent` сообщения как no-op.
 
 ## 6. Operator authentication и UI
 

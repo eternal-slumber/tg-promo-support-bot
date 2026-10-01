@@ -8,6 +8,7 @@ use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
 use App\Enums\SupportDecisionType;
 use App\Enums\TicketStatus;
+use App\Jobs\DeliverTelegramMessage;
 use App\Models\Message;
 use App\Models\SupportDecision;
 use App\Models\TelegramParticipant;
@@ -98,7 +99,7 @@ class SupportDecisionService
 
     private function createPendingBotMessage(Message $message, ?Ticket $ticket, string $body): void
     {
-        Message::query()->create([
+        $outbound = Message::query()->create([
             'participant_id' => $message->participant_id,
             'ticket_id' => $ticket?->id,
             'direction' => MessageDirection::Outbound,
@@ -106,6 +107,8 @@ class SupportDecisionService
             'body' => $body,
             'delivery_status' => DeliveryStatus::Pending,
         ]);
+
+        DeliverTelegramMessage::dispatch($outbound->id)->afterCommit();
     }
 
     private function escalationNotice(Ticket $ticket): string
