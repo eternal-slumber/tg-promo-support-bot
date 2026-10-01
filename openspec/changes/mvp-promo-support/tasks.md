@@ -2,10 +2,10 @@
 
 ## 1. Bootstrap и конфигурация
 
-- [ ] 1.1 Добавить Docker Compose services для Laravel app, PostgreSQL и database queue worker, настроить health/dependency order и проверить, что `docker compose config` проходит, а `docker compose up` запускает весь MVP одной командой.
-- [ ] 1.2 Перевести application и queue connections на PostgreSQL/database driver, добавить jobs/failed-jobs storage и проверить миграции внутри Docker без Redis или другого broker.
-- [ ] 1.3 Добавить Livewire в рамках заданного frontend stack и проверить, что базовая Blade/Livewire/Tailwind 4/Vite страница собирается командой `npm run build`.
-- [ ] 1.4 Добавить environment-backed настройки Telegram, LLM, retry/timeout и `TICKET_AUTO_CLOSE_HOURS=24`, обновить безопасный `.env.example` и проверить, что populated secrets отсутствуют в tracked files.
+- [x] 1.1 Добавить Docker Compose services для Laravel app, PostgreSQL и database queue worker, настроить health/dependency order и проверить, что `docker compose config` проходит, а `docker compose up` запускает весь MVP одной командой.
+- [x] 1.2 Перевести application и queue connections на PostgreSQL/database driver, добавить jobs/failed-jobs storage и проверить миграции внутри Docker без Redis или другого broker.
+- [x] 1.3 Добавить Livewire в рамках заданного frontend stack и проверить, что базовая Blade/Livewire/Tailwind 4/Vite страница собирается командой `npm run build`.
+- [x] 1.4 Добавить environment-backed настройки Telegram, LLM, retry/timeout и `TICKET_AUTO_CLOSE_HOURS=24`, обновить безопасный `.env.example` и проверить, что populated secrets отсутствуют в tracked files.
 
 ## 2. Domain и PostgreSQL data model
 

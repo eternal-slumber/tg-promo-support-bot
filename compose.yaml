@@ -1,0 +1,71 @@
+x-app-environment: &app-environment
+  APP_ENV: local
+  APP_DEBUG: "true"
+  APP_URL: http://localhost:8000
+  DB_CONNECTION: pgsql
+  DB_HOST: postgres
+  DB_PORT: 5432
+  DB_DATABASE: ${DB_DATABASE:-tg_promo}
+  DB_USERNAME: ${DB_USERNAME:-tg_promo}
+  DB_PASSWORD: ${DB_PASSWORD:-tg_promo}
+  QUEUE_CONNECTION: database
+  DB_QUEUE_CONNECTION: pgsql
+  DB_QUEUE_RETRY_AFTER: ${DB_QUEUE_RETRY_AFTER:-120}
+  QUEUE_FAILED_DRIVER: database-uuids
+  CACHE_STORE: database
+  SESSION_DRIVER: database
+  TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+  TELEGRAM_WEBHOOK_SECRET: ${TELEGRAM_WEBHOOK_SECRET:-}
+  LLM_PROVIDER: ${LLM_PROVIDER:-openai}
+  LLM_MODEL: ${LLM_MODEL:-}
+  LLM_API_KEY: ${LLM_API_KEY:-}
+  LLM_CONNECT_TIMEOUT: ${LLM_CONNECT_TIMEOUT:-5}
+  LLM_TIMEOUT: ${LLM_TIMEOUT:-30}
+  LLM_MAX_ATTEMPTS: ${LLM_MAX_ATTEMPTS:-3}
+  LLM_RETRY_BACKOFF: ${LLM_RETRY_BACKOFF:-5,15,30}
+  TICKET_AUTO_CLOSE_HOURS: ${TICKET_AUTO_CLOSE_HOURS:-24}
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-tg_promo}
+      POSTGRES_USER: ${DB_USERNAME:-tg_promo}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-tg_promo}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+    command: ["sh", "-c", "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment: *app-environment
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8000/up"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    ports:
+      - "8000:8000"
+
+  queue:
+    build:
+      context: .
+    command: ["php", "artisan", "queue:work", "database", "--sleep=1", "--tries=3", "--timeout=90"]
+    depends_on:
+      app:
+        condition: service_healthy
+    environment: *app-environment
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
