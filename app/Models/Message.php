@@ -43,6 +43,11 @@ class Message extends Model
         return $this->hasOne(SupportDecision::class);
     }
 
+    public function isInboundParticipantMessage(): bool
+    {
+        return $this->direction === MessageDirection::Inbound && $this->author === MessageAuthor::Participant;
+    }
+
     /**
      * @return array<string, string>
      */

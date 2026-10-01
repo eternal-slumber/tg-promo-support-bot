@@ -20,17 +20,17 @@
 - [x] 3.2 Обработать `/start` отдельным safety message о картах, паролях и SMS-кодах без жёсткой фиксации точной формулировки; проверить acceptance test всех четырёх смысловых пунктов предупреждения.
 - [x] 3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, dispatch jobs через `afterCommit()`, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.
 - [x] 3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.
-- [ ] 3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.
-- [ ] 3.6 Для participant с `open` или `waiting_for_user` прикреплять новое redacted сообщение к существующему ticket без AI-routing, а после `closed` запускать обычную классификацию; проверить все три feature scenarios.
+- [x] 3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.
+- [x] 3.6 Для participant с `open` или `waiting_for_user` прикреплять новое redacted сообщение к существующему ticket без AI-routing, а после `closed` запускать обычную классификацию; проверить все три feature scenarios.
 
 ## 4. LLM boundary и grounded support
 
-- [ ] 4.1 Создать LLM contract, typed decision DTO и validator для `answer`, `escalate`, `mixed`, `refuse`; проверить unit tests для валидных, неполных, неизвестных и противоречивых structured outputs.
-- [ ] 4.2 Добавить отдельные versioned prompt files и loader единственного factual source `docs/assignment/promo-rules.md`; проверить, что decision сохраняет source hash, но не полный runtime system prompt.
-- [ ] 4.3 Реализовать один provider adapter через Laravel HTTP client с explicit connect/response timeout и безопасным error mapping; проверить exact endpoint fakes, `Http::preventStrayRequests()`, timeout, 429, 5xx и получение только redacted participant text без реальной сети.
-- [ ] 4.4 Реализовать `ProcessIncomingMessage` с queue attempts/backoff и early exit при существующем decision; проверить временный сбой с успешным retry и повтор job после сохранённого decision без второго LLM-вызова.
-- [ ] 4.5 Применять валидный decision в короткой транзакции: grounded answer без ticket, unknown/participant-specific/off-topic escalation, mixed answer плюс один ticket и adversarial safe refusal; проверить acceptance cases для каждого варианта, включая requests №7, №12, №16, №23, №24 и №25.
-- [ ] 4.6 Реализовать идемпотентный fallback после исчерпания retry с decision/ticket reason `llm_failure`; проверить timeout, invalid output и exhausted retries без потери message, второго ticket, второго ответа или двойного учёта.
+- [x] 4.1 Создать LLM contract, typed decision DTO и validator для `answer`, `escalate`, `mixed`, `refuse`; проверить unit tests для валидных, неполных, неизвестных и противоречивых structured outputs.
+- [x] 4.2 Добавить отдельные versioned prompt files и loader единственного factual source `docs/assignment/promo-rules.md`; проверить, что decision сохраняет source hash, но не полный runtime system prompt.
+- [x] 4.3 Реализовать один provider adapter через Laravel HTTP client с explicit connect/response timeout и безопасным error mapping; проверить exact endpoint fakes, `Http::preventStrayRequests()`, timeout, 429, 5xx и получение только redacted participant text без реальной сети.
+- [x] 4.4 Реализовать `ProcessIncomingMessage` с queue attempts/backoff и early exit при существующем decision; проверить временный сбой с успешным retry и повтор job после сохранённого decision без второго LLM-вызова.
+- [x] 4.5 Применять валидный decision в короткой транзакции: grounded answer без ticket, unknown/participant-specific/off-topic escalation, mixed answer плюс один ticket и adversarial safe refusal; проверить acceptance cases для каждого варианта, включая requests №7, №12, №16, №23, №24 и №25.
+- [x] 4.6 Реализовать идемпотентный fallback после исчерпания retry с decision/ticket reason `llm_failure`; проверить timeout, invalid output и exhausted retries без потери message, второго ticket, второго ответа или двойного учёта.
 
 ## 5. Telegram delivery
 

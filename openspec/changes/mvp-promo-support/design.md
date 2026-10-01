@@ -147,7 +147,7 @@ jobs / failed_jobs
 
 `ProcessIncomingMessage` получает только message ID. Перед LLM-вызовом job проверяет существование `support_decisions.message_id`; сохранённое решение завершает job без повторного вызова.
 
-LLM-вызов выполняется вне длинной DB-транзакции. После валидного ответа короткая транзакция блокирует message, повторно проверяет отсутствие decision, сохраняет decision и создаёт ровно необходимые side effects:
+LLM-вызов выполняется вне длинной DB-транзакции. Provider возвращает валидированный список смысловых частей (`rule_answer`, `participant_specific`, `not_in_rules`, `prompt_injection`) без raw participant text. PHP детерминированно строит final decision: только grounded части дают `answer`; grounded вместе с unresolved частями дают `mixed`; unresolved части дают `escalate`; `prompt_injection` даёт `refuse`. После этого короткая транзакция блокирует message, повторно проверяет отсутствие decision, сохраняет final decision и безопасный structured analysis, затем создаёт ровно необходимые side effects:
 
 - `answer`: одно исходящее bot message;
 - `escalate`: один ticket и уведомление;
@@ -164,9 +164,9 @@ Job имеет ограниченное число attempts, timeout и backoff 
 
 ### 5. LLM adapter boundary
 
-Application contract принимает redacted participant text и актуальный текст `promo-rules.md`, возвращая typed decision DTO. Provider adapter отвечает за authentication, explicit connect/response timeouts и преобразование provider response.
+Application contract принимает redacted participant text и актуальный текст `promo-rules.md`, возвращая typed analysis DTO со списком смысловых частей. Отдельный application builder детерминированно преобразует этот analysis в typed final decision. Provider adapter отвечает за authentication, explicit connect/response timeouts и преобразование provider response.
 
-Validator разрешает только известные decision types и обязательные поля. Application layer, а не модель, решает, какие записи создать. У LLM нет tools для изменения ticket, победителей, чеков или аккаунтов.
+Analysis validator разрешает только известные kinds и обязательные поля каждой части; application builder создаёт только допустимые final decisions. Application layer, а не модель, решает, какие записи создать. У LLM нет tools для изменения ticket, победителей, чеков или аккаунтов.
 
 Prompt-файлы версионируются отдельно в репозитории. В decision сохраняется структурированный результат и hash factual source для воспроизводимости, но не полный system prompt. Vector database отклонена: один небольшой документ правил помещается в prompt и является единственным knowledge source.
 
