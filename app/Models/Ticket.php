@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\DeliveryStatus;
+use App\Enums\MessageAuthor;
+use App\Enums\MessageDirection;
 use App\Enums\TicketCloseReason;
 use App\Enums\TicketStatus;
 use Database\Factories\TicketFactory;
@@ -25,6 +28,15 @@ class Ticket extends Model
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);
+    }
+
+    public function hasUnfinishedOperatorReply(): bool
+    {
+        return $this->messages()
+            ->where('direction', MessageDirection::Outbound->value)
+            ->where('author', MessageAuthor::Operator->value)
+            ->whereIn('delivery_status', [DeliveryStatus::Pending->value, DeliveryStatus::Failed->value])
+            ->exists();
     }
 
     /**

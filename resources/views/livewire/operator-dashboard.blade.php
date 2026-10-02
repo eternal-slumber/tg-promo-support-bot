@@ -36,6 +36,9 @@
         </aside>
 
         <section class="min-h-96 rounded-xl border border-slate-700 bg-slate-900 p-5">
+            @error('ticket')
+                <p class="mb-3 text-sm text-rose-300">{{ $message }}</p>
+            @enderror
             @if ($selectedTicket !== null)
                 <header class="border-b border-slate-700 pb-4">
                     <div class="flex flex-wrap items-start justify-between gap-3">

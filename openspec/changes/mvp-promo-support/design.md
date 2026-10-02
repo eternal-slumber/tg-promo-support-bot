@@ -182,6 +182,8 @@ Telegram adapter предоставляет минимальные операц�
 
 Каждый исходящий ответ сначала сохраняется как `pending`; затем `DeliverTelegramMessage` отправляет его после commit. При успехе message становится `sent`, сохраняются Telegram message ID и `delivered_at`. После окончательного сбоя message становится `failed`, сохраняется безопасный error code, но body не удаляется.
 
+Создание operator reply выполняется под `lockForUpdate()` ticket в transaction. Для ticket допускается один незавершённый outbound operator reply (`pending` или `failed`): повторный submit отклоняется без новой Message/job, а retry использует прежний message ID. Manual close под тем же ticket lock запрещён при незавершённом operator reply. Перед Telegram-вызовом delivery job повторно проверяет ticket: operator message отправляется только для `open`; для закрытого ticket job ничего не отправляет. Pending/failed reply удерживает ticket в `open` до successful delivery, поэтому ручное закрытие не может обогнать его доставку.
+
 Только успешная доставка ответа оператора переводит ticket `open -> waiting_for_user`, устанавливает `waiting_since` и dispatches delayed auto-close. Повтор delivery job для `sent` message является no-op. Для `failed` сообщения панель должна явно показывать ошибку и позволять повторную отправку тем же message record.
 
 Telegram `sendMessage` не предоставляет application idempotency key. При timeout после фактического принятия Telegram API остаётся небольшой риск повторной доставки при retry; он документируется, поскольку устранение потребовало бы внешнего reconciliation, отсутствующего в MVP.
@@ -224,6 +226,8 @@ Telegram update ID обеспечивает идемпотентность по�
 ### 9. Operator UI и authentication
 
 Панель использует обычную Laravel session authentication и одну заранее созданную operator account. Все operator routes защищены `auth`; self-registration отсутствует.
+
+На clean start Compose требует `OPERATOR_EMAIL` и `OPERATOR_PASSWORD`, ожидает PostgreSQL healthcheck, затем app последовательно выполняет migrations и `db:seed --force --no-interaction` до запуска HTTP server. Queue worker ждёт app healthcheck. Credentials читаются seeder через environment-backed config; непустой пароль и valid email обязательны, development fallback отсутствует. `firstOrCreate` по unique email обеспечивает идемпотентность для того же email; пароль хранится через `User` hashed cast. Повторный startup не обновляет существующий пароль. `.env.example` содержит только development email и пустой пароль; реальные credentials задаются локально.
 
 Livewire отображает очередь, историю, форму ответа, delivery state, ручное закрытие и три метрики. Очередь по умолчанию показывает `open` и `waiting_for_user`; фильтры также позволяют просмотреть `closed` или все обращения, сортируя их от новых к старым. Закрытые обращения read-only. Достаточно server-driven navigation и refresh/polling; WebSockets и SPA отклонены. User-provided text выводится только через escaped Blade syntax, без raw HTML.
 

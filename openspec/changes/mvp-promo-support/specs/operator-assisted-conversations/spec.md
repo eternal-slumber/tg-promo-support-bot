@@ -70,6 +70,19 @@ Webhook MUST проверять непустой configured secret token в за
 ### Requirement: Сохранение и доставка ответа оператора
 Ответ оператора MUST быть сохранён до отправки в Telegram. Успешная запись в PostgreSQL MUST NOT считаться успешной доставкой; исходящее сообщение MUST иметь состояние `pending`, `sent` или `failed`.
 
+Для ticket MUST существовать не более одного незавершённого operator reply (`pending` или `failed`). Конкурентный submit MUST NOT создавать второй message; retry MUST использовать прежний message record. Manual close MUST быть запрещён до завершения operator reply. Delivery job MUST повторно проверить ticket до отправки и MUST NOT вызывать Telegram API для operator message закрытого ticket.
+
+#### Scenario: Повторный submit и manual close при незавершённом ответе
+- **GIVEN** ticket содержит operator reply в состоянии `pending` или `failed`
+- **WHEN** оператор отправляет ещё один ответ либо вручную закрывает ticket
+- **THEN** действие отклоняется без новой Message, job или изменения ticket status
+- **AND** retry использует существующий message ID
+
+#### Scenario: Устаревшая доставка ответа закрытого ticket
+- **GIVEN** operator message ссылается на ticket, который уже `closed`
+- **WHEN** delivery job повторно проверяет состояние перед отправкой
+- **THEN** Telegram API не вызывается и callback-кнопки не отправляются
+
 #### Scenario: Ответ оператора успешно доставлен
 - **GIVEN** оператор отправляет ответ по открытому обращению
 - **WHEN** Telegram API подтверждает отправку

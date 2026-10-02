@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Enums\DeliveryStatus;
 use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
+use App\Enums\TicketStatus;
 use App\Exceptions\TelegramDeliveryException;
 use App\Models\Message;
 use App\Models\Ticket;
@@ -44,6 +45,11 @@ class DeliverTelegramMessage implements ShouldQueue
                 || $lockedMessage->direction !== MessageDirection::Outbound
                 || $lockedMessage->delivery_status === DeliveryStatus::Sent
                 || ! in_array($lockedMessage->delivery_status, [DeliveryStatus::Pending, DeliveryStatus::Failed], true)) {
+                return null;
+            }
+
+            if ($lockedMessage->author === MessageAuthor::Operator
+                && $lockedMessage->ticket?->status !== TicketStatus::Open) {
                 return null;
             }
 

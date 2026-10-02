@@ -89,6 +89,10 @@ class TicketLifecycleService
         return DB::transaction(function () use ($ticket, $allowedFrom, $to, $closeReason): Ticket {
             $lockedTicket = Ticket::query()->lockForUpdate()->findOrFail($ticket->getKey());
 
+            if ($closeReason === TicketCloseReason::OperatorClosed && $lockedTicket->hasUnfinishedOperatorReply()) {
+                throw new DomainException('Ticket cannot be closed while an operator reply is unfinished.');
+            }
+
             if (! in_array($lockedTicket->status, $allowedFrom, true)
                 || ! $lockedTicket->status->canTransitionTo($to)) {
                 throw new DomainException("Ticket cannot transition from {$lockedTicket->status->value} to {$to->value}.");

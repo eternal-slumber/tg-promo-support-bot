@@ -1,3 +1,13 @@
+## Первый запуск и оператор
+
+1. Скопируйте `.env.example` в `.env`.
+2. Укажите `OPERATOR_EMAIL` и собственный непустой `OPERATOR_PASSWORD` в `.env` (либо передайте их через environment). Email в примере предназначен для разработки; готового пароля и development fallback нет. Не коммитьте `.env`.
+3. Запустите `docker compose up` (после изменения исходников образа — `docker compose up --build`).
+
+Compose проверяет обязательные credentials до запуска контейнеров. PostgreSQL сначала проходит healthcheck; app выполняет migrations, затем `DatabaseSeeder` создаёт оператора, после чего запускает HTTP server. Queue worker стартует только после healthcheck app. Если credentials отсутствуют, Compose завершается с понятной ошибкой; seeder дополнительно проверяет email и непустой пароль.
+
+Повторный запуск с тем же email не создаёт дубль и не меняет пароль существующего пользователя. В PostgreSQL пароль сохраняется только как hash через `User` cast `hashed`. Bootstrap не является механизмом смены пароля. После startup войдите в `/operator` с указанными credentials; self-registration отсутствует.
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">

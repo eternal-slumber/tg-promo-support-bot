@@ -30,6 +30,8 @@ x-app-environment: &app-environment
   LLM_RETRY_BACKOFF: ${LLM_RETRY_BACKOFF:-5,15,30}
 
   TICKET_AUTO_CLOSE_HOURS: ${TICKET_AUTO_CLOSE_HOURS:-24}
+  OPERATOR_EMAIL: ${OPERATOR_EMAIL:?Set OPERATOR_EMAIL in .env before starting}
+  OPERATOR_PASSWORD: ${OPERATOR_PASSWORD:?Set OPERATOR_PASSWORD in .env before starting}
 
 services:
   postgres:
@@ -49,7 +51,7 @@ services:
   app:
     build:
       context: .
-    command: ["sh", "-c", "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000"]
+    command: ["sh", "-c", "php artisan migrate --force --no-interaction && php artisan db:seed --force --no-interaction && php artisan serve --host=0.0.0.0 --port=8000"]
     depends_on:
       postgres:
         condition: service_healthy

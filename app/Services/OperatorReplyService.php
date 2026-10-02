@@ -28,6 +28,10 @@ class OperatorReplyService
                 throw new DomainException('Only open tickets can receive an operator reply.');
             }
 
+            if ($lockedTicket->hasUnfinishedOperatorReply()) {
+                throw new DomainException('Ticket already has an unfinished operator reply.');
+            }
+
             $message = Message::query()->create([
                 'participant_id' => $lockedTicket->participant_id,
                 'ticket_id' => $lockedTicket->id,

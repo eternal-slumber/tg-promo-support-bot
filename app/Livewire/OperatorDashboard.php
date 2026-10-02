@@ -67,7 +67,7 @@ class OperatorDashboard extends Component
         try {
             $operatorReplies->create($this->operator(), $ticket, $this->replyBody);
         } catch (DomainException) {
-            $this->addError('replyBody', 'Обращение уже закрыто или ожидает ответа участника.');
+            $this->addError('replyBody', 'Новый ответ недоступен: обращение закрыто, ожидает участника или уже содержит недоставленный ответ.');
 
             return;
         }
@@ -108,6 +108,8 @@ class OperatorDashboard extends Component
         try {
             $ticketLifecycle->closeManually($ticket);
         } catch (DomainException) {
+            $this->addError('ticket', 'Закрытие недоступно: обращение уже закрыто или содержит недоставленный ответ оператора.');
+
             return;
         }
 
