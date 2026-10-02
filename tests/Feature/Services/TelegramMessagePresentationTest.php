@@ -1,5 +1,6 @@
 <?php
 
+use App\Data\TelegramOutboundMessage;
 use App\Enums\DeliveryStatus;
 use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
@@ -10,6 +11,31 @@ use App\Services\TelegramMessagePresentation;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 uses(LazilyRefreshDatabase::class);
+
+test('bounds automatic Unicode message presentation without changing stored text', function (MessageAuthor $author, int $extraCharacters) {
+    $body = str_repeat('🙂', TelegramOutboundMessage::MaxTextLength + $extraCharacters);
+    $message = Message::factory()->create([
+        'direction' => MessageDirection::Outbound,
+        'author' => $author,
+        'body' => $body,
+        'delivery_status' => DeliveryStatus::Pending,
+    ]);
+
+    $outbound = app(TelegramMessagePresentation::class)->present($message);
+
+    expect(mb_strlen($outbound->text, 'UTF-8'))->toBe(TelegramOutboundMessage::MaxTextLength)
+        ->and($message->refresh()->body)->toBe($body);
+
+    if ($extraCharacters === 0) {
+        expect($outbound->text)->toBe($body);
+    } else {
+        expect($outbound->text)->toEndWith('… [сообщение сокращено]');
+    }
+})->with([
+    'bot at limit' => [MessageAuthor::Bot, 0],
+    'bot over limit' => [MessageAuthor::Bot, 1],
+    'system over limit' => [MessageAuthor::System, 1],
+]);
 
 test('presents an operator response with ticket number safe quote and callbacks', function () {
     $participant = TelegramParticipant::factory()->create(['chat_id' => 500]);

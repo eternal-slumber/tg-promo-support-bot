@@ -4,8 +4,10 @@ WORKDIR /app
 
 COPY composer.json composer.lock ./
 
-RUN composer install \
-    --no-dev \
+ARG INSTALL_DEV=false
+
+RUN if [ "$INSTALL_DEV" = "true" ]; then DEV_FLAGS=""; else DEV_FLAGS="--no-dev"; fi \
+    && composer install $DEV_FLAGS \
     --no-interaction \
     --no-progress \
     --no-scripts \

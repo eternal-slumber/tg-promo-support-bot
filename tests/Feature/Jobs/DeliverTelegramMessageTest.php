@@ -1,5 +1,6 @@
 <?php
 
+use App\Data\TelegramOutboundMessage;
 use App\Data\TelegramSentMessage;
 use App\Enums\DeliveryStatus;
 use App\Enums\MessageAuthor;
@@ -17,6 +18,28 @@ use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Mockery;
 
 uses(LazilyRefreshDatabase::class);
+
+test('never sends a legacy oversized operator reply or changes the ticket to waiting', function () {
+    Queue::fake();
+    $ticket = Ticket::factory()->create();
+    $message = Message::factory()->for($ticket)->create([
+        'participant_id' => $ticket->participant_id,
+        'direction' => MessageDirection::Outbound,
+        'author' => MessageAuthor::Operator,
+        'body' => str_repeat('я', TelegramOutboundMessage::MaxTextLength),
+        'delivery_status' => DeliveryStatus::Pending,
+    ]);
+    $client = Mockery::mock(TelegramBotClient::class);
+    $client->shouldNotReceive('sendMessage');
+
+    deliver($message, $client);
+
+    expect($message->refresh()->delivery_status)->toBe(DeliveryStatus::Failed)
+        ->and($message->last_delivery_error)->toBe('telegram_message_too_long')
+        ->and($message->delivery_attempts)->toBe(1)
+        ->and($ticket->refresh()->status->value)->toBe('open');
+    Queue::assertNothingPushed();
+});
 
 test('marks a pending message sent only after Telegram accepts it', function () {
     $message = pendingOutboundMessage();

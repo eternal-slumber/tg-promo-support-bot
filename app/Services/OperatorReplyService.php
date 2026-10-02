@@ -12,10 +12,14 @@ use App\Models\Ticket;
 use App\Models\User;
 use DomainException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class OperatorReplyService
 {
-    public function __construct(private readonly SensitiveDataSanitizer $sanitizer) {}
+    public function __construct(
+        private readonly SensitiveDataSanitizer $sanitizer,
+        private readonly TelegramMessagePresentation $presentation,
+    ) {}
 
     public function create(User $operator, Ticket $ticket, string $body): Message
     {
@@ -30,6 +34,14 @@ class OperatorReplyService
 
             if ($lockedTicket->hasUnfinishedOperatorReply()) {
                 throw new DomainException('Ticket already has an unfinished operator reply.');
+            }
+
+            $limit = $this->presentation->operatorReplyLimit($lockedTicket);
+
+            if (mb_strlen($sanitized->text, 'UTF-8') > $limit) {
+                throw ValidationException::withMessages([
+                    'replyBody' => "Ответ слишком длинный: максимум {$limit} символов с учётом номера обращения и цитаты. Сократите ответ.",
+                ]);
             }
 
             $message = Message::query()->create([

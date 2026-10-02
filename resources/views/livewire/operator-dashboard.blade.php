@@ -79,7 +79,7 @@
                 @if ($selectedTicket->status === \App\Enums\TicketStatus::Open)
                     <form wire:submit="sendReply" class="border-t border-slate-700 pt-4">
                         <label class="block text-sm font-medium" for="replyBody">Ответ участнику</label>
-                        <textarea wire:model="replyBody" id="replyBody" rows="4" class="mt-2 w-full rounded-md border border-slate-600 bg-slate-800 p-3" maxlength="4000"></textarea>
+                        <textarea wire:model="replyBody" id="replyBody" rows="4" class="mt-2 w-full rounded-md border border-slate-600 bg-slate-800 p-3"></textarea>
                         @error('replyBody')
                             <p class="mt-1 text-sm text-rose-300">{{ $message }}</p>
                         @enderror

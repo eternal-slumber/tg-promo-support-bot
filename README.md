@@ -8,6 +8,24 @@ Compose проверяет обязательные credentials до запус�
 
 Повторный запуск с тем же email не создаёт дубль и не меняет пароль существующего пользователя. В PostgreSQL пароль сохраняется только как hash через `User` cast `hashed`. Bootstrap не является механизмом смены пароля. После startup войдите в `/operator` с указанными credentials; self-registration отсутствует.
 
+## Тесты на PostgreSQL
+
+Стандартная команда полного suite (нужен Docker Compose):
+
+```bash
+docker compose -f compose.testing.yaml run --build --rm tests
+```
+
+Команда собирает образ с Composer dev-зависимостями, запускает отдельный PostgreSQL 17, ожидает healthcheck и выполняет `php artisan test --compact`. Connection — `pgsql`, database — `tg_promo_test`; эти значения также печатаются перед suite. Test Compose имеет отдельный project `tg-promo-tests`, не публикует PostgreSQL port и хранит БД в `tmpfs`, без development volumes, credentials и операторского bootstrap. `.env` не попадает в image; runtime использует безопасный `.env.example`. Копировать production/development credentials для тестов не нужно.
+
+`phpunit.xml` закрепляет PostgreSQL и имя test database; development `DB_DATABASE` и `DB_URL` не могут переопределить их. Дополнительная проверка в `Tests\TestCase` выполняется до database refresh и отклоняет другую БД или cached development configuration. Существующие `LazilyRefreshDatabase` tests применяют migrations к test DB, включая PostgreSQL partial unique index; обычный `php artisan test` также использует PostgreSQL, если test DB доступна на настроенном host.
+
+Остановить временную тестовую БД после работы:
+
+```bash
+docker compose -f compose.testing.yaml down
+```
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">

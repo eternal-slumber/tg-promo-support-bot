@@ -12,6 +12,10 @@ class TelegramBotApiClient implements TelegramBotClient
 {
     public function sendMessage(TelegramOutboundMessage $message): TelegramSentMessage
     {
+        if ($message->exceedsTextLimit()) {
+            throw new TelegramDeliveryException('telegram_message_too_long', false);
+        }
+
         $response = $this->request('sendMessage', array_filter([
             'chat_id' => $message->chatId,
             'text' => $message->text,

@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Data\TelegramOutboundMessage;
 use App\Enums\DeliveryStatus;
 use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
@@ -53,8 +54,8 @@ class OperatorDashboard extends Component
     public function sendReply(OperatorReplyService $operatorReplies): void
     {
         $this->validate([
-            'replyBody' => ['required', 'string', 'max:4000'],
-        ]);
+            'replyBody' => ['required', 'string', 'max:'.TelegramOutboundMessage::MaxTextLength],
+        ], ['replyBody.max' => 'Ответ слишком длинный. Сократите его с учётом номера обращения и цитаты.']);
 
         $ticket = $this->activeTicket();
 

@@ -63,7 +63,13 @@ class DeliverTelegramMessage implements ShouldQueue
         }
 
         try {
-            $sentMessage = $client->sendMessage($presentation->present($message));
+            $outbound = $presentation->present($message);
+
+            if ($outbound->exceedsTextLimit()) {
+                throw new TelegramDeliveryException('telegram_message_too_long', false);
+            }
+
+            $sentMessage = $client->sendMessage($outbound);
         } catch (TelegramDeliveryException $exception) {
             $this->markFailed($exception->safeError);
 

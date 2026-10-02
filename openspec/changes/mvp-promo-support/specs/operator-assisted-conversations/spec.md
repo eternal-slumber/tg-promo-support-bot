@@ -120,6 +120,27 @@ Callback `resolved` или `unresolved` MUST применяться только
 - **WHEN** Telegram доставляет тот же callback повторно
 - **THEN** система подтверждает обработку без повторного изменения состояния
 
+### Requirement: Ограничение длины Telegram presentation
+Система MUST NOT передавать в Telegram `sendMessage` текст длиннее централизованного лимита 4096 Unicode символов. Operator reply MUST валидироваться до persistence с учётом итогового presentation overhead. Автоматические сообщения MAY обрезаться с явной пометкой, сохраняя полный sanitized текст в истории.
+
+#### Scenario: Operator reply превышает доступный бюджет
+- **GIVEN** ответ вместе с номером обращения и redacted quote превышает лимит Telegram
+- **WHEN** оператор отправляет ответ
+- **THEN** панель показывает понятную validation error
+- **AND** новая Message и delivery job не создаются
+
+#### Scenario: Слишком длинное автоматическое сообщение
+- **GIVEN** bot/system outbound body длиннее лимита
+- **WHEN** система строит Telegram presentation
+- **THEN** отправляемый текст обрезается по Unicode символам с пометкой сокращения до допустимой длины
+- **AND** сохранённый sanitized body не изменяется
+
+#### Scenario: Defensive delivery guard
+- **GIVEN** сохранённый operator reply формирует oversized payload
+- **WHEN** delivery job обрабатывает сообщение
+- **THEN** Telegram API не вызывается и message получает delivery state `failed`
+- **AND** ticket не переходит в `waiting_for_user`
+
 ### Requirement: Подтверждение решения участником
 Для собственного обращения `waiting_for_user` действие `Проблема решена` MUST перевести ticket в `closed` и сохранить close reason `user_confirmed`.
 

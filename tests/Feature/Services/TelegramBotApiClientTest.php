@@ -11,6 +11,23 @@ beforeEach(function () {
     config()->set('telegram.bot_token', 'test-token');
 });
 
+test('guards the Telegram Unicode text limit before HTTP', function (int $extraCharacters) {
+    Http::preventStrayRequests();
+    Http::fake(['*' => Http::response(['ok' => true, 'result' => ['message_id' => 123]])]);
+    $outbound = new TelegramOutboundMessage(100, str_repeat('🙂', TelegramOutboundMessage::MaxTextLength + $extraCharacters));
+
+    if ($extraCharacters > 0) {
+        expect(fn () => app(TelegramBotApiClient::class)->sendMessage($outbound))
+            ->toThrow(TelegramDeliveryException::class, 'telegram_message_too_long');
+        Http::assertNothingSent();
+
+        return;
+    }
+
+    expect(app(TelegramBotApiClient::class)->sendMessage($outbound)->messageId)->toBe(123);
+    Http::assertSent(fn (Request $request): bool => $request['text'] === $outbound->text);
+})->with(['at limit' => [0], 'over limit' => [1]]);
+
 test('sends a text message with optional inline keyboard', function () {
     Http::preventStrayRequests();
     Http::fake(['https://telegram.example/bottest-token/sendMessage' => Http::response([

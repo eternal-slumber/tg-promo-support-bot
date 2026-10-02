@@ -1,0 +1,39 @@
+name: tg-promo-tests
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: tg_promo_test
+      POSTGRES_USER: tg_promo_test
+      POSTGRES_PASSWORD: tg_promo_test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tg_promo_test -d tg_promo_test"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+    tmpfs:
+      - /var/lib/postgresql/data
+
+  tests:
+    user: root
+    build:
+      context: .
+      args:
+        INSTALL_DEV: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      APP_ENV: testing
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: tg_promo_test
+      DB_USERNAME: tg_promo_test
+      DB_PASSWORD: tg_promo_test
+      DB_URL: ""
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+    command: ["sh", "-c", "php artisan config:show database.default && php artisan config:show database.connections.pgsql.database && php artisan test --compact"]

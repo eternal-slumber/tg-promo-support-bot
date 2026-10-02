@@ -6,6 +6,7 @@ use App\Data\TelegramOutboundMessage;
 use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
 use App\Models\Message;
+use App\Models\Ticket;
 use Illuminate\Support\Str;
 
 class TelegramMessagePresentation
@@ -16,12 +17,10 @@ class TelegramMessagePresentation
         $text = $message->body;
 
         if ($message->author === MessageAuthor::Operator && $message->ticket !== null) {
-            $text = "Ответ оператора по обращению #{$message->ticket->id}\n\n{$message->body}";
-            $quote = $this->quote($message);
-
-            if ($quote !== null) {
-                $text .= "\n\nВаш вопрос: «{$quote}»";
-            }
+            $text = $this->operatorReplyText($message->ticket, $message->body);
+        } elseif ($message->author !== MessageAuthor::Operator && mb_strlen($text, 'UTF-8') > TelegramOutboundMessage::MaxTextLength) {
+            $suffix = '… [сообщение сокращено]';
+            $text = mb_substr($text, 0, TelegramOutboundMessage::MaxTextLength - mb_strlen($suffix, 'UTF-8'), 'UTF-8').$suffix;
         }
 
         return new TelegramOutboundMessage(
@@ -29,6 +28,23 @@ class TelegramMessagePresentation
             $text,
             $this->replyMarkup($message),
         );
+    }
+
+    public function operatorReplyLimit(Ticket $ticket): int
+    {
+        return TelegramOutboundMessage::MaxTextLength - mb_strlen($this->operatorReplyText($ticket, ''), 'UTF-8');
+    }
+
+    private function operatorReplyText(Ticket $ticket, string $body): string
+    {
+        $text = "Ответ оператора по обращению #{$ticket->id}\n\n{$body}";
+        $quote = $this->quote($ticket);
+
+        if ($quote !== null) {
+            $text .= "\n\nВаш вопрос: «{$quote}»";
+        }
+
+        return $text;
     }
 
     /** @return array<string, mixed>|null */
@@ -44,9 +60,9 @@ class TelegramMessagePresentation
         ]]];
     }
 
-    private function quote(Message $message): ?string
+    private function quote(Ticket $ticket): ?string
     {
-        $inbound = $message->ticket?->messages()
+        $inbound = $ticket->messages()
             ->where('direction', MessageDirection::Inbound)
             ->where('author', MessageAuthor::Participant)
             ->oldest('id')
