@@ -6,6 +6,20 @@ Capability обеспечивает полный минимальный lifecycl
 
 ## ADDED Requirements
 
+### Requirement: Аутентификация Telegram webhook
+Webhook MUST проверять непустой configured secret token в заголовке `X-Telegram-Bot-Api-Secret-Token` безопасным сравнением до parsing, persistence и side effects.
+
+#### Scenario: Подтверждённый Telegram request
+- **GIVEN** webhook secret настроен
+- **WHEN** запрос содержит совпадающий secret token
+- **THEN** payload допускается к обычному ingestion и ownership validation
+
+#### Scenario: Неподтверждённый request или spoofed callback
+- **GIVEN** заголовок отсутствует, неверен либо webhook secret не настроен
+- **WHEN** endpoint получает message или callback, даже с Telegram user ID владельца ticket
+- **THEN** endpoint возвращает 403 без новых updates, participants, messages, tickets или jobs
+- **AND** callback не меняет ticket и не вызывает Telegram API
+
 ### Requirement: Идемпотентный Telegram ingestion
 Система MUST обработать каждый Telegram update не более одного раза. Повторная доставка update MUST NOT создавать новые сообщения, обращения, jobs, ответы или статистические результаты.
 
@@ -39,6 +53,14 @@ Capability обеспечивает полный минимальный lifecycl
 
 ### Requirement: Очередь и история обращений
 Аутентифицированный оператор MUST видеть очередь незакрытых обращений и полную хронологическую историю сообщений выбранного обращения. Self-registration, роли и управление операторами не требуются.
+
+Операторская панель MUST предоставлять фильтры `active`, `closed` и `all`. По умолчанию active-очередь содержит только обращения в статусах `open` и `waiting_for_user`; закрытые обращения доступны для просмотра с участником, временем создания и закрытия, причиной закрытия и историей сообщений. Закрытое обращение является read-only: оператор не может отправить в него ответ или закрыть его повторно.
+
+#### Scenario: Просмотр закрытого обращения
+- **GIVEN** оператор открыл фильтр закрытых обращений
+- **WHEN** он выбирает ticket со статусом `closed`
+- **THEN** панель показывает номер, участника, `created_at`, `closed_at`, `close_reason` и историю сообщений
+- **AND** действия ответа и ручного закрытия недоступны
 
 #### Scenario: Оператор открывает обращение
 - **GIVEN** заранее созданный оператор аутентифицирован

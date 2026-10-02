@@ -29,7 +29,8 @@ class OpenAiLlmClient implements SupportLlmClient
                     'model' => config('llm.model'),
                     'response_format' => ['type' => 'json_object'],
                     'messages' => [
-                        ['role' => 'system', 'content' => $this->rules->systemPrompt($request->promotionRules, $request->participantMessage)],
+                        ['role' => 'system', 'content' => $this->rules->systemPrompt($request->promotionRules)],
+                        ['role' => 'user', 'content' => $request->participantMessage],
                     ],
                 ]);
 
@@ -56,6 +57,6 @@ class OpenAiLlmClient implements SupportLlmClient
             throw new InvalidLlmDecisionException('LLM provider response is not valid JSON.', 0, $exception);
         }
 
-        return $this->validator->validate($structuredOutput);
+        return $this->validator->validate($structuredOutput, $request->promotionRules);
     }
 }

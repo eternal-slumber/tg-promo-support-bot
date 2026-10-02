@@ -23,12 +23,14 @@ test('parses a text message into a transport dto', function () {
         ->and($update->text)->toBe('Когда будут результаты?');
 });
 
-test('recognizes callback queries without applying callback business logic', function () {
+test('parses callback query transport fields without applying business logic', function () {
     $update = (new TelegramUpdateParser)->parse([
         'update_id' => 101,
         'callback_query' => [
+            'id' => 'callback-id',
             'from' => ['id' => 301],
             'message' => ['chat' => ['id' => 401]],
+            'data' => 'resolved:1',
         ],
     ]);
 
@@ -36,6 +38,8 @@ test('recognizes callback queries without applying callback business logic', fun
         ->and($update->kind)->toBe(TelegramUpdateKind::CallbackQuery)
         ->and($update->telegramUserId)->toBe(301)
         ->and($update->chatId)->toBe(401)
+        ->and($update->callbackQueryId)->toBe('callback-id')
+        ->and($update->callbackData)->toBe('resolved:1')
         ->and($update->text)->toBeNull();
 });
 

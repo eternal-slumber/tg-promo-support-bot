@@ -18,6 +18,40 @@ use Illuminate\Support\Facades\Schema;
 
 uses(LazilyRefreshDatabase::class);
 
+beforeEach(function () {
+    config()->set('telegram.webhook_secret', 'test-webhook-secret');
+    $this->withHeader('X-Telegram-Bot-Api-Secret-Token', 'test-webhook-secret');
+});
+
+test('rejects unauthenticated updates before any side effect', function (?string $secret) {
+    Queue::fake();
+    Http::preventStrayRequests();
+    $this->flushHeaders();
+
+    if ($secret !== null) {
+        $this->withHeader('X-Telegram-Bot-Api-Secret-Token', $secret);
+    }
+
+    $this->postJson(route('telegram.webhook'), telegramTextUpdate(9001, 9002, 9003, 9004, 'Вопрос'))->assertForbidden();
+
+    expect(TelegramUpdate::query()->count())->toBe(0)
+        ->and(TelegramParticipant::query()->count())->toBe(0)
+        ->and(Message::query()->count())->toBe(0)
+        ->and(Ticket::query()->count())->toBe(0);
+    Queue::assertNothingPushed();
+    Http::assertNothingSent();
+})->with(['missing' => [null], 'wrong' => ['wrong-secret']]);
+
+test('fails closed when webhook secret is not configured', function () {
+    config()->set('telegram.webhook_secret', null);
+    Queue::fake();
+
+    $this->postJson(route('telegram.webhook'), ['update_id' => 1])->assertForbidden();
+
+    expect(TelegramUpdate::query()->count())->toBe(0);
+    Queue::assertNothingPushed();
+});
+
 test('persists a valid text update and queues only its message id', function () {
     Queue::fake();
     Http::preventStrayRequests();
@@ -120,9 +154,10 @@ test('returns success without side effects for a duplicate update id', function 
     Queue::assertPushed(ProcessIncomingMessage::class, 1);
 });
 
-test('recognizes callback updates idempotently without callback business logic', function () {
+test('acknowledges callback updates while processing duplicate delivery idempotently', function () {
     Queue::fake([ProcessIncomingMessage::class]);
     Http::preventStrayRequests();
+    Http::fake(['*answerCallbackQuery' => Http::response(['ok' => true, 'result' => true])]);
     $callback = [
         'update_id' => 1007,
         'callback_query' => [
@@ -141,6 +176,7 @@ test('recognizes callback updates idempotently without callback business logic',
         ->and(Message::query()->count())->toBe(0);
 
     Queue::assertNothingPushed();
+    Http::assertSentCount(2);
 });
 
 test('returns predictable responses for malformed and unsupported updates', function () {

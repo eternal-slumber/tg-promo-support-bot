@@ -41,12 +41,21 @@ class TelegramUpdateParser
 
         if (is_array($payload['callback_query'] ?? null)) {
             $callback = $payload['callback_query'];
+            $callbackQueryId = $callback['id'] ?? null;
+            $telegramUserId = $this->integer(data_get($callback, 'from.id'));
+            $chatId = $this->integer(data_get($callback, 'message.chat.id'));
+
+            if (! is_string($callbackQueryId) || $telegramUserId === null || $chatId === null) {
+                return null;
+            }
 
             return new TelegramUpdateData(
                 updateId: $updateId,
                 kind: TelegramUpdateKind::CallbackQuery,
-                telegramUserId: $this->integer(data_get($callback, 'from.id')),
-                chatId: $this->integer(data_get($callback, 'message.chat.id')),
+                telegramUserId: $telegramUserId,
+                chatId: $chatId,
+                callbackQueryId: $callbackQueryId,
+                callbackData: is_string($callback['data'] ?? null) ? $callback['data'] : null,
             );
         }
 

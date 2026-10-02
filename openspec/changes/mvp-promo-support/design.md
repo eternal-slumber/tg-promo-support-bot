@@ -168,9 +168,15 @@ Application contract принимает redacted participant text и актуа�
 
 Analysis validator разрешает только известные kinds и обязательные поля каждой части; application builder создаёт только допустимые final decisions. Application layer, а не модель, решает, какие записи создать. У LLM нет tools для изменения ticket, победителей, чеков или аккаунтов.
 
+Provider payload содержит два сообщения: `system` включает только application prompt, contract и promotion rules; `user` содержит только sanitized participant text. Runtime participant text никогда не интерполируется в system prompt.
+
+Каждая grounded часть имеет поля `kind`, `answer`, `evidence: [{rule_id, quote}]`; остальные части имеют `answer: null` и пустой evidence. `PromotionRules` строит каталог numbered clauses из `promo-rules.md`, сохраняя multiline списки в соответствующем пункте. Validator проверяет существование точного numeric ID и принадлежность непустой цитаты именно этому пункту (нормализуется только whitespace). Произвольные `source_rules` от provider больше не принимаются. Typed analysis сохраняет проверенный evidence и derived sourceRules. Factual answer собирается из полного текста подтверждённых пунктов каталога, а не из free-form ответа модели или обрезанной цитаты, чтобы не терять отрицания и условия. Невалидный evidence вызывает существующий processing failure/retry и после исчерпания attempts — `llm_failure` escalation. Каталог не доказывает смысловую релевантность выбранного пункта; это остаётся задачей semantic analysis и evaluation.
+
 Prompt-файлы версионируются отдельно в репозитории. В decision сохраняется структурированный результат и hash factual source для воспроизводимости, но не полный system prompt. Vector database отклонена: один небольшой документ правил помещается в prompt и является единственным knowledge source.
 
 ### 6. Telegram adapter и delivery tracking
+
+Inbound webhook проверяет `X-Telegram-Bot-Api-Secret-Token` через `hash_equals` с непустым `config('telegram.webhook_secret')` до parsing и side effects. Missing/wrong token или отсутствующая конфигурация дают HTTP 403. CSRF exception сохраняется; callback ownership проверяется только после аутентификации webhook.
 
 Telegram adapter предоставляет минимальные операции: отправить текст с optional inline keyboard и подтвердить callback. Он задаёт explicit timeout и переводит API/network errors в типизированные ошибки.
 
@@ -219,7 +225,7 @@ Telegram update ID обеспечивает идемпотентность по�
 
 Панель использует обычную Laravel session authentication и одну заранее созданную operator account. Все operator routes защищены `auth`; self-registration отсутствует.
 
-Livewire отображает очередь, историю, форму ответа, delivery state, ручное закрытие и три метрики. Достаточно server-driven navigation и refresh/polling; WebSockets и SPA отклонены. User-provided text выводится только через escaped Blade syntax, без raw HTML.
+Livewire отображает очередь, историю, форму ответа, delivery state, ручное закрытие и три метрики. Очередь по умолчанию показывает `open` и `waiting_for_user`; фильтры также позволяют просмотреть `closed` или все обращения, сортируя их от новых к старым. Закрытые обращения read-only. Достаточно server-driven navigation и refresh/polling; WebSockets и SPA отклонены. User-provided text выводится только через escaped Blade syntax, без raw HTML.
 
 Точная верстка и формулировки Telegram-сообщений не являются domain contract. Presentation concepts:
 

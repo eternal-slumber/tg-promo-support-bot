@@ -13,6 +13,8 @@ final readonly class TelegramUpdateData
         public ?int $chatId = null,
         public ?int $telegramMessageId = null,
         public ?string $text = null,
+        public ?string $callbackQueryId = null,
+        public ?string $callbackData = null,
     ) {}
 
     public function isTextMessage(): bool

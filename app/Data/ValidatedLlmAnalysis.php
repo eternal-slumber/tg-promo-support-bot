@@ -10,7 +10,7 @@ final readonly class ValidatedLlmAnalysis
     public function __construct(public array $parts) {}
 
     /**
-     * @return array{parts: list<array{kind: string, answer: ?string, source_rules: list<string>}>}
+     * @return array{parts: list<array{kind: string, answer: ?string, evidence: list<array{rule_id: string, quote: string}>}>}
      */
     public function toStructuredOutput(): array
     {

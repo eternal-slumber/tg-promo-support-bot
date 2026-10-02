@@ -24,6 +24,8 @@ class TelegramIngestionService
     public function __construct(
         private readonly SensitiveDataSanitizer $sanitizer,
         private readonly TicketLifecycleService $tickets,
+        private readonly TelegramCallbackService $callbacks,
+        private readonly TelegramBotClient $telegram,
     ) {}
 
     public function ingest(TelegramUpdateData $update): TelegramIngestionResult
@@ -47,7 +49,11 @@ class TelegramIngestionService
             }
 
             if ($update->kind === TelegramUpdateKind::CallbackQuery) {
-                $this->attachCallbackParticipant($update);
+                $participant = $this->attachCallbackParticipant($update);
+
+                if ($participant !== null) {
+                    $this->callbacks->handle($participant, $update->callbackData);
+                }
 
                 return new TelegramIngestionResult(false, false);
             }
@@ -57,6 +63,10 @@ class TelegramIngestionService
 
         if ($result->messageId !== null) {
             ProcessIncomingMessage::dispatch($result->messageId)->afterCommit();
+        }
+
+        if ($update->kind === TelegramUpdateKind::CallbackQuery && $update->callbackQueryId !== null) {
+            $this->telegram->acknowledgeCallback($update->callbackQueryId);
         }
 
         return $result;
@@ -103,10 +113,10 @@ class TelegramIngestionService
         return new TelegramIngestionResult(false, false, $message->id);
     }
 
-    private function attachCallbackParticipant(TelegramUpdateData $update): void
+    private function attachCallbackParticipant(TelegramUpdateData $update): ?TelegramParticipant
     {
         if ($update->telegramUserId === null || $update->chatId === null) {
-            return;
+            return null;
         }
 
         $participant = $this->upsertParticipant($update->telegramUserId, $update->chatId);
@@ -114,6 +124,8 @@ class TelegramIngestionService
         TelegramUpdate::query()
             ->where('update_id', $update->updateId)
             ->update(['participant_id' => $participant->id]);
+
+        return $participant;
     }
 
     private function upsertParticipant(int $telegramUserId, int $chatId): TelegramParticipant

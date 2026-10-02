@@ -17,6 +17,11 @@ class TelegramWebhookController extends Controller
         TelegramUpdateParser $parser,
         TelegramIngestionService $ingestion,
     ): JsonResponse {
+        $secret = config('telegram.webhook_secret');
+        $providedSecret = $request->header('X-Telegram-Bot-Api-Secret-Token');
+
+        abort_unless(is_string($secret) && $secret !== '' && is_string($providedSecret) && hash_equals($secret, $providedSecret), 403);
+
         $update = $parser->parse($request->json()->all());
 
         if ($update === null) {

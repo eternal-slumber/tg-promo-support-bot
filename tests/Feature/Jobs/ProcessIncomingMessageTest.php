@@ -43,7 +43,7 @@ test('persists a grounded answer without creating a ticket', function () {
 
     expect($decision->type)->toBe(SupportDecisionType::Answer)
         ->and($decision->answer_text)->toBe('Кефир не участвует.')
-        ->and($decision->structured_output['parts'][0]['source_rules'])->toBe(['4.1'])
+        ->and($decision->structured_output['parts'][0]['evidence'][0]['rule_id'])->toBe('4.2')
         ->and(Ticket::query()->count())->toBe(0)
         ->and($outbound->body)->toBe('Кефир не участвует.')
         ->and($outbound->delivery_status)->toBe(DeliveryStatus::Pending);
@@ -76,6 +76,7 @@ test('creates one ticket for delivery status while answering prize replacement',
             LlmAnalysisKind::RuleAnswer,
             'Выплата денежного эквивалента призов и замена призов другими не производятся.',
             ['7.4'],
+            [['rule_id' => '7.4', 'quote' => 'Выплата денежного эквивалента призов и замена призов другими не производятся.']],
         ),
     ]);
 
@@ -88,7 +89,7 @@ test('creates one ticket for delivery status while answering prize replacement',
     expect($persistedDecision->type)->toBe(SupportDecisionType::Mixed)
         ->and($persistedDecision->reason)->toBe('mixed_request')
         ->and($persistedDecision->answer_text)->toBe('Выплата денежного эквивалента призов и замена призов другими не производятся.')
-        ->and($persistedDecision->structured_output['parts'][1]['source_rules'])->toBe(['7.4'])
+        ->and($persistedDecision->structured_output['parts'][1]['evidence'][0]['rule_id'])->toBe('7.4')
         ->and($ticket->escalation_reason)->toBe('mixed_request')
         ->and(Message::query()->where('author', MessageAuthor::Bot)->count())->toBe(2)
         ->and(Message::query()->where('ticket_id', $ticket->id)->count())->toBe(3);
@@ -174,6 +175,38 @@ test('throws invalid processing failures for queue retries then escalates after 
     assertRetryFailureCreatesOneFallback(new InvalidLlmDecisionException('invalid response'));
 });
 
+test('invalid grounding from the provider follows the existing idempotent llm failure path', function (array $evidence) {
+    config()->set('llm.endpoint', 'https://llm.example/v1/chat/completions');
+    Http::preventStrayRequests();
+    Http::fake(['https://llm.example/v1/chat/completions' => Http::response([
+        'choices' => [['message' => ['content' => json_encode(['parts' => [[
+            'kind' => 'rule_answer', 'answer' => 'Вы выиграли автомобиль', 'evidence' => $evidence,
+        ]]], JSON_THROW_ON_ERROR)]]],
+    ])]);
+    $message = Message::factory()->create();
+    $job = new ProcessIncomingMessage($message->id);
+
+    try {
+        runJob($message, app(SupportLlmClient::class));
+        $this->fail('Invalid grounding must reject this processing attempt.');
+    } catch (InvalidLlmDecisionException $exception) {
+        expect(SupportDecision::query()->count())->toBe(0)
+            ->and(Ticket::query()->count())->toBe(0)
+            ->and(Message::query()->count())->toBe(1);
+        $job->failed($exception);
+        $job->failed($exception);
+    }
+
+    expect(SupportDecision::query()->sole()->reason)->toBe('llm_failure')
+        ->and(Ticket::query()->count())->toBe(1)
+        ->and(Message::query()->where('author', MessageAuthor::Bot)->count())->toBe(1)
+        ->and(Message::query()->find($message->id))->not->toBeNull();
+})->with([
+    'unknown rule' => [[['rule_id' => '999.42', 'quote' => 'Вы выиграли автомобиль']]],
+    'invented quote' => [[['rule_id' => '7.4', 'quote' => 'Вы выиграли автомобиль']]],
+    'no evidence' => [[]],
+]);
+
 function assertRetryFailureCreatesOneFallback(Throwable $exception): void
 {
     config()->set('llm.max_attempts', 3);
@@ -209,7 +242,7 @@ test('calls the LLM before the decision transaction starts', function () {
         return Http::response([
             'choices' => [[
                 'message' => [
-                    'content' => json_encode(analysisOutput([['kind' => 'rule_answer', 'answer' => 'Кефир не участвует.', 'source_rules' => ['4.1']]]), JSON_THROW_ON_ERROR),
+                    'content' => json_encode(analysisOutput([['kind' => 'rule_answer', 'answer' => 'Кефир не участвует.', 'evidence' => [['rule_id' => '4.2', 'quote' => 'Другая продукция «Молочный край» в Акции не участвует, в том числе творожки, творожные десерты, кефир, ряженка и молоко.']]]]), JSON_THROW_ON_ERROR),
                 ],
             ]],
         ]);
@@ -226,7 +259,7 @@ function answerDecision(string $answer): ValidatedSupportDecision
 
 function answerAnalysis(string $answer): ValidatedLlmAnalysis
 {
-    return new ValidatedLlmAnalysis([new LlmAnalysisPart(LlmAnalysisKind::RuleAnswer, $answer, ['4.1'])]);
+    return new ValidatedLlmAnalysis([new LlmAnalysisPart(LlmAnalysisKind::RuleAnswer, $answer, ['4.2'], [['rule_id' => '4.2', 'quote' => 'Другая продукция «Молочный край» в Акции не участвует, в том числе творожки, творожные десерты, кефир, ряженка и молоко.']])]);
 }
 
 function escalationAnalysis(string $reason): ValidatedLlmAnalysis
@@ -237,8 +270,8 @@ function escalationAnalysis(string $reason): ValidatedLlmAnalysis
 }
 
 /**
- * @param  list<array{kind: string, answer: ?string, source_rules: list<string>}>  $parts
- * @return array{parts: list<array{kind: string, answer: ?string, source_rules: list<string>}>}
+ * @param  list<array{kind: string, answer: ?string, evidence: list<array{rule_id: string, quote: string}>}>  $parts
+ * @return array{parts: list<array{kind: string, answer: ?string, evidence: list<array{rule_id: string, quote: string}>}>}
  */
 function analysisOutput(array $parts): array
 {

@@ -5,11 +5,14 @@ use App\Enums\DeliveryStatus;
 use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
 use App\Exceptions\TelegramDeliveryException;
+use App\Jobs\AutoCloseTicket;
 use App\Jobs\DeliverTelegramMessage;
 use App\Models\Message;
 use App\Models\TelegramParticipant;
+use App\Models\Ticket;
 use App\Services\TelegramBotClient;
 use App\Services\TelegramMessagePresentation;
+use App\Services\TicketLifecycleService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Mockery;
 
@@ -68,6 +71,46 @@ test('does not send an already sent message again', function () {
     expect($message->refresh()->delivery_attempts)->toBe(0);
 });
 
+test('moves an open ticket to waiting for the user after delivering an operator reply', function () {
+    Queue::fake();
+    config()->set('support.ticket_auto_close_hours', 12);
+    $participant = TelegramParticipant::factory()->create();
+    $ticket = Ticket::factory()->for($participant, 'participant')->create();
+    $message = Message::factory()->for($participant, 'participant')->for($ticket)->create([
+        'direction' => MessageDirection::Outbound,
+        'author' => MessageAuthor::Operator,
+        'delivery_status' => DeliveryStatus::Pending,
+    ]);
+    $client = Mockery::mock(TelegramBotClient::class);
+    $client->shouldReceive('sendMessage')->once()->andReturn(new TelegramSentMessage(789));
+
+    deliver($message, $client);
+
+    expect($message->refresh()->delivery_status)->toBe(DeliveryStatus::Sent)
+        ->and($ticket->refresh()->status->value)->toBe('waiting_for_user')
+        ->and($ticket->waiting_since)->not->toBeNull();
+
+    Queue::assertPushed(AutoCloseTicket::class, fn (AutoCloseTicket $job): bool => $job->ticketId === $ticket->id
+        && $job->delay?->getTimestamp() === now()->addHours(12)->getTimestamp());
+});
+
+test('keeps an open ticket open when delivery of an operator reply fails', function () {
+    $participant = TelegramParticipant::factory()->create();
+    $ticket = Ticket::factory()->for($participant, 'participant')->create();
+    $message = Message::factory()->for($participant, 'participant')->for($ticket)->create([
+        'direction' => MessageDirection::Outbound,
+        'author' => MessageAuthor::Operator,
+        'delivery_status' => DeliveryStatus::Pending,
+    ]);
+    $client = Mockery::mock(TelegramBotClient::class);
+    $client->shouldReceive('sendMessage')->once()->andThrow(new TelegramDeliveryException('telegram_request_rejected', false));
+
+    deliver($message, $client);
+
+    expect($message->refresh()->delivery_status)->toBe(DeliveryStatus::Failed)
+        ->and($ticket->refresh()->status->value)->toBe('open');
+});
+
 function pendingOutboundMessage(array $attributes = []): Message
 {
     $participant = TelegramParticipant::factory()->create();
@@ -82,5 +125,9 @@ function pendingOutboundMessage(array $attributes = []): Message
 
 function deliver(Message $message, TelegramBotClient $client): void
 {
-    (new DeliverTelegramMessage($message->id))->handle($client, app(TelegramMessagePresentation::class));
+    (new DeliverTelegramMessage($message->id))->handle(
+        $client,
+        app(TelegramMessagePresentation::class),
+        app(TicketLifecycleService::class),
+    );
 }

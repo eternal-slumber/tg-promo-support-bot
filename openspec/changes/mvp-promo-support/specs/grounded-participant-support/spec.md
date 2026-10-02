@@ -72,6 +72,26 @@ Capability обеспечивает надёжную обработку вопр
 ### Requirement: Валидированный structured analysis и детерминированное decision building
 Результат LLM MUST соответствовать заданной структурированной схеме смысловых частей до применения. Application layer MUST детерминированно вывести финальное решение из валидированных частей: grounded части дают ответ, unresolved части дают эскалацию, а их сочетание даёт mixed; prompt injection даёт безопасный отказ. Неизвестная категория, отсутствие обязательных полей или противоречивый analysis MUST NOT приводить к автоматическому ответу.
 
+Grounded part MUST содержать непустой `evidence` из `{rule_id, quote}`. Сервер MUST проверить существование ID и наличие цитаты в соответствующем пункте `promo-rules.md`. Factual response MUST формироваться из полного текста проверенных пунктов, а не из неподтверждённого free-form `answer`. Provider `source_rules` сами по себе MUST NOT считаться evidence. Sanitized participant text MUST передаваться отдельно в user-role message, никогда внутри runtime system content.
+
+#### Scenario: Ложный grounding
+- **GIVEN** LLM возвращает grounded part без evidence, с неизвестным ID `999.42` или цитатой, отсутствующей в указанном пункте
+- **WHEN** validator проверяет analysis
+- **THEN** попытка обработки завершается ошибкой без factual response
+- **AND** после исчерпания retry применяется существующая `llm_failure` escalation
+
+#### Scenario: Выдуманный ответ с реальным evidence
+- **GIVEN** free-form answer модели содержит факт, которого нет в правилах, но evidence валиден
+- **WHEN** строится финальный ответ
+- **THEN** ответ содержит только полный текст проверенных пунктов каталога
+- **AND** выдуманный free-form текст не сохраняется как ответ и не отправляется участнику
+
+#### Scenario: Разделение доверенных инструкций и participant text
+- **GIVEN** участник отправил sanitized adversarial сообщение
+- **WHEN** provider adapter формирует payload
+- **THEN** system-role содержит только application prompt, output contract и правила
+- **AND** user-role содержит только sanitized participant text
+
 #### Scenario: Mixed выводится из смысловых частей
 - **GIVEN** LLM возвращает participant-specific часть и grounded rule-answer часть
 - **WHEN** приложение валидирует analysis и строит final decision

@@ -40,17 +40,17 @@
 
 ## 6. Operator authentication и UI
 
-- [ ] 6.1 Реализовать session login для заранее созданного operator account без self-registration и ролей; проверить guest redirect, успешный login и отсутствие публичного registration endpoint.
-- [ ] 6.2 Реализовать Livewire queue и conversation history с escaped redacted participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets, отсутствие raw HTML и отсутствие исходных card/OTP/password values.
-- [ ] 6.3 Реализовать ответ оператора: сохранить `pending` message и первый response timestamp, dispatch delivery after commit, а после успешной доставки перевести `open -> waiting_for_user`; проверить DB, queue и Telegram side effects вместе.
-- [ ] 6.4 Показывать failed delivery оператору и разрешать повторную отправку того же message record; проверить, что ошибка Telegram не удаляет ответ и не переводит ticket в `waiting_for_user`.
+- [x] 6.1 Реализовать session login для заранее созданного operator account без self-registration и ролей; проверить guest redirect, успешный login и отсутствие публичного registration endpoint.
+- [x] 6.2 Реализовать Livewire queue и conversation history с escaped redacted participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets, отсутствие raw HTML и отсутствие исходных card/OTP/password values.
+- [x] 6.3 Реализовать ответ оператора: сохранить `pending` message и первый response timestamp, dispatch delivery after commit, а после успешной доставки перевести `open -> waiting_for_user`; проверить DB, queue и Telegram side effects вместе.
+- [x] 6.4 Показывать failed delivery оператору и разрешать повторную отправку того же message record; проверить, что ошибка Telegram не удаляет ответ и не переводит ticket в `waiting_for_user`.
 
 ## 7. Callback и ticket lifecycle
 
-- [ ] 7.1 Реализовать owner check для `resolved` / `unresolved` callback по Telegram user и idempotent status guard; проверить callback владельца, другого пользователя и повторную доставку без раскрытия чужого ticket.
-- [ ] 7.2 Реализовать `waiting_for_user -> closed` с `user_confirmed` и `waiting_for_user -> open` для unresolved с приглашением уточнить; проверить оба перехода и добавление следующего clarification в тот же ticket без AI-routing.
-- [ ] 7.3 Реализовать delayed `AutoCloseTicket` с configurable 24-hour delay и generation/status recheck под row lock; проверить auto-close через frozen time и stale job после reopening как no-op.
-- [ ] 7.4 Реализовать ручное закрытие `open`/`waiting_for_user` оператором с `operator_closed`; проверить auth, допустимые статусы и idempotent повторное действие.
+- [x] 7.1 Реализовать owner check для `resolved` / `unresolved` callback по Telegram user и idempotent status guard; проверить callback владельца, другого пользователя и повторную доставку без раскрытия чужого ticket.
+- [x] 7.2 Реализовать `waiting_for_user -> closed` с `user_confirmed` и `waiting_for_user -> open` для unresolved с приглашением уточнить; проверить оба перехода и добавление следующего clarification в тот же ticket без AI-routing.
+- [x] 7.3 Реализовать delayed `AutoCloseTicket` с configurable 24-hour delay и generation/status recheck под row lock; проверить auto-close через frozen time и stale job после reopening как no-op.
+- [x] 7.4 Реализовать ручное закрытие `open`/`waiting_for_user` оператором с `operator_closed`; проверить auth, допустимые статусы и idempotent повторное действие.
 
 ## 8. Statistics
 

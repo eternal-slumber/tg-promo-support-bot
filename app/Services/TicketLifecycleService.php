@@ -62,6 +62,16 @@ class TicketLifecycleService
         );
     }
 
+    public function closeAutomatically(Ticket $ticket): Ticket
+    {
+        return $this->transition(
+            $ticket,
+            [TicketStatus::WaitingForUser],
+            TicketStatus::Closed,
+            TicketCloseReason::AutoClosed,
+        );
+    }
+
     public function markUnresolved(Ticket $ticket): Ticket
     {
         return $this->transition($ticket, [TicketStatus::WaitingForUser], TicketStatus::Open);
