@@ -5,6 +5,7 @@ use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
 use App\Enums\SupportDecisionType;
 use App\Enums\TicketCloseReason;
+use App\Enums\TicketEscalationReason;
 use App\Enums\TicketStatus;
 
 test('support enums expose the persisted values', function (string $enum, array $values) {
@@ -12,9 +13,10 @@ test('support enums expose the persisted values', function (string $enum, array 
 })->with([
     'ticket statuses' => [TicketStatus::class, ['open', 'waiting_for_user', 'closed']],
     'ticket close reasons' => [TicketCloseReason::class, ['user_confirmed', 'auto_closed', 'operator_closed']],
+    'ticket escalation reasons' => [TicketEscalationReason::class, ['llm_failure', 'participant_specific', 'not_in_rules', 'mixed_request']],
     'message directions' => [MessageDirection::class, ['inbound', 'outbound']],
     'message authors' => [MessageAuthor::class, ['participant', 'bot', 'operator', 'system']],
-    'delivery statuses' => [DeliveryStatus::class, ['pending', 'sent', 'failed']],
+    'delivery statuses' => [DeliveryStatus::class, ['pending', 'sent', 'failed', 'cancelled']],
     'support decision types' => [SupportDecisionType::class, ['answer', 'escalate', 'mixed', 'refuse']],
 ]);
 

@@ -39,6 +39,12 @@ return [
             'serialize' => false,
         ],
 
+        'telegram_limits' => [
+            'driver' => 'database',
+            'connection' => null,
+            'table' => 'cache',
+        ],
+
         'database' => [
             'driver' => 'database',
             'connection' => env('DB_CACHE_CONNECTION'),

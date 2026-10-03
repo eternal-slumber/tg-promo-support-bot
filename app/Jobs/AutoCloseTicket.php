@@ -2,6 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Enums\DeliveryStatus;
+use App\Enums\MessageAuthor;
+use App\Enums\MessageDirection;
 use App\Enums\TicketStatus;
 use App\Models\Ticket;
 use App\Services\TicketLifecycleService;
@@ -14,10 +17,16 @@ class AutoCloseTicket implements ShouldQueue
 {
     use Queueable;
 
+    public ?int $replyMessageId = null;
+
     public function __construct(
         public readonly int $ticketId,
         public readonly string $waitingSince,
-    ) {}
+        ?int $replyMessageId = null,
+    ) {
+        $this->replyMessageId = $replyMessageId;
+        $this->onConnection('database')->onQueue('maintenance')->beforeCommit();
+    }
 
     public function handle(TicketLifecycleService $tickets): void
     {
@@ -27,6 +36,15 @@ class AutoCloseTicket implements ShouldQueue
             if ($ticket === null
                 || $ticket->status !== TicketStatus::WaitingForUser
                 || $ticket->waiting_since?->toISOString() !== $this->waitingSince) {
+                return;
+            }
+
+            if ($this->replyMessageId !== null && $ticket->messages()
+                ->where('direction', MessageDirection::Outbound)
+                ->where('author', MessageAuthor::Operator)
+                ->where('delivery_status', DeliveryStatus::Sent)
+                ->latest('id')
+                ->value('id') !== $this->replyMessageId) {
                 return;
             }
 

@@ -12,10 +12,14 @@ use App\Models\Ticket;
 use App\Services\TelegramBotClient;
 use App\Services\TelegramMessagePresentation;
 use App\Services\TicketLifecycleService;
+use DateTimeInterface;
 use DomainException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\TimeoutExceededException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class DeliverTelegramMessage implements ShouldQueue
 {
@@ -23,19 +27,64 @@ class DeliverTelegramMessage implements ShouldQueue
 
     public int $tries = 3;
 
+    public int $maxExceptions = 3;
+
     public int $timeout = 40;
 
     /** @var list<int> */
     public array $backoff = [5, 15, 30];
 
-    public function __construct(public readonly int $messageId) {}
+    public function __construct(public readonly int $messageId)
+    {
+        $this->onConnection('database')->onQueue('telegram')->beforeCommit();
+    }
+
+    /** The queue payload freezes this deadline; rate-limit releases do not consume the exception budget. */
+    public function retryUntil(): DateTimeInterface
+    {
+        return now()->addDay();
+    }
 
     public function handle(
         TelegramBotClient $client,
         TelegramMessagePresentation $presentation,
         TicketLifecycleService $ticketLifecycle,
     ): void {
+        $completed = Cache::store('database')->lock('telegram-delivery:'.$this->messageId, $this->timeout + 10)
+            ->get(function () use ($client, $presentation, $ticketLifecycle): bool {
+                $this->deliver($client, $presentation, $ticketLifecycle);
+
+                return true;
+            });
+
+        if (! $completed) {
+            $this->release(5);
+        }
+    }
+
+    public function failed(?Throwable $exception): void
+    {
+        $safeError = match (true) {
+            $exception instanceof TelegramDeliveryException => $exception->safeError,
+            $exception instanceof TimeoutExceededException => 'telegram_delivery_timeout',
+            default => 'telegram_delivery_exhausted',
+        };
+
+        $this->markFailed($safeError);
+    }
+
+    private function deliver(
+        TelegramBotClient $client,
+        TelegramMessagePresentation $presentation,
+        TicketLifecycleService $ticketLifecycle,
+    ): void {
         $message = DB::transaction(function (): ?Message {
+            $queuedMessage = Message::query()->find($this->messageId);
+
+            if ($queuedMessage?->ticket_id !== null) {
+                Ticket::query()->lockForUpdate()->find($queuedMessage->ticket_id);
+            }
+
             $lockedMessage = Message::query()
                 ->with(['participant', 'ticket'])
                 ->lockForUpdate()
@@ -48,8 +97,22 @@ class DeliverTelegramMessage implements ShouldQueue
                 return null;
             }
 
+            if ($lockedMessage->ticket?->status === TicketStatus::Closed) {
+                $lockedMessage->update(['delivery_status' => DeliveryStatus::Cancelled]);
+
+                return null;
+            }
+
             if ($lockedMessage->author === MessageAuthor::Operator
                 && $lockedMessage->ticket?->status !== TicketStatus::Open) {
+                return null;
+            }
+
+            $retryIn = (int) Cache::store('telegram_limits')->get('telegram-delivery-retry:'.$this->messageId, 0) - now()->getTimestamp();
+
+            if ($retryIn > 0) {
+                $this->release($retryIn);
+
                 return null;
             }
 
@@ -71,6 +134,27 @@ class DeliverTelegramMessage implements ShouldQueue
 
             $sentMessage = $client->sendMessage($outbound);
         } catch (TelegramDeliveryException $exception) {
+            if ($exception->retryAfterSeconds !== null) {
+                if ($exception->retryAfterSeconds > 86400) {
+                    $this->markFailed($exception->safeError);
+                    $this->fail($exception);
+
+                    return;
+                }
+
+                DB::transaction(function () use ($exception): void {
+                    Cache::store('telegram_limits')->put(
+                        'telegram-delivery-retry:'.$this->messageId,
+                        now()->getTimestamp() + $exception->retryAfterSeconds,
+                        $exception->retryAfterSeconds,
+                    );
+                    $this->markFailed($exception->safeError);
+                });
+                $this->release($exception->retryAfterSeconds);
+
+                return;
+            }
+
             $this->markFailed($exception->safeError);
 
             if ($exception->retryable) {
@@ -80,11 +164,12 @@ class DeliverTelegramMessage implements ShouldQueue
             return;
         }
 
-        $waitingTicket = DB::transaction(function () use ($sentMessage, $ticketLifecycle): ?Ticket {
-            $lockedMessage = Message::query()->with('ticket')->lockForUpdate()->findOrFail($this->messageId);
+        DB::transaction(function () use ($message, $sentMessage, $ticketLifecycle): void {
+            $ticket = $message->ticket_id === null ? null : Ticket::query()->lockForUpdate()->find($message->ticket_id);
+            $lockedMessage = Message::query()->lockForUpdate()->findOrFail($this->messageId);
 
             if ($lockedMessage->delivery_status === DeliveryStatus::Sent) {
-                return null;
+                return;
             }
 
             $lockedMessage->update([
@@ -94,36 +179,36 @@ class DeliverTelegramMessage implements ShouldQueue
                 'last_delivery_error' => null,
             ]);
 
-            if ($lockedMessage->author === MessageAuthor::Operator && $lockedMessage->ticket !== null) {
-                try {
-                    return $ticketLifecycle->waitForUser($lockedMessage->ticket)->fresh();
-                } catch (DomainException) {
-                    return null;
+            if ($lockedMessage->author === MessageAuthor::Operator && $ticket !== null) {
+                if ($ticket->first_operator_replied_at === null) {
+                    $ticket->update(['first_operator_replied_at' => $lockedMessage->delivered_at]);
                 }
+
+                if ($ticket->input_revision !== $lockedMessage->operator_input_revision) {
+                    return;
+                }
+
+                try {
+                    $waitingTicket = $ticketLifecycle->waitForUser($ticket);
+                } catch (DomainException) {
+                    return;
+                }
+
+                AutoCloseTicket::dispatch($waitingTicket->id, $waitingTicket->waiting_since->toISOString(), $lockedMessage->id)
+                    ->delay($waitingTicket->waiting_since->copy()->addHours((int) config('support.ticket_auto_close_hours')));
             }
-
-            return null;
         });
-
-        if ($waitingTicket !== null && $waitingTicket->waiting_since !== null) {
-            AutoCloseTicket::dispatch($waitingTicket->id, $waitingTicket->waiting_since->toISOString())
-                ->delay(now()->addHours((int) config('support.ticket_auto_close_hours')));
-        }
     }
 
     private function markFailed(string $safeError): void
     {
-        DB::transaction(function () use ($safeError): void {
-            $lockedMessage = Message::query()->lockForUpdate()->findOrFail($this->messageId);
-
-            if ($lockedMessage->delivery_status === DeliveryStatus::Sent) {
-                return;
-            }
-
-            $lockedMessage->update([
+        Message::query()
+            ->whereKey($this->messageId)
+            ->where('direction', MessageDirection::Outbound)
+            ->whereIn('delivery_status', [DeliveryStatus::Pending, DeliveryStatus::Failed])
+            ->update([
                 'delivery_status' => DeliveryStatus::Failed,
                 'last_delivery_error' => $safeError,
             ]);
-        });
     }
 }

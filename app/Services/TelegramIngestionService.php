@@ -8,11 +8,14 @@ use App\Enums\DeliveryStatus;
 use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
 use App\Enums\TelegramUpdateKind;
+use App\Enums\TicketStatus;
 use App\Jobs\DeliverTelegramMessage;
 use App\Jobs\ProcessIncomingMessage;
 use App\Models\Message;
 use App\Models\TelegramParticipant;
 use App\Models\TelegramUpdate;
+use Illuminate\Cache\RateLimiter;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class TelegramIngestionService
@@ -21,11 +24,13 @@ class TelegramIngestionService
 
     private const string RedactionWarning = 'Чувствительные данные скрыты и не нужны для поддержки акции.';
 
+    private const string RateLimitWarning = 'Вы отправили слишком много вопросов. Попробуйте позже.';
+
+    private const string NonTextMessageWarning = 'Я принимаю только текстовые сообщения. Пришлите вопрос и, если есть, текст подписи к вложению отдельным текстовым сообщением.';
+
     public function __construct(
         private readonly SensitiveDataSanitizer $sanitizer,
         private readonly TicketLifecycleService $tickets,
-        private readonly TelegramCallbackService $callbacks,
-        private readonly TelegramBotClient $telegram,
     ) {}
 
     public function ingest(TelegramUpdateData $update): TelegramIngestionResult
@@ -34,7 +39,7 @@ class TelegramIngestionService
             return new TelegramIngestionResult(false, true);
         }
 
-        $result = DB::transaction(function () use ($update): TelegramIngestionResult {
+        return DB::transaction(function () use ($update): TelegramIngestionResult {
             $now = now();
             $inserted = TelegramUpdate::query()->insertOrIgnore([
                 'update_id' => $update->updateId,
@@ -48,33 +53,20 @@ class TelegramIngestionService
                 return new TelegramIngestionResult(true, false);
             }
 
-            if ($update->kind === TelegramUpdateKind::CallbackQuery) {
-                $participant = $this->attachCallbackParticipant($update);
+            $result = $this->ingestMessage($update);
 
-                if ($participant !== null) {
-                    $this->callbacks->handle($participant, $update->callbackData);
-                }
-
-                return new TelegramIngestionResult(false, false);
+            if ($result->messageId !== null) {
+                ProcessIncomingMessage::dispatch($result->messageId);
             }
 
-            return $this->ingestTextMessage($update);
+            return $result;
         });
-
-        if ($result->messageId !== null) {
-            ProcessIncomingMessage::dispatch($result->messageId)->afterCommit();
-        }
-
-        if ($update->kind === TelegramUpdateKind::CallbackQuery && $update->callbackQueryId !== null) {
-            $this->telegram->acknowledgeCallback($update->callbackQueryId);
-        }
-
-        return $result;
     }
 
-    private function ingestTextMessage(TelegramUpdateData $update): TelegramIngestionResult
+    private function ingestMessage(TelegramUpdateData $update): TelegramIngestionResult
     {
-        if (! $update->isTextMessage() || $update->telegramUserId === null || $update->chatId === null || $update->telegramMessageId === null) {
+        if ((! $update->isTextMessage() && $update->kind !== TelegramUpdateKind::NonTextMessage)
+            || $update->telegramUserId === null || $update->chatId === null || $update->telegramMessageId === null) {
             return new TelegramIngestionResult(false, true);
         }
 
@@ -82,11 +74,26 @@ class TelegramIngestionService
         $telegramUpdate = TelegramUpdate::query()->where('update_id', $update->updateId)->firstOrFail();
         $telegramUpdate->update(['participant_id' => $participant->id]);
 
-        $sanitized = $this->sanitizer->sanitize($update->text);
         $activeTicket = $this->tickets->activeFor($participant);
+
+        if ($update->kind === TelegramUpdateKind::NonTextMessage) {
+            $this->createPendingMessage($participant, $activeTicket?->id, MessageAuthor::System, self::NonTextMessageWarning);
+
+            return new TelegramIngestionResult(false, false);
+        }
+
+        if ($activeTicket === null && in_array(trim($update->text), [TicketLifecycleService::ResolvedResponse, TicketLifecycleService::UnresolvedResponse], true)) {
+            return new TelegramIngestionResult(false, true);
+        }
+
+        if ($activeTicket === null && ! $this->isStartCommand($update->text) && ! $this->allowAiRequest($participant)) {
+            return new TelegramIngestionResult(false, true);
+        }
+
+        $sanitized = $this->sanitizer->sanitize($update->text);
         $message = Message::query()->create([
             'participant_id' => $participant->id,
-            'ticket_id' => $activeTicket?->id,
+            'ticket_id' => null,
             'telegram_update_id' => $telegramUpdate->id,
             'direction' => MessageDirection::Inbound,
             'author' => MessageAuthor::Participant,
@@ -96,12 +103,22 @@ class TelegramIngestionService
             'redaction_types' => $sanitized->redactionTypes,
         ]);
 
+        if ($activeTicket !== null) {
+            $this->tickets->attachParticipantMessage($activeTicket, $message);
+        }
+
         if ($sanitized->wasRedacted) {
             $this->createPendingMessage($participant, $activeTicket?->id, MessageAuthor::System, self::RedactionWarning);
         }
 
+        if ($activeTicket?->status === TicketStatus::WaitingForUser) {
+            $this->tickets->applyUserResponse($activeTicket, $message->body);
+
+            return new TelegramIngestionResult(false, false);
+        }
+
         if ($this->isStartCommand($update->text)) {
-            $this->createPendingMessage($participant, $activeTicket?->id, MessageAuthor::Bot, self::StartWarning);
+            $this->createPendingMessage($participant, $activeTicket?->id, MessageAuthor::System, self::StartWarning);
 
             return new TelegramIngestionResult(false, false);
         }
@@ -111,21 +128,6 @@ class TelegramIngestionService
         }
 
         return new TelegramIngestionResult(false, false, $message->id);
-    }
-
-    private function attachCallbackParticipant(TelegramUpdateData $update): ?TelegramParticipant
-    {
-        if ($update->telegramUserId === null || $update->chatId === null) {
-            return null;
-        }
-
-        $participant = $this->upsertParticipant($update->telegramUserId, $update->chatId);
-
-        TelegramUpdate::query()
-            ->where('update_id', $update->updateId)
-            ->update(['participant_id' => $participant->id]);
-
-        return $participant;
     }
 
     private function upsertParticipant(int $telegramUserId, int $chatId): TelegramParticipant
@@ -143,7 +145,32 @@ class TelegramIngestionService
             ['chat_id', 'updated_at'],
         );
 
-        return TelegramParticipant::query()->where('telegram_user_id', $telegramUserId)->firstOrFail();
+        return TelegramParticipant::query()->where('telegram_user_id', $telegramUserId)->lockForUpdate()->firstOrFail();
+    }
+
+    /** The participant row lock serializes quota checks; database counters roll back with the queued work. */
+    private function allowAiRequest(TelegramParticipant $participant): bool
+    {
+        $cache = Cache::store('telegram_limits');
+        $limiter = new RateLimiter($cache);
+        $limits = [
+            "telegram-ai:minute:{$participant->id}" => [(int) config('llm.requests_per_minute'), 60],
+            "telegram-ai:day:{$participant->id}" => [(int) config('llm.requests_per_day'), 86400],
+        ];
+
+        foreach ($limits as $key => [$maxRequests, $seconds]) {
+            if ($limiter->tooManyAttempts($key, $maxRequests)) {
+                $this->createPendingMessage($participant, null, MessageAuthor::System, self::RateLimitWarning);
+
+                return false;
+            }
+        }
+
+        foreach ($limits as $key => [$maxRequests, $seconds]) {
+            $limiter->hit($key, $seconds);
+        }
+
+        return true;
     }
 
     private function createPendingMessage(
@@ -152,6 +179,10 @@ class TelegramIngestionService
         MessageAuthor $author,
         string $body,
     ): void {
+        if (! Cache::store('telegram_limits')->add('telegram-notice:'.$participant->id.':'.hash('sha256', $body), true, 60)) {
+            return;
+        }
+
         $message = Message::query()->create([
             'participant_id' => $participant->id,
             'ticket_id' => $ticketId,
@@ -161,7 +192,7 @@ class TelegramIngestionService
             'delivery_status' => DeliveryStatus::Pending,
         ]);
 
-        DeliverTelegramMessage::dispatch($message->id)->afterCommit();
+        DeliverTelegramMessage::dispatch($message->id);
     }
 
     private function isStartCommand(string $text): bool

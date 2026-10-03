@@ -54,10 +54,14 @@ class TelegramMessagePresentation
             return null;
         }
 
-        return ['inline_keyboard' => [[
-            ['text' => 'Проблема решена', 'callback_data' => "resolved:{$message->ticket_id}"],
-            ['text' => 'Не решило мою проблему', 'callback_data' => "unresolved:{$message->ticket_id}"],
-        ]]];
+        return [
+            'keyboard' => [[
+                ['text' => TicketLifecycleService::ResolvedResponse],
+                ['text' => TicketLifecycleService::UnresolvedResponse],
+            ]],
+            'resize_keyboard' => true,
+            'one_time_keyboard' => true,
+        ];
     }
 
     private function quote(Ticket $ticket): ?string
@@ -75,8 +79,11 @@ class TelegramMessagePresentation
         return Str::limit($this->hidePhoneNumbers($inbound->body), 120, '…');
     }
 
+    /**
+     * ponytail: Russian +7/8 phone formats only; extend country prefixes if needed.
+     */
     private function hidePhoneNumbers(string $text): string
     {
-        return preg_replace('/(?:\\+7|8)[\\s-]?(?:\\d[\\s-]?){10}/u', '[скрыто]', $text) ?? $text;
+        return preg_replace('/(?<![\p{N}+])(?:\+7|(?<!\p{L})8)[\h\p{Pd}]*(?:\(\h*[0-9]{3}\h*\)|[0-9]{3})(?:[\h\p{Pd}]*[0-9]){7}(?!\p{N})/u', '[скрыто]', $text) ?? $text;
     }
 }

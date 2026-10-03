@@ -10,14 +10,17 @@ use App\Models\Message;
 use App\Models\TelegramParticipant;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Services\OperatorReplyService;
 use App\Services\TelegramMessagePresentation;
+use App\Services\TicketLifecycleService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Livewire\Livewire;
 
 uses(LazilyRefreshDatabase::class);
 
-test('persists a sanitized pending operator reply and dispatches delivery after commit', function () {
+test('persists a sanitized pending operator reply and queues delivery in the same transaction', function (string $body, string $expected, array $redactionTypes) {
     Queue::fake();
     $operator = User::factory()->create();
     $participant = TelegramParticipant::factory()->create();
@@ -27,7 +30,7 @@ test('persists a sanitized pending operator reply and dispatches delivery after 
 
     Livewire::test(OperatorDashboard::class)
         ->call('selectTicket', $ticket->id)
-        ->set('replyBody', 'Переведите на карту 2200 1234 5678 9012')
+        ->set('replyBody', $body)
         ->call('sendReply')
         ->assertHasNoErrors()
         ->assertSet('replyBody', '');
@@ -37,13 +40,86 @@ test('persists a sanitized pending operator reply and dispatches delivery after 
     expect($reply->author)->toBe(MessageAuthor::Operator)
         ->and($reply->direction)->toBe(MessageDirection::Outbound)
         ->and($reply->delivery_status)->toBe(DeliveryStatus::Pending)
-        ->and($reply->body)->toBe('Переведите на карту [REDACTED_PAYMENT_CARD]')
+        ->and($reply->body)->toBe($expected)
         ->and($reply->sensitive_data_redacted)->toBeTrue()
-        ->and($reply->redaction_types)->toBe(['payment_card'])
+        ->and($reply->redaction_types)->toBe($redactionTypes)
         ->and($reply->operator_id)->toBe($operator->id)
-        ->and($ticket->refresh()->first_operator_replied_at)->not->toBeNull();
+        ->and($ticket->refresh()->first_operator_replied_at)->toBeNull();
 
-    Queue::assertPushed(DeliverTelegramMessage::class, fn ($job): bool => $job->messageId === $reply->id && $job->afterCommit === true);
+    Queue::assertPushed(DeliverTelegramMessage::class, fn ($job): bool => $job->messageId === $reply->id && $job->afterCommit === false);
+})->with([
+    'card' => ['Переведите на карту 2200 1234 5678 9012', 'Переведите на карту [REDACTED_PAYMENT_CARD]', ['payment_card']],
+    'card followed by amount' => ['Карта 4111 1111 1111 1111 100 рублей', 'Карта [REDACTED_PAYMENT_CARD] 100 рублей', ['payment_card']],
+    'common secret formats' => [
+        "Карта 2200\u{00A0}1234\u{00A0}5678\u{00A0}9012, код из смс: 123 456, пароль: secret word",
+        'Карта [REDACTED_PAYMENT_CARD], код из смс: [REDACTED_OTP], пароль: [REDACTED_PASSWORD]',
+        ['payment_card', 'otp', 'password'],
+    ],
+]);
+
+test('statistics use the first delivered operator reply after a failed answer is cancelled', function () {
+    Queue::fake();
+    $this->travelTo(now()->setDate(2026, 10, 3)->setTime(12, 0));
+    $operator = User::factory()->create();
+    $ticket = Ticket::factory()->create();
+    $this->actingAs($operator);
+    config()->set('telegram.api_base_url', 'https://telegram.example');
+    config()->set('telegram.bot_token', 'test-token');
+    Http::preventStrayRequests();
+    Http::fake(['https://telegram.example/bottest-token/sendMessage' => Http::sequence()
+        ->push(['ok' => false], 400)
+        ->push(['ok' => true, 'result' => ['message_id' => 789]])
+        ->push(['ok' => true, 'result' => ['message_id' => 790]])]);
+    $replies = app(OperatorReplyService::class);
+    $this->travel(2)->minutes();
+    $cancelled = $replies->create($operator, $ticket, 'Первый ответ');
+    app()->call([new DeliverTelegramMessage($cancelled->id), 'handle']);
+    expect($cancelled->refresh()->delivery_status)->toBe(DeliveryStatus::Failed);
+    expect($ticket->refresh()->first_operator_replied_at)->toBeNull();
+    $replies->cancel($ticket, $cancelled->id);
+
+    expect($ticket->refresh()->first_operator_replied_at)->toBeNull();
+    Livewire::test(OperatorDashboard::class)->assertViewHas('statistics', fn (array $statistics): bool => $statistics['average_operator_response_seconds'] === null && $statistics['operator_cancelled'] === 1
+    );
+    $this->travel(2)->minutes();
+    $delivered = $replies->create($operator, $ticket, 'Исправленный ответ');
+    $this->travel(3)->minutes();
+
+    app()->call([new DeliverTelegramMessage($delivered->id), 'handle']);
+
+    expect($ticket->refresh()->first_operator_replied_at?->toDateTimeString())->toBe('2026-10-03 12:07:00');
+    expect($delivered->refresh()->delivered_at?->toDateTimeString())->toBe('2026-10-03 12:07:00');
+    app(TicketLifecycleService::class)->markUnresolved($ticket);
+    $this->travel(3)->minutes();
+    $followUp = $replies->create($operator, $ticket, 'Уточнение');
+    $this->travel(2)->minutes();
+    app()->call([new DeliverTelegramMessage($followUp->id), 'handle']);
+    app()->call([new DeliverTelegramMessage($cancelled->id), 'handle']);
+    expect($ticket->refresh()->first_operator_replied_at?->toDateTimeString())->toBe('2026-10-03 12:07:00');
+    Livewire::test(OperatorDashboard::class)->assertViewHas('statistics', fn (array $statistics): bool => $statistics['average_operator_response_seconds'] === 420.0 && $statistics['operator_cancelled'] === 1
+    );
+    Http::assertSentCount(3);
+    Queue::assertPushed(DeliverTelegramMessage::class, 3);
+});
+
+test('preserves operator instructions about passwords and sms codes', function () {
+    Queue::fake();
+    $ticket = Ticket::factory()->create();
+    $body = 'Измените пароль в личном кабинете. Если код из смс не приходит, проверьте указанный телефон.';
+    $this->actingAs(User::factory()->create());
+
+    Livewire::test(OperatorDashboard::class)
+        ->call('selectTicket', $ticket->id)
+        ->set('replyBody', $body)
+        ->call('sendReply')
+        ->assertHasNoErrors();
+
+    $reply = Message::query()->sole();
+    expect($reply->body)->toBe($body)
+        ->and($reply->sensitive_data_redacted)->toBeFalse()
+        ->and($reply->redaction_types)->toBeNull()
+        ->and(app(TelegramMessagePresentation::class)->present($reply)->text)->toContain($body);
+    Queue::assertPushed(DeliverTelegramMessage::class, fn (DeliverTelegramMessage $job): bool => $job->messageId === $reply->id);
 });
 
 test('does not create an operator reply for a closed ticket', function () {
@@ -91,6 +167,6 @@ test('validates Unicode operator replies against the rendered message budget', f
     $reply = Message::query()->where('author', MessageAuthor::Operator)->sole();
     $outbound = app(TelegramMessagePresentation::class)->present($reply);
     expect(mb_strlen($outbound->text, 'UTF-8'))->toBe(TelegramOutboundMessage::MaxTextLength)
-        ->and($outbound->replyMarkup['inline_keyboard'][0][0]['callback_data'])->toBe("resolved:{$ticket->id}");
+        ->and($outbound->replyMarkup['keyboard'][0][0]['text'])->toBe('Проблема решена');
     Queue::assertPushed(DeliverTelegramMessage::class, 1);
 })->with(['at limit' => [0], 'over limit' => [1]]);

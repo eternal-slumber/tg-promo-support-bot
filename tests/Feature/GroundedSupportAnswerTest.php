@@ -98,7 +98,7 @@ test('never sends an invalid result and escalates once without another provider 
     expect(SupportDecision::query()->sole()->answer_text)->toBeNull();
     expect($inbound->refresh()->ticket_id)->toBe(Ticket::query()->sole()->id);
     expect(Message::query()->where('author', MessageAuthor::Bot)->sole()->body)->toContain('передан оператору')->not->toContain('автомобиль');
-    expect(DB::table('jobs')->where('queue', 'default')->count())->toBe(1);
+    expect(DB::table('jobs')->where('queue', 'telegram')->count())->toBe(1);
     Http::assertSentCount(1);
 })->with([
     'unknown decision' => [['decision' => 'unknown']],
@@ -132,7 +132,7 @@ test('retries only the main request and applies the answer on the third attempt 
     $this->assertDatabaseCount('failed_jobs', 0);
     Http::assertSentCount(3);
     Http::assertNotSent(fn (Request $request): bool => $request['messages'][1]['content'] !== 'Можно заменить приз деньгами?');
-    expect(DB::table('jobs')->where('queue', 'default')->count())->toBe(1);
+    expect(DB::table('jobs')->where('queue', 'telegram')->count())->toBe(1);
 });
 
 test('stops transient failures after three provider requests and creates one safe escalation', function (int $status) {
@@ -151,7 +151,7 @@ test('stops transient failures after three provider requests and creates one saf
     $this->assertDatabaseCount('tickets', 1);
     $this->assertDatabaseCount('messages', 2);
     $this->assertDatabaseCount('support_decisions', 1);
-    expect(DB::table('jobs')->where('queue', 'default')->count())->toBe(1);
+    expect(DB::table('jobs')->where('queue', 'telegram')->count())->toBe(1);
     expect(Message::query()->where('author', MessageAuthor::Bot)->sole()->body)->toContain('передан оператору');
     Http::assertSentCount(3);
 })->with(['rate limit' => [429], 'server error' => [503]]);

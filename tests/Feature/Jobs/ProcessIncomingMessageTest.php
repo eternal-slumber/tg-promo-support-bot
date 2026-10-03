@@ -1,20 +1,29 @@
 <?php
 
 use App\Data\SupportLlmRequest;
+use App\Data\TelegramUpdateData;
 use App\Data\ValidatedSupportDecision;
 use App\Enums\DeliveryStatus;
 use App\Enums\MessageAuthor;
 use App\Enums\SupportDecisionType;
+use App\Enums\TelegramUpdateKind;
+use App\Enums\TicketStatus;
 use App\Exceptions\InvalidLlmDecisionException;
 use App\Exceptions\LlmRequestException;
+use App\Jobs\AutoCloseTicket;
 use App\Jobs\DeliverTelegramMessage;
 use App\Jobs\ProcessIncomingMessage;
 use App\Models\Message;
 use App\Models\SupportDecision;
+use App\Models\TelegramParticipant;
 use App\Models\Ticket;
+use App\Models\User;
+use App\Services\OperatorReplyService;
 use App\Services\PromotionRules;
 use App\Services\SupportDecisionService;
 use App\Services\SupportLlmClient;
+use App\Services\TelegramIngestionService;
+use App\Services\TicketLifecycleService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\DB;
@@ -277,6 +286,62 @@ function runJob(Message $message, SupportLlmClient $client): void
     $job = new ProcessIncomingMessage($message->id);
     $job->handle($client, app(PromotionRules::class), app(SupportDecisionService::class));
 }
+
+test('two rapid questions share the active ticket and discard an older AI answer', function () {
+    $participant = TelegramParticipant::factory()->create();
+    $ingestion = app(TelegramIngestionService::class);
+    foreach ([1, 2] as $id) {
+        $ingestion->ingest(new TelegramUpdateData($id, TelegramUpdateKind::Message, $participant->telegram_user_id, $participant->chat_id, $id, 'Вопрос '.$id));
+    }
+    [$first, $second] = Message::query()->orderBy('id')->get()->all();
+    $client = Mockery::mock(SupportLlmClient::class);
+    $client->shouldReceive('analyze')->once()->andReturnUsing(function () use ($second) {
+        runJob($second, fakeLlmClient(escalationDecision('participant_specific')));
+
+        return answerDecision('Устаревший ответ');
+    });
+
+    runJob($first, $client);
+
+    $ticket = Ticket::query()->sole();
+    expect($first->refresh()->ticket_id)->toBe($ticket->id)
+        ->and($second->refresh()->ticket_id)->toBe($ticket->id)
+        ->and($ticket->status)->toBe(TicketStatus::Open);
+    $this->assertDatabaseCount('support_decisions', 1);
+    expect(Message::query()->where('author', MessageAuthor::Bot)->sole()->body)->not->toContain('Устаревший ответ');
+    Queue::assertPushed(ProcessIncomingMessage::class, 2);
+    Queue::assertPushed(DeliverTelegramMessage::class, 1);
+});
+
+test('a late AI result after an operator reply reopens the ticket without sending the stale result', function (SupportDecisionType $type) {
+    $this->freezeTime();
+    Http::preventStrayRequests();
+    Http::fake(['*sendMessage' => Http::response(['ok' => true, 'result' => ['message_id' => 501]])]);
+    $participant = TelegramParticipant::factory()->create();
+    $lateMessage = Message::factory()->for($participant, 'participant')->create();
+    $first = Message::factory()->for($participant, 'participant')->create();
+    runJob($first, fakeLlmClient(escalationDecision('participant_specific')));
+    $ticket = Ticket::query()->sole();
+    $reply = app(OperatorReplyService::class)->create(User::factory()->create(), $ticket, 'Ответ оператора');
+    app()->call([new DeliverTelegramMessage($reply->id), 'handle']);
+    $timer = Queue::pushed(AutoCloseTicket::class)->sole();
+    expect($ticket->refresh()->status)->toBe(TicketStatus::WaitingForUser);
+    $messageCount = Message::query()->count();
+    $lateDecision = new ValidatedSupportDecision($type, 'late_result', $type === SupportDecisionType::Escalate ? null : 'Поздний ответ', []);
+
+    expect(app(SupportDecisionService::class)->apply($lateMessage, $lateDecision, app(PromotionRules::class)->hash()))->toBeNull();
+
+    expect($lateMessage->refresh()->ticket_id)->toBe($ticket->id)
+        ->and($ticket->refresh()->status)->toBe(TicketStatus::Open)
+        ->and($ticket->waiting_since)->toBeNull();
+    $this->assertDatabaseCount('tickets', 1);
+    $this->assertDatabaseCount('support_decisions', 1);
+    $this->assertDatabaseCount('messages', $messageCount);
+    Queue::assertPushed(DeliverTelegramMessage::class, 2);
+    $this->travel(25)->hours();
+    $timer->handle(app(TicketLifecycleService::class));
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
+})->with(SupportDecisionType::cases());
 
 test('a permanent LLM error falls back immediately without retrying the provider', function (int $status) {
     config()->set('llm.endpoint', 'https://llm.example/v1/chat/completions');

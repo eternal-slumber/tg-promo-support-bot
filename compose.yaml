@@ -9,7 +9,6 @@ x-app-environment: &app-environment
   DB_USERNAME: ${DB_USERNAME:-tg_promo}
   DB_PASSWORD: ${DB_PASSWORD:-tg_promo}
   QUEUE_CONNECTION: database
-  DB_QUEUE_CONNECTION: pgsql
   DB_QUEUE_RETRY_AFTER: ${DB_QUEUE_RETRY_AFTER:-180}
   QUEUE_FAILED_DRIVER: database-uuids
   CACHE_STORE: database
@@ -28,6 +27,8 @@ x-app-environment: &app-environment
   LLM_CONNECT_TIMEOUT: ${LLM_CONNECT_TIMEOUT:-5}
   LLM_TIMEOUT: ${LLM_TIMEOUT:-120}
   LLM_MAX_ATTEMPTS: ${LLM_MAX_ATTEMPTS:-3}
+  LLM_REQUESTS_PER_MINUTE: ${LLM_REQUESTS_PER_MINUTE:-5}
+  LLM_REQUESTS_PER_DAY: ${LLM_REQUESTS_PER_DAY:-50}
   LLM_RETRY_BACKOFF: ${LLM_RETRY_BACKOFF:-5,15,30}
 
   TICKET_AUTO_CLOSE_HOURS: ${TICKET_AUTO_CLOSE_HOURS:-24}
@@ -66,7 +67,7 @@ services:
     ports:
       - "8000:8000"
 
-  queue:
+  queue: &queue-worker
     build:
       context: .
     command: ["php", "artisan", "queue:work", "database", "--queue=ai,default", "--sleep=1", "--tries=3", "--timeout=150"]
@@ -75,6 +76,14 @@ services:
         condition: service_healthy
     environment: *app-environment
     restart: unless-stopped
+
+  queue-telegram:
+    <<: *queue-worker
+    command: ["php", "artisan", "queue:work", "database", "--queue=telegram", "--sleep=1", "--tries=3", "--timeout=90"]
+
+  queue-maintenance:
+    <<: *queue-worker
+    command: ["php", "artisan", "queue:work", "database", "--queue=maintenance", "--sleep=1", "--tries=3", "--timeout=90"]
 
 volumes:
   postgres-data:

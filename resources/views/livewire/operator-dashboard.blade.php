@@ -1,7 +1,6 @@
-<main class="mx-auto max-w-7xl px-6 py-8">
+<main wire:poll.15s.visible class="mx-auto max-w-7xl px-6 py-8">
     <header class="mb-8 flex items-center justify-between gap-4">
         <div>
-            <p class="text-sm font-semibold uppercase tracking-widest text-emerald-400">M-Social</p>
             <h1 class="mt-1 text-3xl font-semibold">Обращения поддержки</h1>
         </div>
         <form method="POST" action="{{ route('operator.logout') }}">
@@ -9,6 +8,29 @@
             <button type="submit" class="rounded-md border border-slate-600 px-3 py-2 text-sm hover:bg-slate-800">Выйти</button>
         </form>
     </header>
+
+    <dl aria-label="Статистика поддержки" class="mb-6 grid gap-4 sm:grid-cols-3">
+        <div class="rounded-xl border border-slate-700 bg-slate-900 p-4">
+            <dt class="text-sm text-slate-400">Отправлено ботом без оператора</dt>
+            <dd class="mt-2">
+                <span class="text-2xl font-semibold">{{ $statistics['bot_resolved'] }}</span>
+                <p class="mt-2 text-xs text-slate-400">Подготовлено: {{ $statistics['bot_prepared'] }}</p>
+                <p class="mt-1 text-xs text-slate-400">Ожидают отправки: {{ $statistics['bot_pending'] }} · С ошибкой: {{ $statistics['bot_failed'] }} · Отменено: {{ $statistics['bot_cancelled'] }}</p>
+            </dd>
+        </div>
+        <div class="rounded-xl border border-slate-700 bg-slate-900 p-4">
+            <dt class="text-sm text-slate-400">Передано операторам</dt>
+            <dd class="mt-2 text-2xl font-semibold">{{ $statistics['escalated'] }}</dd>
+        </div>
+        <div class="rounded-xl border border-slate-700 bg-slate-900 p-4">
+            <dt class="text-sm text-slate-400">Среднее время первого ответа оператора</dt>
+            <dd class="mt-2">
+                <span class="text-2xl font-semibold">{{ $statistics['average_operator_response_seconds'] === null ? 'Нет ответов' : number_format($statistics['average_operator_response_seconds'] / 60, 1, ',', ' ').' мин' }}</span>
+                <p class="mt-2 text-xs text-slate-400">От создания обращения до первой успешной отправки.</p>
+                <p class="mt-1 text-xs text-slate-400">Отменено ответов оператора: {{ $statistics['operator_cancelled'] }}</p>
+            </dd>
+        </div>
+    </dl>
 
     <div class="grid gap-6 lg:grid-cols-[20rem_1fr]">
         <aside class="rounded-xl border border-slate-700 bg-slate-900 p-4">
@@ -25,14 +47,27 @@
                     <button wire:click="selectTicket({{ $ticket->id }})" wire:key="ticket-{{ $ticket->id }}" type="button" class="w-full rounded-lg border border-slate-700 p-3 text-left hover:border-emerald-400 {{ $selectedTicket?->id === $ticket->id ? 'border-emerald-400 bg-slate-800' : '' }}">
                         <div class="flex items-center justify-between gap-3">
                             <span class="font-medium">#{{ $ticket->id }}</span>
-                            <span class="text-xs text-slate-400">{{ $ticket->status->value }}</span>
+                            <span class="text-xs text-slate-400">{{ $ticket->status->label() }}</span>
                         </div>
-                        <p class="mt-1 truncate text-sm text-slate-400">{{ $ticket->escalation_reason }}</p>
+                        <p class="mt-1 truncate text-sm text-slate-400">{{ $ticket->escalationReasonLabel() }}</p>
                     </button>
                 @empty
                     <p class="text-sm text-slate-400">Обращений нет.</p>
                 @endforelse
             </div>
+            @if ($tickets->hasPages())
+                <nav aria-label="Страницы обращений" class="mt-4 flex flex-wrap justify-between gap-2 text-sm">
+                    @if ($cursor = $tickets->previousCursor())
+                        <button wire:click="setPage('{{ $cursor->encode() }}', 'ticketsCursor')" wire:key="tickets-previous-{{ $cursor->encode() }}" type="button" class="rounded border border-slate-600 px-3 py-2 hover:bg-slate-800" wire:loading.attr="disabled">Новые обращения</button>
+                    @endif
+                    @if ($cursor = $tickets->nextCursor())
+                        <button wire:click="setPage('{{ $cursor->encode() }}', 'ticketsCursor')" wire:key="tickets-next-{{ $cursor->encode() }}" type="button" class="rounded border border-slate-600 px-3 py-2 hover:bg-slate-800" wire:loading.attr="disabled">Старые обращения</button>
+                    @endif
+                    @if (! $tickets->onFirstPage())
+                        <button wire:click="resetPage('ticketsCursor')" type="button" class="rounded border border-slate-600 px-3 py-2 hover:bg-slate-800" wire:loading.attr="disabled">Последние обращения</button>
+                    @endif
+                </nav>
+            @endif
         </aside>
 
         <section class="min-h-96 rounded-xl border border-slate-700 bg-slate-900 p-5">
@@ -44,11 +79,13 @@
                     <div class="flex flex-wrap items-start justify-between gap-3">
                         <div>
                             <h2 class="text-xl font-semibold">Обращение #{{ $selectedTicket->id }}</h2>
-                            <p class="mt-1 text-sm text-slate-400">Статус: {{ $selectedTicket->status->value }} · Создано: {{ $selectedTicket->created_at->format('d.m.Y H:i') }}</p>
+                            <p class="mt-1 text-sm text-slate-400">Статус: {{ $selectedTicket->status->label() }}</p>
+                            <p class="mt-1 text-sm text-slate-400">Создано: {{ $selectedTicket->created_at->copy()->timezone('Europe/Moscow')->format('d.m.Y H:i') }} МСК</p>
                             <p class="mt-1 text-sm text-slate-400">Участник: {{ $selectedTicket->participant->telegram_user_id }}</p>
-                            <p class="mt-1 text-sm text-slate-400">Причина эскалации: {{ $selectedTicket->escalation_reason ?? 'не указана' }}</p>
+                            <p class="mt-1 text-sm text-slate-400">Причина передачи оператору: {{ $selectedTicket->escalationReasonLabel() }}</p>
                             @if ($selectedTicket->status === \App\Enums\TicketStatus::Closed)
-                                <p class="mt-1 text-sm text-slate-400">Закрыто: {{ $selectedTicket->closed_at?->format('d.m.Y H:i') }} · Причина: {{ $selectedTicket->close_reason?->value }}</p>
+                                <p class="mt-1 text-sm text-slate-400">Закрыто: {{ $selectedTicket->closed_at?->copy()->timezone('Europe/Moscow')->format('d.m.Y H:i') }} МСК</p>
+                                <p class="mt-1 text-sm text-slate-400">Способ закрытия: {{ $selectedTicket->close_reason?->label() ?? 'Не указан' }}</p>
                             @endif
                         </div>
                         @if ($selectedTicket->status !== \App\Enums\TicketStatus::Closed)
@@ -58,23 +95,40 @@
                 </header>
 
                 <div class="space-y-3 py-5">
-                    @foreach ($selectedTicket->messages as $message)
+                    @foreach ($messages->getCollection()->reverse() as $message)
                         <article wire:key="message-{{ $message->id }}" class="rounded-lg border border-slate-700 p-3">
                             <div class="flex flex-wrap justify-between gap-2 text-xs text-slate-400">
-                                <span>{{ $message->author->value }}</span>
-                                <span>{{ $message->created_at->format('d.m.Y H:i') }}</span>
+                                <span>{{ $message->author->label() }} · {{ $message->ticket_id === null ? 'Без обращения' : 'Обращение #'.$message->ticket_id }}</span>
+                                <span>{{ $message->created_at->copy()->timezone('Europe/Moscow')->format('d.m.Y H:i') }} МСК</span>
                             </div>
                             <p class="mt-2 whitespace-pre-wrap text-sm">{{ $message->body }}</p>
                             @if ($message->direction->value === 'outbound')
-                                <p class="mt-2 text-xs text-slate-400">Доставка: {{ $message->delivery_status?->value }}</p>
-                                @if ($selectedTicket->status !== \App\Enums\TicketStatus::Closed && $message->delivery_status === \App\Enums\DeliveryStatus::Failed && $message->operator_id === auth()->id())
-                                    <p class="mt-1 text-xs text-rose-300">Ошибка: {{ $message->last_delivery_error }}</p>
-                                    <button wire:click="retryDelivery({{ $message->id }})" type="button" class="mt-2 rounded-md border border-slate-500 px-2 py-1 text-xs hover:bg-slate-800">Повторить отправку</button>
+                                <p class="mt-2 text-xs text-slate-400">Доставка: {{ $message->delivery_status?->label() }}</p>
+                                @if ($message->ticket_id === $selectedTicket->id && $selectedTicket->status === \App\Enums\TicketStatus::Open && $message->author === \App\Enums\MessageAuthor::Operator && in_array($message->delivery_status, [\App\Enums\DeliveryStatus::Pending, \App\Enums\DeliveryStatus::Failed], true))
+                                    @if ($message->delivery_status === \App\Enums\DeliveryStatus::Failed)
+                                        <p class="mt-1 text-xs text-rose-300">Ошибка: {{ $message->last_delivery_error }}</p>
+                                        <button wire:click="retryDelivery({{ $message->id }})" type="button" class="mt-2 rounded-md border border-slate-500 px-2 py-1 text-xs hover:bg-slate-800" wire:loading.attr="disabled">Повторить отправку</button>
+                                    @endif
+                                    <button wire:click="cancelDelivery({{ $message->id }})" type="button" class="mt-2 rounded-md border border-rose-500 px-2 py-1 text-xs text-rose-300 hover:bg-rose-950" wire:loading.attr="disabled">Отменить доставку</button>
                                 @endif
                             @endif
                         </article>
                     @endforeach
                 </div>
+
+                @if ($messages->hasPages())
+                    <nav aria-label="Страницы истории сообщений" class="mb-4 flex flex-wrap justify-between gap-2 text-sm">
+                        @if ($cursor = $messages->nextCursor())
+                            <button wire:click="setPage('{{ $cursor->encode() }}', 'messagesCursor')" wire:key="messages-next-{{ $cursor->encode() }}" type="button" class="rounded border border-slate-600 px-3 py-2 hover:bg-slate-800" wire:loading.attr="disabled">Раньше</button>
+                        @endif
+                        @if ($cursor = $messages->previousCursor())
+                            <button wire:click="setPage('{{ $cursor->encode() }}', 'messagesCursor')" wire:key="messages-previous-{{ $cursor->encode() }}" type="button" class="rounded border border-slate-600 px-3 py-2 hover:bg-slate-800" wire:loading.attr="disabled">Позже</button>
+                        @endif
+                        @if (! $messages->onFirstPage())
+                            <button wire:click="resetPage('messagesCursor')" type="button" class="rounded border border-slate-600 px-3 py-2 hover:bg-slate-800" wire:loading.attr="disabled">Последние сообщения</button>
+                        @endif
+                    </nav>
+                @endif
 
                 @if ($selectedTicket->status === \App\Enums\TicketStatus::Open)
                     <form wire:submit="sendReply" class="border-t border-slate-700 pt-4">

@@ -6,6 +6,7 @@ use App\Enums\DeliveryStatus;
 use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
 use App\Enums\TicketCloseReason;
+use App\Enums\TicketEscalationReason;
 use App\Enums\TicketStatus;
 use Database\Factories\TicketFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['participant_id', 'status', 'escalation_reason', 'first_operator_replied_at', 'waiting_since', 'closed_at', 'close_reason'])]
+#[Fillable(['participant_id', 'status', 'escalation_reason', 'first_operator_replied_at', 'waiting_since', 'closed_at', 'close_reason', 'input_revision'])]
 class Ticket extends Model
 {
     /** @use HasFactory<TicketFactory> */
@@ -28,6 +29,11 @@ class Ticket extends Model
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);
+    }
+
+    public function escalationReasonLabel(): string
+    {
+        return TicketEscalationReason::tryFrom($this->escalation_reason ?? '')?->label() ?? 'Не указана';
     }
 
     public function hasUnfinishedOperatorReply(): bool
@@ -45,6 +51,7 @@ class Ticket extends Model
     protected function casts(): array
     {
         return [
+            'input_revision' => 'integer',
             'status' => TicketStatus::class,
             'close_reason' => TicketCloseReason::class,
             'first_operator_replied_at' => 'datetime',

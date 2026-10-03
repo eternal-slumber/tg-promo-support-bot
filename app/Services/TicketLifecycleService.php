@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\TicketCloseReason;
 use App\Enums\TicketStatus;
+use App\Models\Message;
 use App\Models\TelegramParticipant;
 use App\Models\Ticket;
 use DomainException;
@@ -11,11 +12,16 @@ use Illuminate\Support\Facades\DB;
 
 class TicketLifecycleService
 {
+    public const string ResolvedResponse = 'Проблема решена';
+
+    public const string UnresolvedResponse = 'Не решило';
+
     public function activeFor(TelegramParticipant $participant): ?Ticket
     {
         return $participant->tickets()
             ->whereIn('status', [TicketStatus::Open->value, TicketStatus::WaitingForUser->value])
             ->oldest('id')
+            ->lockForUpdate()
             ->first();
     }
 
@@ -40,6 +46,21 @@ class TicketLifecycleService
     public function waitForUser(Ticket $ticket): Ticket
     {
         return $this->transition($ticket, [TicketStatus::Open], TicketStatus::WaitingForUser);
+    }
+
+    /** The caller holds ticket/message locks in its transaction; repeated attachment is a no-op. */
+    public function attachParticipantMessage(Ticket $ticket, Message $message): void
+    {
+        if ($message->ticket_id === $ticket->id) {
+            return;
+        }
+
+        if (! $message->isInboundParticipantMessage() || $message->participant_id !== $ticket->participant_id || $message->ticket_id !== null) {
+            throw new DomainException('Only unattached messages from the ticket participant can be attached.');
+        }
+
+        $message->update(['ticket_id' => $ticket->id]);
+        $ticket->increment('input_revision');
     }
 
     public function closeManually(Ticket $ticket): Ticket
@@ -75,6 +96,13 @@ class TicketLifecycleService
     public function markUnresolved(Ticket $ticket): Ticket
     {
         return $this->transition($ticket, [TicketStatus::WaitingForUser], TicketStatus::Open);
+    }
+
+    public function applyUserResponse(Ticket $ticket, string $text): Ticket
+    {
+        return trim($text) === self::ResolvedResponse
+            ? $this->resolve($ticket)
+            : $this->markUnresolved($ticket);
     }
 
     /**

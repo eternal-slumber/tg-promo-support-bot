@@ -71,13 +71,14 @@ Telegram update
   -> discard raw body and INSERT only redacted inbound message + safe metadata
   -> if redaction occurred: create pending safety notification
   -> if active ticket exists: attach message to ticket
-  -> COMMIT
-  -> dispatch AI job afterCommit only when no active ticket exists
+  -> if waiting_for_user: apply text feedback in the same transaction
+  -> if no active ticket exists: insert AI job into the same PostgreSQL transaction
+  -> COMMIT; workers can now see the queued work
 ```
 
 Конфликт уникального `telegram_updates.update_id` означает уже принятый update и завершается успешным webhook response без side effects. Для сообщения при активном ticket AI job не создаётся.
 
-Выбран explicit `afterCommit()` для AI dispatch, даже если queue connection позднее получит глобальный `after_commit`: связь между durable message и job остаётся видимой в use case. Вызов LLM внутри webhook отклонён, потому что увеличивает latency и теряет сообщение при timeout до persistence.
+Database jobs создаются с `beforeCommit()` в той же PostgreSQL connection и транзакции, что message и lifecycle state: rollback отменяет обе записи, workers видят работу только после commit. Вызов LLM внутри webhook отклонён, потому что увеличивает latency и теряет сообщение при timeout до persistence.
 
 ### 3. PostgreSQL ER model
 
@@ -101,6 +102,7 @@ tickets
   id PK / public number
   participant_id FK -> telegram_participants.id
   status: open | waiting_for_user | closed
+  input_revision (actual participant attachments)
   escalation_reason
   first_operator_replied_at NULL
   waiting_since NULL
@@ -122,6 +124,7 @@ messages
   telegram_message_id NULL
   delivered_at NULL
   delivery_attempts
+  operator_input_revision (reply snapshot)
   last_delivery_error NULL
   created_at
 
@@ -147,7 +150,7 @@ jobs / failed_jobs
 
 `ProcessIncomingMessage` получает только message ID. Перед LLM-вызовом job проверяет существование `support_decisions.message_id`; сохранённое решение завершает job без повторного вызова.
 
-Один основной LLM-вызов выполняется вне длинной DB-транзакции. Модель одновременно понимает все запросы участника, выбирает `decision`/`reason`, формирует конкретный `answer` и приводит `evidence`. PHP выполняет только deterministic validation и получает `ValidatedSupportDecision`, без отдельного decision builder или LLM verifier. После этого короткая транзакция блокирует message, повторно проверяет отсутствие decision, сохраняет final decision и безопасный structured result, затем создаёт ровно необходимые side effects:
+Один основной LLM-вызов выполняется вне длинной DB-транзакции. Модель одновременно понимает все запросы участника, выбирает `decision`/`reason`, формирует конкретный `answer` и приводит `evidence`. PHP выполняет только deterministic validation и получает `ValidatedSupportDecision`, без отдельного decision builder или LLM verifier. После этого короткая транзакция блокирует participant, активный ticket и message (в таком порядке), повторно проверяет отсутствие decision. Если за время LLM-вызова появился активный ticket, сообщение прикрепляется к нему, waiting_for_user возвращается в open через TicketLifecycleService, а устаревшее решение и ответ не сохраняются. Если ticket нет, транзакция сохраняет final decision и безопасный structured result, затем создаёт ровно необходимые side effects:
 
 - `answer`: одно исходящее bot message;
 - `escalate`: один ticket и уведомление;
@@ -178,17 +181,19 @@ Prompt-файлы версионируются отдельно в репози�
 
 ### 6. Telegram adapter и delivery tracking
 
-Inbound webhook проверяет `X-Telegram-Bot-Api-Secret-Token` через `hash_equals` с непустым `config('telegram.webhook_secret')` до parsing и side effects. Missing/wrong token или отсутствующая конфигурация дают HTTP 403. CSRF exception сохраняется; callback ownership проверяется только после аутентификации webhook.
+Inbound webhook проверяет `X-Telegram-Bot-Api-Secret-Token` через `hash_equals` с непустым `config('telegram.webhook_secret')` до parsing и side effects. Missing/wrong token или отсутствующая конфигурация дают HTTP 403. CSRF exception сохраняется; legacy callbacks считаются unsupported после аутентификации webhook.
 
-Telegram adapter предоставляет минимальные операции: отправить текст с optional inline keyboard и подтвердить callback. Он задаёт explicit timeout и переводит API/network errors в типизированные ошибки.
+Parser отличает распознаваемые non-text сообщения участника в private chat от служебных событий и group updates. Для non-text DTO содержит только транспортные IDs, без caption и file metadata. Ingestion сохраняет update metadata и создаёт text-only fallback через существующий `createPendingMessage`: вопрос и текст подписи нужно отправить отдельным текстовым сообщением. Уведомление и delivery job сохраняются в той же transaction; duplicate update не создаёт повтор, существующий notice limiter допускает одно уведомление в минуту. LLM не вызывается, его quota не расходуется; ticket не создаётся и не меняет status/input revision. При наличии active ticket уведомление относится к его истории. Файлы и подписи не принимаются как вопросы в этом MVP.
 
-Лимит текста централизован в `TelegramOutboundMessage::MaxTextLength` (4096 Unicode символов); длина и обрезка используют `mb_*`. Operator reply до persistence проверяется под ticket lock с учётом реального заголовка и короткой redacted quote из того же presentation builder. Превышение бюджета даёт validation error без создания Message/job. Operator reply не обрезается и не разбивается: inline buttons остаются на единственном ответе. Для bot/system сообщений, включая grounded LLM ответы, presentation обрезает слишком длинный текст с пометкой `… [сообщение сокращено]`; полный sanitized body сохраняется в истории. Delivery job и Telegram adapter дополнительно отклоняют oversized payload до API-вызова с безопасной non-retryable ошибкой `telegram_message_too_long`. Такая ошибка сохраняет сообщение как `failed` и не переводит ticket в `waiting_for_user`.
+Telegram adapter отправляет текст с optional `ReplyKeyboardMarkup`. Inline buttons и callback acknowledgement удалены. Он задаёт explicit timeout и переводит API/network errors в типизированные ошибки.
+
+Лимит текста централизован в `TelegramOutboundMessage::MaxTextLength` (4096 Unicode символов); длина и обрезка используют `mb_*`. Operator reply до persistence проверяется под ticket lock с учётом реального заголовка и короткой redacted quote из того же presentation builder. Превышение бюджета даёт validation error без создания Message/job. Operator reply не обрезается и не разбивается: reply keyboard отправляется с единственным ответом. Для bot/system сообщений, включая grounded LLM ответы, presentation обрезает слишком длинный текст с пометкой `… [сообщение сокращено]`; полный sanitized body сохраняется в истории. Delivery job и Telegram adapter дополнительно отклоняют oversized payload до API-вызова с безопасной non-retryable ошибкой `telegram_message_too_long`. Такая ошибка сохраняет сообщение как `failed` и не переводит ticket в `waiting_for_user`.
 
 Каждый исходящий ответ сначала сохраняется как `pending`; затем `DeliverTelegramMessage` отправляет его после commit. При успехе message становится `sent`, сохраняются Telegram message ID и `delivered_at`. После окончательного сбоя message становится `failed`, сохраняется безопасный error code, но body не удаляется.
 
 Создание operator reply выполняется под `lockForUpdate()` ticket в transaction. Для ticket допускается один незавершённый outbound operator reply (`pending` или `failed`): повторный submit отклоняется без новой Message/job, а retry использует прежний message ID. Manual close под тем же ticket lock запрещён при незавершённом operator reply. Перед Telegram-вызовом delivery job повторно проверяет ticket: operator message отправляется только для `open`; для закрытого ticket job ничего не отправляет. Pending/failed reply удерживает ticket в `open` до successful delivery, поэтому ручное закрытие не может обогнать его доставку.
 
-Только успешная доставка ответа оператора переводит ticket `open -> waiting_for_user`, устанавливает `waiting_since` и dispatches delayed auto-close. Повтор delivery job для `sent` message является no-op. Для `failed` сообщения панель должна явно показывать ошибку и позволять повторную отправку тем же message record.
+Ticket остаётся open во время operator delivery. Каждое фактическое прикрепление participant message увеличивает tickets.input_revision один раз через TicketLifecycleService; operator reply сохраняет messages.operator_input_revision под ticket lock. После успешной доставки равные revisions разрешают open -> waiting_for_user и auto-close; при изменении ticket остаётся open без таймера. Это включает late AI attach ранее созданного сообщения и входящие между Telegram failure и retry. Message.id/created_at не определяют новизну input. Feedback «Проблема решена» / «Не решило» является action только в waiting_for_user; в open это input, увеличивающий revision, без подтверждения задним числом. Правило раннего feedback явно подтверждено пользователем 03.10.2026; прежние заявления о согласовании до этой даты не являлись подтверждением пользователя. Повтор delivery job для `sent` message является no-op. Для `failed` сообщения панель должна явно показывать ошибку и позволять повторную отправку тем же message record.
 
 Telegram `sendMessage` не предоставляет application idempotency key. При timeout после фактического принятия Telegram API остаётся небольшой риск повторной доставки при retry; он документируется, поскольку устранение потребовало бы внешнего reconciliation, отсутствующего в MVP.
 
@@ -202,7 +207,7 @@ Telegram `sendMessage` не предоставляет application idempotency k
      | open |                                    | waiting_for_user |
      +--+---+                                    +---+----------+---+
         ^                                            |          |
-        | unresolved                                 | solved   | timeout
+        | any other text                             | solved   | timeout
         +--------------------------------------------+          |
                                                             v   v
                                                           +--------+
@@ -213,19 +218,19 @@ open ---------------- operator close --------------------> closed
 waiting_for_user ------- operator close -----------------> closed
 ```
 
-Close reasons: `user_confirmed`, `auto_closed`, `operator_closed`. Закрытый ticket не переоткрывается: новое сообщение идёт через новый routing flow.
+Close reasons: `user_confirmed`, `auto_closed`, `operator_closed`. Закрытый ticket не переоткрывается: новый вопрос идёт через новый routing flow. Тексты кнопок вне активного ticket игнорируются без AI.
 
-`AutoCloseTicket` получает ticket ID и ожидаемое значение `waiting_since` либо ID operator message. В транзакции job блокирует ticket и закрывает его только если статус всё ещё `waiting_for_user` и generation marker совпадает. Поэтому job от старого ответа ничего не делает после `unresolved`, нового ответа или ручного закрытия.
+`AutoCloseTicket` получает ticket ID, ожидаемое значение `waiting_since` и ID operator message. Новые jobs проверяют оба marker, включая новый ответ в ту же секунду; старые сериализованные jobs без reply ID сохраняют проверку status и `waiting_since`. В транзакции job блокирует ticket и закрывает его только если статус всё ещё `waiting_for_user` и generation marker совпадает. Поэтому job от старого ответа ничего не делает после `unresolved`, нового ответа или ручного закрытия.
 
 `TICKET_AUTO_CLOSE_HOURS` читается через application config; значение `.env` используется только в config file. MVP default — 24.
 
-### 8. Callback security
+### 8. Reply keyboard и текстовый feedback
 
-Callback payload содержит action и public ticket reference, но не является доказательством владения. Handler по Telegram `from.id` находит participant, загружает ticket и проверяет `ticket.participant_id` до показа данных или перехода.
+Operator reply содержит `ReplyKeyboardMarkup` с текстами `Проблема решена` и `Не решило`, `resize_keyboard: true` и `one_time_keyboard: true`. Inline-кнопок под сообщением нет. Клавиатура скрывается клиентом после использования, её текст поступает обычным private message update.
 
-Telegram update ID обеспечивает идемпотентность повторной callback delivery. Сам переход дополнительно проверяет ожидаемый текущий статус под row lock: `resolved` и `unresolved` применимы только к `waiting_for_user`.
+Ingestion выбирает только собственный активный ticket отправителя и блокирует его строку. В `waiting_for_user` текст `Проблема решена` сохраняется в истории и закрывает ticket с `user_confirmed`. `Не решило` и любой другой текст, включая `/start`, сохраняются в том же ticket и переводят его в `open`; `waiting_since` очищается. LLM и новые кнопки не запускаются. При redaction сохраняется обычное безопасное уведомление без клавиатуры.
 
-Подписанный или opaque callback token рассматривался, но для MVP не заменяет обязательную owner check и добавляет управление ключом/хранилищем. Его можно добавить позднее как defense in depth.
+Unique update ID делает повторный feedback идемпотентным. Legacy inline callbacks возвращают HTTP 200 со статусом `ignored`, без persistence, изменения ticket или callback acknowledgement. Отдельного callback handler и callback DTO больше нет.
 
 ### 9. Operator UI и authentication
 
@@ -234,6 +239,10 @@ Telegram update ID обеспечивает идемпотентность по�
 На clean start Compose требует `OPERATOR_EMAIL` и `OPERATOR_PASSWORD`, ожидает PostgreSQL healthcheck, затем app последовательно выполняет migrations и `db:seed --force --no-interaction` до запуска HTTP server. Queue worker ждёт app healthcheck. Credentials читаются seeder через environment-backed config; непустой пароль и valid email обязательны, development fallback отсутствует. `firstOrCreate` по unique email обеспечивает идемпотентность для того же email; пароль хранится через `User` hashed cast. Повторный startup не обновляет существующий пароль. `.env.example` содержит только development email и пустой пароль; реальные credentials задаются локально.
 
 Livewire отображает очередь, историю, форму ответа, delivery state, ручное закрытие и три метрики. Очередь по умолчанию показывает `open` и `waiting_for_user`; фильтры также позволяют просмотреть `closed` или все обращения, сортируя их от новых к старым. Закрытые обращения read-only. Достаточно server-driven navigation и refresh/polling; WebSockets и SPA отклонены. User-provided text выводится только через escaped Blade syntax, без raw HTML.
+
+История выбирается через `selectedTicket.messages()` и содержит только записи с `ticket_id` выбранного обращения. Предыдущие и последующие tickets одного participant, включая closed, имеют независимые истории. Unticketed pre-escalation context временно не показывается: безопасная граница контекста отдельно не определяется. Cursor pagination сохраняет страницы по 50 записей и порядок `(created_at, id)`; запрос использует существующий индекс `(ticket_id, created_at, id)` без новой migration. Retry/cancellation controls показываются только для сообщений выбранного ticket; server actions также проверяют ticket_id. Доступ к истории не перепривязывает сообщения к ticket, не меняет lifecycle и не создаёт decisions или jobs.
+
+Отдельно от выборки истории, даты создания и закрытия ticket и timestamps сообщений форматируются в `Europe/Moscow` с пометкой «МСК». Преобразование применяется к копии Carbon date только при отображении; приложение, timestamps в PostgreSQL и queue timers сохраняют UTC.
 
 Точная верстка и формулировки Telegram-сообщений не являются domain contract. Presentation concepts:
 
@@ -251,7 +260,7 @@ Sanitizer вызывается в webhook use case до открытия persist
 
 - **Payment card:** маскировать группы вида `4x4`, включая evaluation case `2200 1234 5678 9012`; для непрерывных или иначе сгруппированных последовательностей 13–19 цифр использовать форму и Luhn как сигналы, не маскируя любое длинное число безусловно.
 - **OTP/SMS code:** маскировать короткое числовое или буквенно-числовое значение только рядом с явными маркерами `SMS`, `OTP`, `код из SMS`, `одноразовый код` и близкими вариантами.
-- **Password:** маскировать значение только рядом с явными маркерами `пароль`, `password`, `pwd` и близкими вариантами; сам несекретный контекст сохранять.
+- **Password:** после `пароль`, `password`, `pwd` разделитель или кавычки обозначают значение; без них первый token должен содержать цифру или password punctuation. Дополнительно одно значение после `мой пароль` / `my password` перед концом строки, запятой или точкой с запятой маскируется независимо от наличия цифр. Шаблон явного/quoted значения применяется первым, чтобы не оставить часть секрета после разделителя внутри кавычек. Word whitelist не используется; обычные многословные фразы о входе сохраняются. Однословные owned-фразы неоднозначны и консервативно считаются раскрытием секрета.
 - **Ordinary numeric text:** даты, суммы, количество товаров, номера обращений и другие числа без card-like формы или sensitive context оставлять без изменений.
 - **Phone:** автоматически не маскировать, поскольку участник может использовать номер как идентификатор аккаунта; при этом application logs содержат только технические IDs/status/error codes и никогда не содержат message body.
 
@@ -263,21 +272,21 @@ Sanitizer вызывается в webhook use case до открытия persist
 
 Provisional определения из specs реализуются обычными PostgreSQL aggregates:
 
-- `bot resolved`: число уникальных inbound messages с decision `answer` или `refuse`, не связанных с созданным ticket; mixed исключается.
+- `bot resolved`: число исходящих сообщений бота без ticket со статусом `sent`; самостоятельные ответы и отказы учитываются, mixed и уведомления об эскалации исключаются. Число подготовленных ответов и состояния `pending`, `failed`, `cancelled` показаны отдельно.
 - `escalated`: число tickets, а не число их сообщений.
 - average operator response time: `AVG(first_operator_replied_at - tickets.created_at)` только для ненулевого `first_operator_replied_at`.
 
-`first_operator_replied_at` устанавливается один раз при сохранении первого operator message, независимо от последующих delivery retries. Расчёт не вызывает LLM и не мутирует данные. Определения изолируются в одном query/service boundary, чтобы изменить их после ответа менеджера без изменения ingestion и ticket lifecycle.
+`first_operator_replied_at` устанавливается один раз в transaction успешной доставки первого operator message по его `delivered_at`, до проверки input revision для перехода в waiting. Pending, failed и cancelled ответы не участвуют в average; отменённые operator replies имеют отдельный счётчик. Forward data migration исправляет исторические timestamps по первой успешной доставке и очищает значение у tickets без отправленных ответов. Расчёт не вызывает LLM и не мутирует данные. Определения изолируются в одном query boundary.
 
 ### 12. Transaction boundaries summary
 
-1. **Ingestion:** unique update + participant + redacted inbound message + safe redaction metadata и optional safety notification; commit; dispatch jobs after commit.
-2. **Decision application:** lock message + unique decision + ticket/outbound messages; commit; dispatch delivery after commit.
-3. **Operator reply:** validate ticket + save pending outbound message and first response timestamp; commit; dispatch delivery.
-4. **Delivery success:** lock message + mark sent; для operator reply перевести ticket в waiting and set generation marker; commit; dispatch delayed auto-close.
-5. **Callback/manual/auto close:** lock ticket, validate owner/status/generation, apply one state transition, commit.
+1. **Ingestion:** unique update + participant + locked active ticket + redacted inbound message + safe metadata + text feedback transition + optional safety notification и jobs в одной PostgreSQL transaction; commit.
+2. **Decision application:** lock participant -> active ticket -> message + recheck; либо attach/reopen без устаревшего AI-ответа, либо unique decision + ticket/outbound messages и delivery jobs; commit.
+3. **Operator reply:** lock/validate ticket + pending outbound message с revision snapshot + first response timestamp + delivery job; commit.
+4. **Delivery success:** lock ticket и message + mark sent; для operator reply сравнить ticket input_revision и operator reply snapshot; оставить open либо перейти в waiting и записать delayed auto-close; commit.
+5. **Text feedback/manual/auto close:** lock ticket, validate owner/status/generation, apply one state transition, commit.
 
-External HTTP calls never выполняются внутри DB-транзакции.
+В production flow внешние HTTP calls выполняются вне DB-транзакции. Offline evaluation использует отдельную тестовую БД и rollback транзакцию на каждый случай, чтобы не сохранять fixtures; Telegram не отправляется; ProcessIncomingMessage выполняется штатным database Worker в изолированной временной queue.
 
 ## Risks / Trade-offs
 
@@ -299,7 +308,7 @@ External HTTP calls never выполняются внутри DB-транзак�
 4. Start app and queue worker through Docker Compose; run migrations before accepting updates.
 5. Validate with faked integration tests, then run the 25-message evaluation dataset.
 
-Rollback for the MVP is stopping webhook traffic and workers before rolling back application migrations. No existing production data migration is required because the project is greenfield.
+Перед миграцией revision существующей БД и обновлением application/workers приём webhook и workers останавливаются. Forward migration сохраняет сообщения и считает фактические participant attachments. Rollback требует остановки webhook/workers перед удалением revision columns.
 
 ## Provisional Decisions Pending Manager Confirmation
 
@@ -309,3 +318,15 @@ Rollback for the MVP is stopping webhook traffic and workers before rolling back
 - Average operator response: ticket creation to first saved operator reply; unanswered tickets excluded.
 
 Changing these definitions may require spec and query/test updates, but the persisted message, decision and timestamp model supports either likely interpretation.
+
+## Public pilot configuration
+
+Compose запускает Nginx + PHP-FPM в существующем app container, APP_ENV=production и APP_DEBUG=false. APP_KEY обязателен, передаётся из локального environment всем контейнерам и не генерируется при build/restart. Host HTTP port привязан к loopback; HTTPS завершается на локальном ngrok/TLS proxy, который задаёт X-Forwarded-Proto. Для публичного доступа задаются HTTPS APP_URL и SESSION_SECURE_COOKIE=true. Это пилотная конфигурация, а не обещание управляемого production hosting, backup или monitoring.
+
+## Обязательные уточнения review
+
+Password detection не содержит word whitelist: явный разделитель или кавычки обозначают фразу; без них первый token должен содержать цифру/password punctuation либо быть единственным значением после `мой пароль` / `my password`. Многословная неразмеченная prose сохраняется; неоднозначный owned single token маскируется в пользу безопасности.
+
+EvaluateSupport использует штатный database Worker: job tries/backoff и terminal failed(), без принудительного fallback после первой временной ошибки. Отчёт показывает decision и validation failures (включая немедленный JobFailed после invalid result) в model result, safe HTTP/connection failures отдельно в infrastructure reason, attempts и конечный ответ; raw provider/error body не сохраняется.
+
+Forward migration считает уже прикреплённые inputs для начальной revision. Legacy operator snapshots остаются 0: при ненулевой revision доставка консервативно оставляет open, поскольку достоверно восстановить исторический snapshot нельзя. Downgrade удаляет revision state.

@@ -17,9 +17,13 @@ use Illuminate\Support\Facades\DB;
 
 class SupportDecisionService
 {
+    public function __construct(private readonly TicketLifecycleService $tickets) {}
+
     public function apply(Message $message, ValidatedSupportDecision $decision, string $rulesHash): ?SupportDecision
     {
         return DB::transaction(function () use ($message, $decision, $rulesHash): ?SupportDecision {
+            $participant = TelegramParticipant::query()->lockForUpdate()->findOrFail($message->participant_id);
+            $activeTicket = $this->tickets->activeFor($participant);
             $lockedMessage = Message::query()->lockForUpdate()->findOrFail($message->id);
             $existingDecision = SupportDecision::query()->where('message_id', $lockedMessage->id)->first();
 
@@ -33,6 +37,16 @@ class SupportDecisionService
                 return null;
             }
 
+            if ($activeTicket !== null) {
+                $this->tickets->attachParticipantMessage($activeTicket, $lockedMessage);
+
+                if ($activeTicket->status === TicketStatus::WaitingForUser) {
+                    $this->tickets->markUnresolved($activeTicket);
+                }
+
+                return null;
+            }
+
             $persistedDecision = $lockedMessage->decision()->create([
                 'type' => $decision->type,
                 'reason' => $decision->reason,
@@ -41,14 +55,13 @@ class SupportDecisionService
                 'structured_output' => $decision->toStructuredOutput(),
             ]);
 
-            $participant = TelegramParticipant::query()->lockForUpdate()->findOrFail($lockedMessage->participant_id);
             $ticket = match ($decision->type) {
-                SupportDecisionType::Escalate, SupportDecisionType::Mixed => $this->activeTicketOrCreate($participant, $decision->reason),
+                SupportDecisionType::Escalate, SupportDecisionType::Mixed => $this->tickets->create($participant, $decision->reason),
                 SupportDecisionType::Answer, SupportDecisionType::Refuse => null,
             };
 
             if ($ticket !== null && $lockedMessage->ticket_id === null) {
-                $lockedMessage->update(['ticket_id' => $ticket->id]);
+                $this->tickets->attachParticipantMessage($ticket, $lockedMessage);
             }
 
             match ($decision->type) {
@@ -70,24 +83,6 @@ class SupportDecisionService
         );
     }
 
-    private function activeTicketOrCreate(TelegramParticipant $participant, string $reason): Ticket
-    {
-        $ticket = Ticket::query()
-            ->where('participant_id', $participant->id)
-            ->whereIn('status', [TicketStatus::Open->value, TicketStatus::WaitingForUser->value])
-            ->oldest('id')
-            ->first();
-
-        if ($ticket !== null) {
-            return $ticket;
-        }
-
-        return $participant->tickets()->create([
-            'status' => TicketStatus::Open,
-            'escalation_reason' => $reason,
-        ]);
-    }
-
     private function createMixedMessages(Message $message, Ticket $ticket, ?string $answer): void
     {
         $this->createPendingBotMessage($message, $ticket, $answer);
@@ -105,7 +100,7 @@ class SupportDecisionService
             'delivery_status' => DeliveryStatus::Pending,
         ]);
 
-        DeliverTelegramMessage::dispatch($outbound->id)->afterCommit();
+        DeliverTelegramMessage::dispatch($outbound->id);
     }
 
     private function escalationNotice(Ticket $ticket): string

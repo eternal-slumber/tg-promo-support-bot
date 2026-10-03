@@ -20,12 +20,45 @@ class TelegramUpdateParser
 
         if (is_array($payload['message'] ?? null)) {
             $message = $payload['message'];
-            $telegramUserId = $this->integer(data_get($message, 'from.id'));
+
+            if (data_get($message, 'chat.type') !== 'private') {
+                return new TelegramUpdateData($updateId, TelegramUpdateKind::Unsupported);
+            }
+
             $chatId = $this->integer(data_get($message, 'chat.id'));
             $telegramMessageId = $this->integer($message['message_id'] ?? null);
+
+            if ($chatId === null || $telegramMessageId === null) {
+                return null;
+            }
+
+            $telegramUserId = $this->integer(data_get($message, 'from.id'));
+
+            if (! array_key_exists('text', $message)) {
+                if (! array_any([
+                    'animation', 'audio', 'document', 'live_photo', 'paid_media', 'photo', 'sticker', 'story',
+                    'video', 'video_note', 'voice', 'rich_message', 'checklist', 'contact', 'dice', 'game',
+                    'poll', 'venue', 'location', 'invoice', 'giveaway', 'giveaway_winners', 'passport_data',
+                ], fn (string $field): bool => is_array($message[$field] ?? null))) {
+                    return new TelegramUpdateData($updateId, TelegramUpdateKind::Unsupported);
+                }
+
+                if ($telegramUserId === null) {
+                    return null;
+                }
+
+                return new TelegramUpdateData(
+                    updateId: $updateId,
+                    kind: TelegramUpdateKind::NonTextMessage,
+                    telegramUserId: $telegramUserId,
+                    chatId: $chatId,
+                    telegramMessageId: $telegramMessageId,
+                );
+            }
+
             $text = $message['text'] ?? null;
 
-            if ($telegramUserId === null || $chatId === null || $telegramMessageId === null || ! is_string($text)) {
+            if ($telegramUserId === null || ! is_string($text)) {
                 return null;
             }
 
@@ -36,26 +69,6 @@ class TelegramUpdateParser
                 chatId: $chatId,
                 telegramMessageId: $telegramMessageId,
                 text: $text,
-            );
-        }
-
-        if (is_array($payload['callback_query'] ?? null)) {
-            $callback = $payload['callback_query'];
-            $callbackQueryId = $callback['id'] ?? null;
-            $telegramUserId = $this->integer(data_get($callback, 'from.id'));
-            $chatId = $this->integer(data_get($callback, 'message.chat.id'));
-
-            if (! is_string($callbackQueryId) || $telegramUserId === null || $chatId === null) {
-                return null;
-            }
-
-            return new TelegramUpdateData(
-                updateId: $updateId,
-                kind: TelegramUpdateKind::CallbackQuery,
-                telegramUserId: $telegramUserId,
-                chatId: $chatId,
-                callbackQueryId: $callbackQueryId,
-                callbackData: is_string($callback['data'] ?? null) ? $callback['data'] : null,
             );
         }
 

@@ -111,3 +111,101 @@ docker compose -f compose.testing.yaml run --rm --env-from-file /absolute/path/p
 Создайте private env file вне репозитория с `LLM_ENDPOINT`, `LLM_MODEL`, `LLM_API_KEY`, `LLM_CONNECT_TIMEOUT`, `LLM_TIMEOUT`, ограничьте permissions и удалите после прогона. Команда перезаписывает отчёт с отметкой «требует проверки»: вручную оцените все строки. Не запускайте её одновременно с tests/refresh на этой БД. Eval использует rollback transaction вокруг LLM только в offline test run; записи/Telegram jobs не уходят в production.
 
 Для LM Studio из Docker используйте `LLM_ENDPOINT=http://host.docker.internal:1234/v1/chat/completions`, ID загруженной модели и `LLM_RESPONSE_FORMAT=json_schema`: локальный API может отклонять стандартный для приложения `json_object`. Одна схема `support_decision` требует `decision`, `reason`, `answer`, `evidence`; JSON и связи decision/reason/answer/evidence, ID и quote membership проверяются в PHP. Режим `text` также доступен, но не гарантирует JSON со стороны provider.
+
+## Поведение обращений и доставки
+
+У участника не более одного active ticket (`open` или `waiting_for_user`). Новые входящие прикрепляются к нему. После закрытия новый вопрос снова проходит AI-routing. Если активное обращение появилось, пока LLM обрабатывал более ранний вопрос, транзакция прикрепляет раннее сообщение к нему, подавляет устаревший AI-ответ и возвращает `waiting_for_user` в `open`.
+
+Operator reply сначала сохраняется `pending`, затем отправляется в Telegram. Во время delivery ticket остаётся `open`. Фактическое прикрепление participant message увеличивает `input_revision`, operator reply хранит `operator_input_revision`. Изменённая revision оставляет ticket `open` без таймера, включая late AI attach ранее созданного message; Message.id не определяет новизну input. Иначе ticket становится `waiting_for_user`, и планируется закрытие через `TICKET_AUTO_CLOSE_HOURS` (по умолчанию 24). Раннее «Проблема решена» остаётся в истории для ручного закрытия; подтверждения задним числом нет. Это правило действует и для входящего между ошибкой Telegram и retry и подтверждено пользователем 03.10.2026.
+
+В `waiting_for_user` текст «Проблема решена» закрывает ticket с `user_confirmed`; любой другой текст, включая «Не решило», возвращает `open` без LLM и новых кнопок. Старый auto-close проверяет `waiting_since` и ID ответа и не закрывает новый цикл. Оператор может закрыть обращение вручную с `operator_closed`.
+
+Один незавершённый operator reply блокирует новый ответ и ручное закрытие. Ошибка доставки сохраняет `failed` и безопасный код; UI позволяет повторить тот же message либо отменить доставку (`cancelled`, существующее состояние). После отмены можно ответить заново/закрыть. Временные ошибки LLM повторяются штатной queue с backoff; постоянные сразу дают идемпотентный `llm_failure` fallback оператору. Невалидный JSON/schema/evidence сразу даёт тот же fallback без повторной генерации. Telegram timeout после фактического приёма может привести к повторной доставке: exactly-once Telegram не гарантируется.
+
+## Статистика
+
+В панели показаны все сохранённые данные, независимо от текущего фильтра queue:
+
+- `bot resolved` («Отправлено ботом без оператора»): число исходящих сообщений бота без ticket в состоянии `sent`. Это отправленные самостоятельные ответы и безопасные отказы, не подтверждение решения проблемы участником. Mixed, уведомления об эскалации и системные предупреждения исключены. Отдельно показаны подготовленные ответы бота и состояния `pending`, `failed`, `cancelled`.
+- `escalated`: число созданных tickets, включая закрытые. Follow-ups и retry не увеличивают его.
+- Среднее время первого ответа: `AVG(first_operator_replied_at - created_at)` по tickets с первым успешно отправленным operator reply. Timestamp фиксируется вместе с `sent` по `delivered_at`; задержка доставки входит во время ответа. Обращения без отправленного ответа исключены, отменённые ответы оператора показаны отдельным счётчиком. UI показывает минуты.
+
+Forward migration пересчитывает исторический `first_operator_replied_at` по минимальному `delivered_at` отправленных ответов оператора и сбрасывает его в `null`, если таких ответов нет. На время пересчёта ticket writes блокируются в transaction. Откат миграции сохраняет исправленные данные: исходные timestamps подготовки ответа восстановить нельзя.
+
+Предупреждение `/start` является системным сообщением и не увеличивает показатели ответов бота. Отдельная forward migration исправляет классификацию старых предупреждений, сохраняя их содержимое и delivery state.
+
+Запросы изолированы в `OperatorDashboard::statistics()`, повторный просмотр не мутирует DB и не вызывает внешние API. Метрики пока не имеют date range/export, а агрегаты читают весь архив; индексы и pagination защищают очередь/историю, но не превращают статистику в analytics platform.
+
+## PostgreSQL
+
+```mermaid
+erDiagram
+    telegram_participants ||--o{ telegram_updates : participant_id
+    telegram_participants ||--o{ tickets : participant_id
+    telegram_participants ||--o{ messages : participant_id
+    tickets o|--o{ messages : ticket_id
+    telegram_updates o|--o{ messages : telegram_update_id
+    users o|--o{ messages : operator_id
+    messages ||--o| support_decisions : message_id
+    telegram_participants {
+        bigint id PK
+        bigint telegram_user_id UK
+        bigint chat_id
+    }
+    telegram_updates {
+        bigint id PK
+        bigint update_id UK
+        bigint participant_id FK "nullable"
+        string kind
+        timestamp received_at
+    }
+    tickets {
+        bigint id PK "public number"
+        bigint participant_id FK
+        string status
+        bigint input_revision
+        string escalation_reason "nullable"
+        timestamp first_operator_replied_at "nullable"
+        timestamp waiting_since "nullable"
+        timestamp closed_at "nullable"
+        string close_reason "nullable"
+    }
+    messages {
+        bigint id PK
+        bigint participant_id FK
+        bigint ticket_id FK "nullable"
+        bigint telegram_update_id FK "nullable"
+        bigint operator_id FK "nullable"
+        string direction
+        string author
+        text body "sanitized"
+        boolean sensitive_data_redacted
+        jsonb redaction_types "nullable"
+        string delivery_status "nullable"
+        bigint telegram_message_id "nullable"
+        timestamp delivered_at "nullable"
+        int delivery_attempts
+        bigint operator_input_revision
+        string last_delivery_error "nullable"
+    }
+    support_decisions {
+        bigint id PK
+        bigint message_id FK,UK
+        string type
+        string reason "nullable"
+        text answer_text "nullable"
+        string knowledge_source_hash "nullable"
+        jsonb structured_output "nullable"
+    }
+    users {
+        bigint id PK
+        string email UK
+        string password "hash"
+    }
+```
+
+Все domain tables также имеют `created_at`/`updated_at`. FK удаления: participant cascade для tickets/messages, participant set-null для updates; ticket/update/operator set-null для messages; message cascade для decision. Unique `update_id` предотвращает повтор ingestion, unique `message_id` — повтор decision. Partial unique `tickets(participant_id) WHERE status IN ('open','waiting_for_user')` гарантирует один active ticket. Status strings валидируются PHP enums/lifecycle, отдельного SQL CHECK для каждого enum нет.
+
+Индексы queue: `(created_at,id)`, `(status,created_at,id)`, partial active `(created_at,id)`; history участника: `(participant_id,created_at,id)`, ticket queries: `(ticket_id,created_at,id)`. Индекс истории участника добавляется отдельной forward migration для существующих БД. Laravel также использует `migrations`, `jobs`, `failed_jobs`, `job_batches`, `cache`, `cache_locks`, `sessions`, `password_reset_tokens`; batches/reset UI не реализованы. В queue payload передаются IDs, raw body отсутствует. Полный runtime prompt в DB не сохраняется. `delivery_input_marker` удалён прежней forward migration. Migration revision добавляет snapshot; legacy pending replies с неизвестным snapshot консервативно остаются open. Применённые migrations не переписываются.
+
+Транзакции ingestion и AI application блокируют participant → active ticket → message; operator reply и delivery — ticket → message. Database jobs записываются в ту же PostgreSQL transaction через `beforeCommit()`, поэтому rollback отменяет также job, а worker видит её после commit. Production HTTP к LLM/Telegram выполняется вне DB transaction. Successful delivery атомарно сохраняет `sent` и переход/auto-close; retries защищены DB checks и существующим database cache lock.

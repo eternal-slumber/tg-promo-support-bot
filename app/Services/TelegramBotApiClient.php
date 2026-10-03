@@ -30,11 +30,6 @@ class TelegramBotApiClient implements TelegramBotClient
         return new TelegramSentMessage($messageId);
     }
 
-    public function acknowledgeCallback(string $callbackQueryId): void
-    {
-        $this->request('answerCallbackQuery', ['callback_query_id' => $callbackQueryId]);
-    }
-
     /**
      * @param  array<string, mixed>  $payload
      * @return array<string, mixed>
@@ -46,11 +41,17 @@ class TelegramBotApiClient implements TelegramBotClient
                 ->connectTimeout((int) config('telegram.connect_timeout'))
                 ->timeout((int) config('telegram.timeout'))
                 ->post(rtrim((string) config('telegram.api_base_url'), '/').'/bot'.config('telegram.bot_token').'/'.$method, $payload);
-        } catch (ConnectionException $exception) {
-            throw new TelegramDeliveryException('telegram_connection_failed', true, $exception);
+        } catch (ConnectionException) {
+            throw new TelegramDeliveryException('telegram_connection_failed', true);
         }
 
-        if ($response->status() === 429 || $response->serverError()) {
+        if ($response->status() === 429) {
+            $retryAfter = data_get($response->json(), 'parameters.retry_after');
+
+            throw new TelegramDeliveryException('telegram_rate_limited', true, is_int($retryAfter) && $retryAfter > 0 ? $retryAfter : 60);
+        }
+
+        if ($response->serverError()) {
             throw new TelegramDeliveryException('telegram_temporary_failure', true);
         }
 

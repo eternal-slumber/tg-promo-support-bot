@@ -9,8 +9,8 @@ class TelegramDeliveryException extends RuntimeException
     public function __construct(
         public readonly string $safeError,
         public readonly bool $retryable,
-        ?\Throwable $previous = null,
+        public readonly ?int $retryAfterSeconds = null,
     ) {
-        parent::__construct($safeError, 0, $previous);
+        parent::__construct($safeError);
     }
 }

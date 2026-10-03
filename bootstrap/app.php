@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\SafeDatabaseException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,6 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn (): string => route('login'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->map(fn (Throwable $exception): Throwable => SafeDatabaseException::from($exception) ?? $exception);
+
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );

@@ -11,6 +11,7 @@ use App\Models\Message;
 use App\Models\Ticket;
 use App\Models\User;
 use DomainException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -20,6 +21,34 @@ class OperatorReplyService
         private readonly SensitiveDataSanitizer $sanitizer,
         private readonly TelegramMessagePresentation $presentation,
     ) {}
+
+    public function cancel(Ticket $ticket, int $messageId): void
+    {
+        $cancelled = Cache::store('database')->lock('telegram-delivery:'.$messageId, 50)
+            ->get(function () use ($ticket, $messageId): bool {
+                return DB::transaction(function () use ($ticket, $messageId): bool {
+                    $lockedTicket = Ticket::query()->lockForUpdate()->findOrFail($ticket->getKey());
+                    $message = $lockedTicket->messages()
+                        ->where('direction', MessageDirection::Outbound)
+                        ->where('author', MessageAuthor::Operator)
+                        ->lockForUpdate()
+                        ->findOrFail($messageId);
+
+                    if ($lockedTicket->status !== TicketStatus::Open
+                        || ! in_array($message->delivery_status, [DeliveryStatus::Pending, DeliveryStatus::Failed], true)) {
+                        throw new DomainException('Only unfinished operator replies on open tickets can be cancelled.');
+                    }
+
+                    $message->update(['delivery_status' => DeliveryStatus::Cancelled]);
+
+                    return true;
+                });
+            });
+
+        if (! $cancelled) {
+            throw new DomainException('Delivery is already in progress.');
+        }
+    }
 
     public function create(User $operator, Ticket $ticket, string $body): Message
     {
@@ -52,15 +81,12 @@ class OperatorReplyService
                 'author' => MessageAuthor::Operator,
                 'body' => $sanitized->text,
                 'delivery_status' => DeliveryStatus::Pending,
+                'operator_input_revision' => $lockedTicket->input_revision,
                 'sensitive_data_redacted' => $sanitized->wasRedacted,
                 'redaction_types' => $sanitized->redactionTypes ?: null,
             ]);
 
-            if ($lockedTicket->first_operator_replied_at === null) {
-                $lockedTicket->update(['first_operator_replied_at' => now()]);
-            }
-
-            DeliverTelegramMessage::dispatch($message->id)->afterCommit();
+            DeliverTelegramMessage::dispatch($message->id);
 
             return $message;
         });
