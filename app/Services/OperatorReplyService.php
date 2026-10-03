@@ -20,6 +20,7 @@ class OperatorReplyService
     public function __construct(
         private readonly SensitiveDataSanitizer $sanitizer,
         private readonly TelegramMessagePresentation $presentation,
+        private readonly TicketLifecycleService $tickets,
     ) {}
 
     public function cancel(Ticket $ticket, int $messageId): void
@@ -34,12 +35,12 @@ class OperatorReplyService
                         ->lockForUpdate()
                         ->findOrFail($messageId);
 
-                    if ($lockedTicket->status !== TicketStatus::Open
+                    if ($lockedTicket->status === TicketStatus::Closed
                         || ! in_array($message->delivery_status, [DeliveryStatus::Pending, DeliveryStatus::Failed], true)) {
-                        throw new DomainException('Only unfinished operator replies on open tickets can be cancelled.');
+                        throw new DomainException('Only unfinished operator replies on active tickets can be cancelled.');
                     }
 
-                    $message->update(['delivery_status' => DeliveryStatus::Cancelled]);
+                    $message->update(['delivery_status' => DeliveryStatus::Cancelled, 'resolves_ticket' => false]);
 
                     return true;
                 });
@@ -50,19 +51,15 @@ class OperatorReplyService
         }
     }
 
-    public function create(User $operator, Ticket $ticket, string $body): Message
+    public function create(User $operator, Ticket $ticket, string $body, bool $resolveTicket = false): Message
     {
         $sanitized = $this->sanitizer->sanitize($body);
 
-        return DB::transaction(function () use ($operator, $ticket, $sanitized): Message {
+        return DB::transaction(function () use ($operator, $ticket, $sanitized, $resolveTicket): Message {
             $lockedTicket = Ticket::query()->lockForUpdate()->findOrFail($ticket->getKey());
 
-            if ($lockedTicket->status !== TicketStatus::Open) {
-                throw new DomainException('Only open tickets can receive an operator reply.');
-            }
-
-            if ($lockedTicket->hasUnfinishedOperatorReply()) {
-                throw new DomainException('Ticket already has an unfinished operator reply.');
+            if ($lockedTicket->status === TicketStatus::Closed) {
+                throw new DomainException('Closed tickets cannot receive an operator reply.');
             }
 
             $limit = $this->presentation->operatorReplyLimit($lockedTicket);
@@ -73,6 +70,8 @@ class OperatorReplyService
                 ]);
             }
 
+            $this->tickets->reopen($lockedTicket);
+
             $message = Message::query()->create([
                 'participant_id' => $lockedTicket->participant_id,
                 'ticket_id' => $lockedTicket->id,
@@ -81,7 +80,7 @@ class OperatorReplyService
                 'author' => MessageAuthor::Operator,
                 'body' => $sanitized->text,
                 'delivery_status' => DeliveryStatus::Pending,
-                'operator_input_revision' => $lockedTicket->input_revision,
+                'resolves_ticket' => $resolveTicket,
                 'sensitive_data_redacted' => $sanitized->wasRedacted,
                 'redaction_types' => $sanitized->redactionTypes ?: null,
             ]);

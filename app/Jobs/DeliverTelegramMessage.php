@@ -104,7 +104,7 @@ class DeliverTelegramMessage implements ShouldQueue
             }
 
             if ($lockedMessage->author === MessageAuthor::Operator
-                && $lockedMessage->ticket?->status !== TicketStatus::Open) {
+                && $lockedMessage->ticket === null) {
                 return null;
             }
 
@@ -184,18 +184,18 @@ class DeliverTelegramMessage implements ShouldQueue
                     $ticket->update(['first_operator_replied_at' => $lockedMessage->delivered_at]);
                 }
 
-                if ($ticket->input_revision !== $lockedMessage->operator_input_revision) {
+                if (! $lockedMessage->resolves_ticket) {
                     return;
                 }
 
                 try {
-                    $waitingTicket = $ticketLifecycle->waitForUser($ticket);
+                    $resolvedTicket = $ticketLifecycle->resolve($ticket);
                 } catch (DomainException) {
                     return;
                 }
 
-                AutoCloseTicket::dispatch($waitingTicket->id, $waitingTicket->waiting_since->toISOString(), $lockedMessage->id)
-                    ->delay($waitingTicket->waiting_since->copy()->addHours((int) config('support.ticket_auto_close_hours')));
+                AutoCloseTicket::dispatch($resolvedTicket->id, $resolvedTicket->resolved_since->toISOString(), $lockedMessage->id)
+                    ->delay($resolvedTicket->resolved_since->copy()->addHours((int) config('support.ticket_auto_close_hours')));
             }
         });
     }

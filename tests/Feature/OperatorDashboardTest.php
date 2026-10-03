@@ -28,7 +28,7 @@ test('shows active ticket queue and escaped chronological conversation history',
     $operator = User::factory()->create();
     $participant = TelegramParticipant::factory()->create();
     $openTicket = Ticket::factory()->for($participant, 'participant')->create(['escalation_reason' => 'participant_specific']);
-    $resolvedTicket = Ticket::factory()->waitingForUser()->create();
+    $resolvedTicket = Ticket::factory()->resolved()->create();
     $closedTicket = Ticket::factory()->closed()->create();
 
     Message::factory()->for($participant, 'participant')->for($openTicket)->create([
@@ -98,7 +98,7 @@ test('shows readable ticket status and escalation reason labels without changing
     $this->freezeTime();
     $factory = match ($status) {
         TicketStatus::Open => Ticket::factory(),
-        TicketStatus::WaitingForUser => Ticket::factory()->waitingForUser(),
+        TicketStatus::Resolved => Ticket::factory()->resolved(),
         TicketStatus::Closed => Ticket::factory()->closed(),
     };
     $ticket = $factory->create(['escalation_reason' => $reason]);
@@ -109,14 +109,14 @@ test('shows readable ticket status and escalation reason labels without changing
         ->assertSeeText([$statusLabel, $reasonLabel])
         ->call('selectTicket', $ticket->id)
         ->assertSeeText(['Статус: '.$statusLabel, 'Причина передачи оператору: '.$reasonLabel])
-        ->assertDontSeeText(['Причина эскалации', 'open', 'waiting_for_user', 'closed', 'llm_failure', 'participant_specific', 'not_in_rules', 'mixed_request', 'unknown', 'legacy_reason'])
+        ->assertDontSeeText(['Причина эскалации', 'open', 'resolved', 'closed', 'llm_failure', 'participant_specific', 'not_in_rules', 'mixed_request', 'unknown', 'legacy_reason'])
         ->call('$refresh')
         ->assertSeeText(['Статус: '.$statusLabel, 'Причина передачи оператору: '.$reasonLabel]);
 
     expect($ticket->refresh()->getRawOriginal())->toBe($storedAttributes);
 })->with([
     'AI failure and open ticket' => [TicketStatus::Open, 'llm_failure', 'Открыто', 'Ошибка ИИ'],
-    'participant data and resolved ticket' => [TicketStatus::WaitingForUser, 'participant_specific', 'Ожидает ответа участника', 'Требуется проверка данных участника'],
+    'participant data and resolved ticket' => [TicketStatus::Resolved, 'participant_specific', 'Решено', 'Требуется проверка данных участника'],
     'missing rule and closed ticket' => [TicketStatus::Closed, 'not_in_rules', 'Закрыто', 'Нет ответа в правилах'],
     'mixed question' => [TicketStatus::Open, 'mixed_request', 'Открыто', 'Часть вопроса требует оператора'],
     'no reason' => [TicketStatus::Open, null, 'Открыто', 'Не указана'],

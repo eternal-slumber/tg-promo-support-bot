@@ -322,10 +322,10 @@ test('a late AI result after an operator reply reopens the ticket without sendin
     $first = Message::factory()->for($participant, 'participant')->create();
     runJob($first, fakeLlmClient(escalationDecision('participant_specific')));
     $ticket = Ticket::query()->sole();
-    $reply = app(OperatorReplyService::class)->create(User::factory()->create(), $ticket, 'Ответ оператора');
+    $reply = app(OperatorReplyService::class)->create(User::factory()->create(), $ticket, 'Ответ оператора', true);
     app()->call([new DeliverTelegramMessage($reply->id), 'handle']);
     $timer = Queue::pushed(AutoCloseTicket::class)->sole();
-    expect($ticket->refresh()->status)->toBe(TicketStatus::WaitingForUser);
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Resolved);
     $messageCount = Message::query()->count();
     $lateDecision = new ValidatedSupportDecision($type, 'late_result', $type === SupportDecisionType::Escalate ? null : 'Поздний ответ', []);
 
@@ -333,7 +333,7 @@ test('a late AI result after an operator reply reopens the ticket without sendin
 
     expect($lateMessage->refresh()->ticket_id)->toBe($ticket->id)
         ->and($ticket->refresh()->status)->toBe(TicketStatus::Open)
-        ->and($ticket->waiting_since)->toBeNull();
+        ->and($ticket->resolved_since)->toBeNull();
     $this->assertDatabaseCount('tickets', 1);
     $this->assertDatabaseCount('support_decisions', 1);
     $this->assertDatabaseCount('messages', $messageCount);

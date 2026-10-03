@@ -41,8 +41,8 @@ test('configured delivery and maintenance workers progress while the AI worker w
         'delivery_status' => DeliveryStatus::Pending,
     ]);
     DeliverTelegramMessage::dispatch($reply->id);
-    $dueTicket = Ticket::factory()->waitingForUser()->create(['waiting_since' => now()->subDay()]);
-    AutoCloseTicket::dispatch($dueTicket->id, $dueTicket->waiting_since->toISOString());
+    $dueTicket = Ticket::factory()->resolved()->create(['resolved_since' => now()->subDay()]);
+    AutoCloseTicket::dispatch($dueTicket->id, $dueTicket->resolved_since->toISOString());
     $input = new InputStream;
     $worker = telegramCapacityWorker('ai', telegramWorkerQueue('queue', $development), $input);
 
@@ -59,7 +59,7 @@ test('configured delivery and maintenance workers progress while the AI worker w
         expect($dueTicket->refresh()->status)->toBe(TicketStatus::Closed);
         expect($worker->isRunning())->toBeTrue();
         expect(DB::table('jobs')->where('queue', $queue)->count())->toBe(1);
-        expect(DB::table('jobs')->where('queue', 'maintenance')->count())->toBe(1);
+        expect(DB::table('jobs')->where('queue', 'maintenance')->count())->toBe(0);
         $input->write("continue\n");
         $input->close();
         expect($worker->wait())->toBe(0);
@@ -110,6 +110,7 @@ test('early reply keyboard feedback survives delivery retries without AI jobs or
         'direction' => MessageDirection::Outbound,
         'author' => MessageAuthor::Operator,
         'delivery_status' => DeliveryStatus::Pending,
+        'resolves_ticket' => true,
     ]);
     DeliverTelegramMessage::dispatch($message->id);
     $input = new InputStream;
@@ -148,7 +149,7 @@ test('early reply keyboard feedback survives delivery retries without AI jobs or
 
         expect($ticket->refresh()->status)->toBe($expectedStatus)
             ->and($ticket->close_reason)->toBe($expectedReason)
-            ->and($ticket->waiting_since)->toBeNull()
+            ->and($ticket->resolved_since)->toBeNull()
             ->and($message->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
         $this->assertDatabaseCount('telegram_updates', 1);
         $this->assertDatabaseCount('messages', 2);
@@ -172,6 +173,7 @@ test('incoming questions survive delivery finalization rollback and keep the tic
         'direction' => MessageDirection::Outbound,
         'author' => MessageAuthor::Operator,
         'delivery_status' => DeliveryStatus::Pending,
+        'resolves_ticket' => true,
     ]);
     $participant = $ticket->participant;
     app(TelegramIngestionService::class)->ingest(new TelegramUpdateData(92001, TelegramUpdateKind::Message, $participant->telegram_user_id, $participant->chat_id, 92001, 'Не решило'));
@@ -207,6 +209,7 @@ test('two workers send the same message only once', function (DeliveryStatus $st
         'direction' => MessageDirection::Outbound,
         'author' => MessageAuthor::Operator,
         'delivery_status' => $status,
+        'resolves_ticket' => true,
     ]);
     DeliverTelegramMessage::dispatch($message->id);
     DeliverTelegramMessage::dispatch($message->id);
@@ -228,7 +231,7 @@ test('two workers send the same message only once', function (DeliveryStatus $st
         expect($first->wait())->toBe(0);
 
         expect($message->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
-        expect($ticket->refresh()->status)->toBe(TicketStatus::WaitingForUser);
+        expect($ticket->refresh()->status)->toBe(TicketStatus::Resolved);
         $this->assertDatabaseCount('cache_locks', 0);
         makeTelegramDeliveryAvailable();
         $retry = telegramDeliveryWorker();
@@ -536,6 +539,7 @@ test('real workers respect flood control across retries duplicates and manual re
         'direction' => MessageDirection::Outbound,
         'author' => $author,
         'delivery_status' => DeliveryStatus::Pending,
+        'resolves_ticket' => $author === MessageAuthor::Operator,
     ]);
     DeliverTelegramMessage::dispatch($message->id);
 
@@ -571,7 +575,7 @@ test('real workers respect flood control across retries duplicates and manual re
     telegramDeliveryWorker()->mustRun();
     expect($message->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
     expect($message->delivery_attempts)->toBe(2);
-    expect($ticket->refresh()->status)->toBe($author === MessageAuthor::Operator ? TicketStatus::WaitingForUser : TicketStatus::Open);
+    expect($ticket->refresh()->status)->toBe($author === MessageAuthor::Operator ? TicketStatus::Resolved : TicketStatus::Open);
     expect(DB::table('jobs')->where('queue', 'telegram')->count())->toBe(0);
     expect(DB::table('jobs')->where('queue', 'maintenance')->count())->toBe($author === MessageAuthor::Operator ? 1 : 0);
     $this->assertDatabaseCount('failed_jobs', 0);

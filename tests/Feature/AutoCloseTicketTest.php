@@ -10,32 +10,32 @@ use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 uses(LazilyRefreshDatabase::class);
 
 test('auto close closes the matching waiting ticket', function () {
-    $ticket = Ticket::factory()->waitingForUser()->create();
+    $ticket = Ticket::factory()->resolved()->create();
 
-    autoClose($ticket, $ticket->waiting_since->toISOString());
+    autoClose($ticket, $ticket->resolved_since->toISOString());
 
     expect($ticket->refresh()->status)->toBe(TicketStatus::Closed)
         ->and($ticket->close_reason)->toBe(TicketCloseReason::AutoClosed);
 });
 
 test('a stale auto close job does nothing after the ticket reopens', function () {
-    $ticket = Ticket::factory()->waitingForUser()->create();
-    $waitingSince = $ticket->waiting_since->toISOString();
-    app(TicketLifecycleService::class)->markUnresolved($ticket);
+    $ticket = Ticket::factory()->resolved()->create();
+    $resolvedSince = $ticket->resolved_since->toISOString();
+    app(TicketLifecycleService::class)->reopen($ticket);
 
-    autoClose($ticket, $waitingSince);
+    autoClose($ticket, $resolvedSince);
 
     expect($ticket->refresh()->status)->toBe(TicketStatus::Open)
         ->and($ticket->close_reason)->toBeNull();
 });
 
 test('a repeated auto close job does nothing after automatic closure', function () {
-    $ticket = Ticket::factory()->waitingForUser()->create();
-    $waitingSince = $ticket->waiting_since->toISOString();
+    $ticket = Ticket::factory()->resolved()->create();
+    $resolvedSince = $ticket->resolved_since->toISOString();
 
-    autoClose($ticket, $waitingSince);
+    autoClose($ticket, $resolvedSince);
     $closedAt = $ticket->refresh()->closed_at;
-    autoClose($ticket, $waitingSince);
+    autoClose($ticket, $resolvedSince);
 
     expect($ticket->refresh()->status)->toBe(TicketStatus::Closed)
         ->and($ticket->close_reason)->toBe(TicketCloseReason::AutoClosed)
@@ -43,18 +43,29 @@ test('a repeated auto close job does nothing after automatic closure', function 
 });
 
 test('a repeated auto close job does not override a manual close', function () {
-    $ticket = Ticket::factory()->waitingForUser()->create();
-    $waitingSince = $ticket->waiting_since->toISOString();
+    $ticket = Ticket::factory()->resolved()->create();
+    $resolvedSince = $ticket->resolved_since->toISOString();
     app(TicketLifecycleService::class)->closeManually($ticket);
 
-    autoClose($ticket, $waitingSince);
-    autoClose($ticket, $waitingSince);
+    autoClose($ticket, $resolvedSince);
+    autoClose($ticket, $resolvedSince);
 
     expect($ticket->refresh()->status)->toBe(TicketStatus::Closed)
         ->and($ticket->close_reason)->toBe(TicketCloseReason::OperatorClosed);
 });
 
-function autoClose(Ticket $ticket, string $waitingSince): void
+test('a serialized legacy waiting timer cannot close a newly resolved ticket', function () {
+    $ticket = Ticket::factory()->resolved()->create();
+    $payload = serialize(new AutoCloseTicket($ticket->id, $ticket->resolved_since->toISOString()));
+    $legacyTimer = unserialize(str_replace('s:13:"resolvedSince";', 's:12:"waitingSince";', $payload));
+
+    $legacyTimer->handle(app(TicketLifecycleService::class));
+
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Resolved)
+        ->and($ticket->close_reason)->toBeNull();
+});
+
+function autoClose(Ticket $ticket, string $resolvedSince): void
 {
-    (new AutoCloseTicket($ticket->id, $waitingSince))->handle(app(TicketLifecycleService::class));
+    (new AutoCloseTicket($ticket->id, $resolvedSince))->handle(app(TicketLifecycleService::class));
 }

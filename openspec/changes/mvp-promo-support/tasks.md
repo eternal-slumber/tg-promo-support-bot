@@ -89,6 +89,15 @@
 - [x] 12.2 Ограничить provider attempts тремя на сообщение: один HTTP request на queue attempt, retries только transient errors; invalid result сразу использует существующую safe escalation; ticket lifecycle, operator dashboard и delivery semantics не менять.
 - [x] 12.3 Обновить OpenSpec, README и regression tests для single-call contract, evidence validation, safe fallback и HTTP request counts; выполнить узкие Pest tests, Pint и OpenSpec validation без реальных LLM-запросов.
 
+
+## 13. Явное решение и минимальный lifecycle
+
+- [x] 13.1 Заменить waiting_for_user на open/resolved/closed, обновить schema/factories/indexes, удалить input revisions; старые waiting tickets открыть консервативно, историю сохранить.
+- [x] 13.2 Разрешить неограниченные operator replies в open/resolved; добавить «Отправить и решить» с resolve только после successful delivery, отменять pending intent и старый auto-close при продолжении переписки; feedback оставить сигналом, closed terminal. AI pipeline не менять.
+- [x] 13.3 Актуализировать regression tests и README; проверить delivery failures/retries, pending/new messages, stale timers, concurrent workers, migration, UI validation/auth и существующий AI contract; выполнить узкие PostgreSQL tests, Pint, build и OpenSpec validation.
+
+Раздел 13 по явному запросу пользователя заменяет прежние lifecycle требования разделов 2/3/6/7 и revision mechanism раздела 11. Исторические завершённые задачи остаются записью предыдущих изменений.
+
 ## 14. Изоляция истории обращений
 
 - [x] 14.1 Ограничить ленту operator dashboard выбранным ticket_id; исключить другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, pagination и delivery action isolation. Lifecycle не менять.

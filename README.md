@@ -114,13 +114,17 @@ docker compose -f compose.testing.yaml run --rm --env-from-file /absolute/path/p
 
 ## Поведение обращений и доставки
 
-У участника не более одного active ticket (`open` или `waiting_for_user`). Новые входящие прикрепляются к нему. После закрытия новый вопрос снова проходит AI-routing. Если активное обращение появилось, пока LLM обрабатывал более ранний вопрос, транзакция прикрепляет раннее сообщение к нему, подавляет устаревший AI-ответ и возвращает `waiting_for_user` в `open`.
+У участника не более одного active ticket (`open` или `resolved`). Новые входящие прикрепляются к нему без AI-routing. После terminal `closed` новый вопрос снова проходит обычную классификацию. Если active ticket появился во время обработки более раннего вопроса, общий lifecycle прикрепляет поздний input, подавляет устаревший AI-ответ и возвращает `resolved` в `open`.
 
-Operator reply сначала сохраняется `pending`, затем отправляется в Telegram. Во время delivery ticket остаётся `open`. Фактическое прикрепление participant message увеличивает `input_revision`, operator reply хранит `operator_input_revision`. Изменённая revision оставляет ticket `open` без таймера, включая late AI attach ранее созданного message; Message.id не определяет новизну input. Иначе ticket становится `waiting_for_user`, и планируется закрытие через `TICKET_AUTO_CLOSE_HOURS` (по умолчанию 24). Раннее «Проблема решена» остаётся в истории для ручного закрытия; подтверждения задним числом нет. Это правило действует и для входящего между ошибкой Telegram и retry и подтверждено пользователем 03.10.2026.
+Оператор может отправлять неограниченное число сообщений. Обычная «Отправить ответ» оставляет `open`. «Отправить и решить» сохраняет `resolves_ticket` в pending message; только успешная доставка этого сообщения переводит ticket в `resolved` и планирует закрытие через `TICKET_AUTO_CLOSE_HOURS` (по умолчанию 24).
 
-В `waiting_for_user` текст «Проблема решена» закрывает ticket с `user_confirmed`; любой другой текст, включая «Не решило», возвращает `open` без LLM и новых кнопок. Старый auto-close проверяет `waiting_since` и ID ответа и не закрывает новый цикл. Оператор может закрыть обращение вручную с `operator_closed`.
+Любое новое сообщение участника или новый ответ оператора возвращает `resolved` в `open`, очищает `resolved_since` и отменяет ещё не доставленное намерение решить ticket. Это действует также во время HTTP delivery, между ошибкой Telegram и retry и при late AI attach. Revision counters/snapshots отсутствуют. Старый auto-close проверяет status, `resolved_since` и ID ответа, поэтому не закрывает новый цикл, в том числе при одинаковых timestamps.
 
-Один незавершённый operator reply блокирует новый ответ и ручное закрытие. Ошибка доставки сохраняет `failed` и безопасный код; UI позволяет повторить тот же message либо отменить доставку (`cancelled`, существующее состояние). После отмены можно ответить заново/закрыть. Временные ошибки LLM повторяются штатной queue с backoff; постоянные сразу дают идемпотентный `llm_failure` fallback оператору. Невалидный JSON/schema/evidence сразу даёт тот же fallback без повторной генерации. Telegram timeout после фактического приёма может привести к повторной доставке: exactly-once Telegram не гарантируется.
+Кнопки «Проблема решена» / «Не решило» остаются обратной связью в истории и не закрывают ticket. Оператор может закрыть `open` или `resolved` вручную с `operator_closed`; недоставленные сообщения отменяются. `closed` не переоткрывается. Historical `user_confirmed` доступен для просмотра старых обращений.
+
+Failed delivery одного сообщения не блокирует переписку или закрытие. UI позволяет повторить отправку того же record или отменить её. Если Telegram HTTP уже начался до закрытия, результат доставки сохраняется, но ticket остаётся closed без нового таймера. Временные ошибки LLM повторяются штатной queue с backoff; постоянные ошибки и невалидный JSON/schema/evidence используют прежний llm_failure fallback. AI pipeline этой доработкой не меняется. Telegram timeout после фактического приёма может привести к повторной доставке: exactly-once Telegram не гарантируется.
+
+При обновлении существующей БД остановите приём webhook и workers, примените миграции новым кодом (`php artisan migrate --force --no-interaction`), затем перезапустите процессы. Forward migration переводит прежние waiting_for_user в open без автозакрытия, сохраняет историю и timestamps, обновляет active indexes и удаляет revision columns. Старые auto-close payload являются no-op; rollback не восстанавливает прежнее ожидание исторических обращений.
 
 ## Статистика
 
@@ -163,10 +167,9 @@ erDiagram
         bigint id PK "public number"
         bigint participant_id FK
         string status
-        bigint input_revision
         string escalation_reason "nullable"
         timestamp first_operator_replied_at "nullable"
-        timestamp waiting_since "nullable"
+        timestamp resolved_since "nullable"
         timestamp closed_at "nullable"
         string close_reason "nullable"
     }
@@ -185,7 +188,7 @@ erDiagram
         bigint telegram_message_id "nullable"
         timestamp delivered_at "nullable"
         int delivery_attempts
-        bigint operator_input_revision
+        boolean resolves_ticket
         string last_delivery_error "nullable"
     }
     support_decisions {
@@ -204,8 +207,8 @@ erDiagram
     }
 ```
 
-Все domain tables также имеют `created_at`/`updated_at`. FK удаления: participant cascade для tickets/messages, participant set-null для updates; ticket/update/operator set-null для messages; message cascade для decision. Unique `update_id` предотвращает повтор ingestion, unique `message_id` — повтор decision. Partial unique `tickets(participant_id) WHERE status IN ('open','waiting_for_user')` гарантирует один active ticket. Status strings валидируются PHP enums/lifecycle, отдельного SQL CHECK для каждого enum нет.
+Все domain tables также имеют `created_at`/`updated_at`. FK удаления: participant cascade для tickets/messages, participant set-null для updates; ticket/update/operator set-null для messages; message cascade для decision. Unique `update_id` предотвращает повтор ingestion, unique `message_id` — повтор decision. Partial unique `tickets(participant_id) WHERE status IN ('open','resolved')` гарантирует один active ticket. Status strings валидируются PHP enums/lifecycle, отдельного SQL CHECK для каждого enum нет.
 
-Индексы queue: `(created_at,id)`, `(status,created_at,id)`, partial active `(created_at,id)`; history участника: `(participant_id,created_at,id)`, ticket queries: `(ticket_id,created_at,id)`. Индекс истории участника добавляется отдельной forward migration для существующих БД. Laravel также использует `migrations`, `jobs`, `failed_jobs`, `job_batches`, `cache`, `cache_locks`, `sessions`, `password_reset_tokens`; batches/reset UI не реализованы. В queue payload передаются IDs, raw body отсутствует. Полный runtime prompt в DB не сохраняется. `delivery_input_marker` удалён прежней forward migration. Migration revision добавляет snapshot; legacy pending replies с неизвестным snapshot консервативно остаются open. Применённые migrations не переписываются.
+Индексы queue: `(created_at,id)`, `(status,created_at,id)`, partial active `(created_at,id)`; history участника: `(participant_id,created_at,id)`, ticket queries: `(ticket_id,created_at,id)`. Индекс истории участника добавляется отдельной forward migration для существующих БД. Laravel также использует `migrations`, `jobs`, `failed_jobs`, `job_batches`, `cache`, `cache_locks`, `sessions`, `password_reset_tokens`; batches/reset UI не реализованы. В queue payload передаются IDs, raw body отсутствует. Полный runtime prompt в DB не сохраняется. `delivery_input_marker` удалён прежней forward migration. Новая lifecycle migration удаляет revision/snapshot, добавляет resolves_ticket=false и консервативно открывает прежние waiting tickets. Применённые migrations не переписываются.
 
 Транзакции ingestion и AI application блокируют participant → active ticket → message; operator reply и delivery — ticket → message. Database jobs записываются в ту же PostgreSQL transaction через `beforeCommit()`, поэтому rollback отменяет также job, а worker видит её после commit. Production HTTP к LLM/Telegram выполняется вне DB transaction. Successful delivery атомарно сохраняет `sent` и переход/auto-close; retries защищены DB checks и существующим database cache lock.

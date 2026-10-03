@@ -301,7 +301,7 @@ test('returns predictable responses for malformed and unsupported updates', func
 
 test('ignores service events and their repeats without storing content or changing a ticket', function (array $content) {
     $participant = TelegramParticipant::factory()->create(['telegram_user_id' => 2015, 'chat_id' => 3015]);
-    $ticket = Ticket::factory()->for($participant, 'participant')->waitingForUser()->create();
+    $ticket = Ticket::factory()->for($participant, 'participant')->resolved()->create();
     Queue::fake();
     Http::preventStrayRequests();
     $payload = [
@@ -317,7 +317,7 @@ test('ignores service events and their repeats without storing content or changi
     $this->postJson(route('telegram.webhook'), $payload)->assertOk()->assertExactJson(['status' => 'ignored']);
 
     expect($participant->refresh()->chat_id)->toBe(3015);
-    expect($ticket->refresh()->status)->toBe(TicketStatus::WaitingForUser);
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Resolved);
     $this->assertDatabaseCount('telegram_participants', 1);
     $this->assertDatabaseCount('tickets', 1);
     $this->assertDatabaseCount('telegram_updates', 0);
@@ -332,16 +332,15 @@ test('ignores service events and their repeats without storing content or changi
     'service event with sender' => [['from' => ['id' => 2015], 'delete_chat_photo' => true]],
 ]);
 
-test('delivers a deduplicated text-only fallback for private media without consuming content or changing a ticket', function (array $content, ?TicketStatus $status) {
+test('delivers a deduplicated text-only fallback for private media and reopens resolved tickets', function (array $content, ?TicketStatus $status) {
     config()->set('telegram.bot_token', 'test-bot-token');
     config()->set('telegram.api_base_url', 'https://telegram.example');
     $participant = TelegramParticipant::factory()->create(['telegram_user_id' => 2015, 'chat_id' => 3015]);
     $ticket = null;
     if ($status !== null) {
         $factory = Ticket::factory()->for($participant, 'participant');
-        $ticket = ($status === TicketStatus::WaitingForUser ? $factory->waitingForUser() : $factory)->create();
+        $ticket = ($status === TicketStatus::Resolved ? $factory->resolved() : $factory)->create();
     }
-    $ticketState = $ticket?->refresh()->getAttributes();
     Queue::fake();
     Http::preventStrayRequests();
     Http::fake(['https://telegram.example/bottest-bot-token/sendMessage' => Http::response(['ok' => true, 'result' => ['message_id' => 501]])]);
@@ -363,7 +362,8 @@ test('delivers a deduplicated text-only fallback for private media without consu
     expect($outbound->body)->toContain('только текстовые сообщения', 'вопрос', 'текст подписи', 'отдельным текстовым сообщением');
     expect($outbound->delivery_status)->toBe(DeliveryStatus::Sent);
     expect($outbound->ticket_id)->toBe($ticket?->id);
-    expect($ticket?->refresh()->getAttributes())->toBe($ticketState);
+    expect($ticket?->refresh()->status)->toBe($status === null ? null : TicketStatus::Open);
+    expect($ticket?->resolved_since)->toBeNull();
     $this->assertDatabaseCount('telegram_participants', 1);
     $this->assertDatabaseCount('telegram_updates', 1);
     $this->assertDatabaseCount('tickets', $ticket === null ? 0 : 1);
@@ -382,7 +382,7 @@ test('delivers a deduplicated text-only fallback for private media without consu
         ['photo' => [['file_id' => 'private-file']], 'caption' => 'Проверьте мой чек'], null,
     ],
     'photo with meaningful and sensitive caption on a waiting ticket' => [
-        ['photo' => [['file_id' => 'private-file']], 'caption' => 'Почему отклонили чек? пароль qwerty123'], TicketStatus::WaitingForUser,
+        ['photo' => [['file_id' => 'private-file']], 'caption' => 'Почему отклонили чек? пароль qwerty123'], TicketStatus::Resolved,
     ],
     'document without a ticket' => [['document' => ['file_id' => 'private-file', 'file_name' => 'qwerty123.txt']], null],
     'voice on an open ticket' => [['voice' => ['file_id' => 'private-file']], TicketStatus::Open],
@@ -502,7 +502,7 @@ test('attaches a message to a waiting ticket and reopens it without queuing norm
     Queue::fake([ProcessIncomingMessage::class]);
     Http::preventStrayRequests();
     $participant = TelegramParticipant::factory()->create(['telegram_user_id' => 2011, 'chat_id' => 3011]);
-    $ticket = Ticket::factory()->for($participant, 'participant')->waitingForUser()->create();
+    $ticket = Ticket::factory()->for($participant, 'participant')->resolved()->create();
 
     $this->postJson(route('telegram.webhook'), telegramTextUpdate(1011, 2011, 3011, 4011, 'Проблема не решена'))
         ->assertOk();
@@ -510,7 +510,7 @@ test('attaches a message to a waiting ticket and reopens it without queuing norm
     expect(Message::query()->sole()->ticket_id)->toBe($ticket->id);
 
     expect($ticket->refresh()->status)->toBe(TicketStatus::Open)
-        ->and($ticket->waiting_since)->toBeNull();
+        ->and($ticket->resolved_since)->toBeNull();
 
     Queue::assertNothingPushed();
 });

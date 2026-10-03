@@ -21,7 +21,7 @@ class AutoCloseTicket implements ShouldQueue
 
     public function __construct(
         public readonly int $ticketId,
-        public readonly string $waitingSince,
+        public readonly string $resolvedSince,
         ?int $replyMessageId = null,
     ) {
         $this->replyMessageId = $replyMessageId;
@@ -34,8 +34,9 @@ class AutoCloseTicket implements ShouldQueue
             $ticket = Ticket::query()->lockForUpdate()->find($this->ticketId);
 
             if ($ticket === null
-                || $ticket->status !== TicketStatus::WaitingForUser
-                || $ticket->waiting_since?->toISOString() !== $this->waitingSince) {
+                || ! isset($this->resolvedSince)
+                || $ticket->status !== TicketStatus::Resolved
+                || $ticket->resolved_since?->toISOString() !== $this->resolvedSince) {
                 return;
             }
 

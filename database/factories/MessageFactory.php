@@ -32,6 +32,7 @@ class MessageFactory extends Factory
             'telegram_message_id' => null,
             'delivered_at' => null,
             'delivery_attempts' => 0,
+            'resolves_ticket' => false,
             'last_delivery_error' => null,
             'sensitive_data_redacted' => false,
             'redaction_types' => null,

@@ -63,7 +63,7 @@ class OperatorDashboard extends Component
         $this->selectedTicketId = $ticket->id;
     }
 
-    public function sendReply(OperatorReplyService $operatorReplies): void
+    public function sendReply(OperatorReplyService $operatorReplies, bool $resolveTicket = false): void
     {
         $this->validate([
             'replyBody' => ['required', 'string', 'max:'.TelegramOutboundMessage::MaxTextLength],
@@ -72,15 +72,15 @@ class OperatorDashboard extends Component
         $ticket = $this->activeTicket();
 
         if ($ticket === null) {
-            $this->addError('replyBody', 'Обращение уже закрыто или ожидает ответа участника.');
+            $this->addError('replyBody', 'Обращение уже закрыто.');
 
             return;
         }
 
         try {
-            $operatorReplies->create($this->operator(), $ticket, $this->replyBody);
+            $operatorReplies->create($this->operator(), $ticket, $this->replyBody, $resolveTicket);
         } catch (DomainException) {
-            $this->addError('replyBody', 'Новый ответ недоступен: обращение закрыто, ожидает участника или уже содержит недоставленный ответ.');
+            $this->addError('replyBody', 'Новый ответ недоступен: обращение уже закрыто.');
 
             return;
         }
@@ -145,7 +145,7 @@ class OperatorDashboard extends Component
         try {
             $ticketLifecycle->closeManually($ticket);
         } catch (DomainException) {
-            $this->addError('ticket', 'Закрытие недоступно: обращение уже закрыто или содержит недоставленный ответ оператора.');
+            $this->addError('ticket', 'Закрытие недоступно: обращение уже закрыто.');
 
             return;
         }
@@ -226,7 +226,7 @@ class OperatorDashboard extends Component
         return match ($this->filter) {
             'closed' => Ticket::query()->where('status', TicketStatus::Closed->value),
             'all' => Ticket::query(),
-            default => Ticket::query()->whereIn('status', [TicketStatus::Open->value, TicketStatus::WaitingForUser->value]),
+            default => Ticket::query()->whereIn('status', [TicketStatus::Open->value, TicketStatus::Resolved->value]),
         };
     }
 
@@ -234,7 +234,7 @@ class OperatorDashboard extends Component
     {
         return Ticket::query()
             ->whereKey($ticketId ?? $this->selectedTicketId)
-            ->whereIn('status', [TicketStatus::Open->value, TicketStatus::WaitingForUser->value])
+            ->whereIn('status', [TicketStatus::Open->value, TicketStatus::Resolved->value])
             ->first();
     }
 

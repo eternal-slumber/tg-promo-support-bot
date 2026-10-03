@@ -17,7 +17,7 @@
 
 ### Принятые допущения MVP
 
-- У Telegram-участника может быть не более одного незакрытого обращения. Новые сообщения при статусе `open` или `waiting_for_user` добавляются в него без повторной обычной AI-маршрутизации; после `closed` следующее сообщение классифицируется заново.
+- У Telegram-участника может быть не более одного незакрытого обращения. Новые сообщения при статусе `open` или `resolved` добавляются в него без повторной обычной AI-маршрутизации; после `closed` следующее сообщение классифицируется заново.
 - Интеграции с системами чеков, аккаунтов, победителей и доставки призов нет; бот не имитирует доступ к персональным данным акции.
 - Операторская учётная запись создаётся заранее; self-registration, роли и управление операторами не входят в MVP.
 - WebSocket и отдельный SPA не требуются; достаточно server-driven интерфейса на Livewire.
@@ -25,7 +25,7 @@
 - Полные runtime system prompts в PostgreSQL не сохраняются; единственный factual knowledge source — `promo-rules.md`.
 - Обычный off-topic без ответа в правилах эскалируется по буквальному требованию исходного задания. Adversarial-запросы на раскрытие инструкций или фиктивное административное действие получают безопасный отказ.
 - Для mixed request бот отвечает на подтверждённую правилами часть и одновременно эскалирует персональную или неизвестную часть. Это допущение подлежит пересмотру после ответа менеджера.
-- Автозакрытие `waiting_for_user` выполняется через 24 часа по конфигурируемому `TICKET_AUTO_CLOSE_HOURS`.
+- Автозакрытие `resolved` выполняется через 24 часа по конфигурируемому `TICKET_AUTO_CLOSE_HOURS`.
 - При `/start` бот предупреждает не отправлять банковские карты, пароли и SMS-коды, поскольку они не нужны для поддержки акции. Краткий повтор этого предупреждения при эскалации разрешён и рекомендован как presentation behavior, но не обязателен для каждого сообщения.
 
 ### Implementation decisions
@@ -34,8 +34,8 @@
 - Один основной LLM request возвращает `decision/reason/answer/evidence`; PHP выполняет только deterministic validation, без отдельного verifier и builder. Валидный answer остаётся текстом для пользователя, trusted system context содержит московское время.
 - LLM job ограничен тремя provider attempts с одним HTTP request на попытку и retry с backoff только для временных ошибок; invalid result сразу эскалируется; постоянные ошибки сразу передаются в существующий fallback. Сохранённое решение, ticket, исходящее сообщение и статистический результат защищаются от повторного создания при retry.
 - Исходящие Telegram-сообщения имеют состояния `pending`, `sent`, `failed`; запись сообщения и успешная доставка являются разными фактами.
-- Обращение использует статусы `open`, `waiting_for_user`, `closed` и причины закрытия `user_confirmed`, `auto_closed`, `operator_closed`.
-- Ответ оператора показывает `ReplyKeyboardMarkup` с `Проблема решена` и `Не решило`. Текст `Проблема решена` в собственном `waiting_for_user` закрывает ticket с `user_confirmed`; любой другой текст, включая `Не решило`, сохраняется в том же ticket и возвращает его в `open` без LLM или новых кнопок. Старый auto-close становится stale no-op. Legacy inline callbacks игнорируются.
+- Обращение использует статусы `open`, `resolved`, `closed`; новые причины закрытия — `auto_closed` и `operator_closed`. Исторические `user_confirmed` сохраняются для просмотра.
+- Ответ оператора показывает `ReplyKeyboardMarkup` с `Проблема решена` и `Не решило`. Оба текста являются обратной связью в истории; любое новое сообщение участника возвращает `resolved` в `open` без LLM и не закрывает ticket. Старый auto-close становится stale no-op. Legacy inline callbacks игнорируются.
 - Card-like sequences, явно обозначенные SMS/OTP-коды и пароли редактируются до persistence и до передачи в LLM, operator UI, Telegram quotes или application logs; raw unredacted body не сохраняется.
 - Телефонный номер автоматически не редактируется, поскольку может идентифицировать аккаунт участника, но не включается в application logs и не повторяется без необходимости.
 - При редактировании сохраняются только redacted text и, при необходимости, типы `payment_card`, `otp`, `password` без исходных значений; участник получает краткое уведомление о скрытии ненужных чувствительных данных.
@@ -65,10 +65,12 @@
 - Внешние границы MVP: Telegram Bot API и выбранный LLM provider; секреты поступают только через environment/configuration.
 - Provisional semantics статистики: `bot resolved` — входящее сообщение, полностью обработанное ботом без ticket; `escalated` — созданный ticket; average operator response time — от создания ticket до первого ответа оператора, без ticket без ответа. Определения должны быть легко изменяемыми после уточнения менеджера.
 
-### Revision lifecycle доставки
+### Явное решение обращения
 
-Поздние AI-результаты повторно проверяют активное обращение под participant -> ticket -> message locks. При наличии ticket сообщение прикрепляется к нему без устаревшего ответа; waiting_for_user возвращается в open. После доставки operator reply сравнивает текущую input_revision со снимком; только равенство разрешает waiting_for_user и auto-close. Раннее подтверждение не применяется задним числом. Перед публичным пилотом используются Nginx/PHP-FPM, HTTPS proxy, выключенный debug и стабильный environment APP_KEY.
+Обычный operator reply не меняет статус и не запускает auto-close. Действие «Отправить и решить» сохраняет `messages.resolves_ticket`; только успешная доставка этого сообщения переводит `open` в `resolved` и запускает прежний таймер. Оператор может отправлять сколько угодно сообщений, включая `resolved`, pending и failed ответы не блокируют переписку. Продолжение переписки участником или оператором возвращает `resolved` в `open` и отменяет ещё не выполненное намерение решить обращение. Revision counters и snapshots удаляются. Старый auto-close проверяет status, `resolved_since` и ID ответа; `closed` остаётся terminal state. При закрытии недоставленные сообщения отменяются.
 
-Ticket остаётся open во время operator delivery. Каждое фактическое прикрепление participant message увеличивает tickets.input_revision один раз через TicketLifecycleService; operator reply сохраняет messages.operator_input_revision под ticket lock. После успешной доставки равные revisions разрешают open -> waiting_for_user и auto-close; при изменении ticket остаётся open без таймера. Это включает late AI attach ранее созданного сообщения и входящие между Telegram failure и retry. Message.id/created_at не определяют новизну input. Feedback «Проблема решена» / «Не решило» является action только в waiting_for_user; в open это input, увеличивающий revision, без подтверждения задним числом. Правило раннего feedback явно подтверждено пользователем 03.10.2026; прежние заявления о согласовании до этой даты не являлись подтверждением пользователя.
+Поздний AI-result по прежним правилам прикрепляет вопрос к активному ticket и подавляет устаревший ответ; reopening выполняется общим lifecycle service. AI contract, prompts и retry-policy не меняются.
 
-Evaluation использует штатную job retry-policy с отдельными model result и infrastructure reason. Sanitizer определяет password value по синтаксису/value-like признакам без word whitelist. Других архитектурных изменений review не требует.
+Forward migration переводит старые waiting_for_user в open без auto-close, поскольку оператор не выбирал явное решение. Сохраняются история, delivery state и first-response timestamps. Перед обновлением schema/application остановить webhook и workers, затем выполнить миграции и перезапустить процессы. Старые сериализованные auto-close jobs становятся no-op.
+
+Перед публичным пилотом используются Nginx/PHP-FPM, HTTPS proxy, выключенный debug и стабильный environment APP_KEY. Evaluation использует штатную job retry-policy с отдельными model result и infrastructure reason; sanitizer и AI pipeline этой доработкой не меняются.

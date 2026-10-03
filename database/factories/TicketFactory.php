@@ -25,17 +25,17 @@ class TicketFactory extends Factory
             'status' => TicketStatus::Open,
             'escalation_reason' => 'unknown',
             'first_operator_replied_at' => null,
-            'waiting_since' => null,
+            'resolved_since' => null,
             'closed_at' => null,
             'close_reason' => null,
         ];
     }
 
-    public function waitingForUser(): static
+    public function resolved(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => TicketStatus::WaitingForUser,
-            'waiting_since' => now(),
+            'status' => TicketStatus::Resolved,
+            'resolved_since' => now(),
         ]);
     }
 
@@ -43,7 +43,7 @@ class TicketFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => TicketStatus::Closed,
-            'waiting_since' => null,
+            'resolved_since' => null,
             'closed_at' => now(),
             'close_reason' => $reason,
         ]);

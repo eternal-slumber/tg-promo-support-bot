@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\DeliveryStatus;
+use App\Enums\MessageAuthor;
+use App\Enums\MessageDirection;
 use App\Enums\TicketCloseReason;
 use App\Enums\TicketStatus;
 use App\Models\Message;
@@ -19,7 +22,7 @@ class TicketLifecycleService
     public function activeFor(TelegramParticipant $participant): ?Ticket
     {
         return $participant->tickets()
-            ->whereIn('status', [TicketStatus::Open->value, TicketStatus::WaitingForUser->value])
+            ->whereIn('status', [TicketStatus::Open->value, TicketStatus::Resolved->value])
             ->oldest('id')
             ->lockForUpdate()
             ->first();
@@ -43,9 +46,9 @@ class TicketLifecycleService
         });
     }
 
-    public function waitForUser(Ticket $ticket): Ticket
+    public function resolve(Ticket $ticket): Ticket
     {
-        return $this->transition($ticket, [TicketStatus::Open], TicketStatus::WaitingForUser);
+        return $this->transition($ticket, [TicketStatus::Open], TicketStatus::Resolved);
     }
 
     /** The caller holds ticket/message locks in its transaction; repeated attachment is a no-op. */
@@ -59,27 +62,17 @@ class TicketLifecycleService
             throw new DomainException('Only unattached messages from the ticket participant can be attached.');
         }
 
+        $this->reopen($ticket);
         $message->update(['ticket_id' => $ticket->id]);
-        $ticket->increment('input_revision');
     }
 
     public function closeManually(Ticket $ticket): Ticket
     {
         return $this->transition(
             $ticket,
-            [TicketStatus::Open, TicketStatus::WaitingForUser],
+            [TicketStatus::Open, TicketStatus::Resolved],
             TicketStatus::Closed,
             TicketCloseReason::OperatorClosed,
-        );
-    }
-
-    public function resolve(Ticket $ticket): Ticket
-    {
-        return $this->transition(
-            $ticket,
-            [TicketStatus::WaitingForUser],
-            TicketStatus::Closed,
-            TicketCloseReason::UserConfirmed,
         );
     }
 
@@ -87,22 +80,34 @@ class TicketLifecycleService
     {
         return $this->transition(
             $ticket,
-            [TicketStatus::WaitingForUser],
+            [TicketStatus::Resolved],
             TicketStatus::Closed,
             TicketCloseReason::AutoClosed,
         );
     }
 
-    public function markUnresolved(Ticket $ticket): Ticket
+    public function reopen(Ticket $ticket): Ticket
     {
-        return $this->transition($ticket, [TicketStatus::WaitingForUser], TicketStatus::Open);
-    }
+        return DB::transaction(function () use ($ticket): Ticket {
+            $lockedTicket = Ticket::query()->lockForUpdate()->findOrFail($ticket->getKey());
 
-    public function applyUserResponse(Ticket $ticket, string $text): Ticket
-    {
-        return trim($text) === self::ResolvedResponse
-            ? $this->resolve($ticket)
-            : $this->markUnresolved($ticket);
+            if ($lockedTicket->status === TicketStatus::Closed) {
+                throw new DomainException('Closed tickets cannot be reopened.');
+            }
+
+            $lockedTicket->messages()
+                ->where('direction', MessageDirection::Outbound)
+                ->where('author', MessageAuthor::Operator)
+                ->whereIn('delivery_status', [DeliveryStatus::Pending, DeliveryStatus::Failed])
+                ->where('resolves_ticket', true)
+                ->update(['resolves_ticket' => false]);
+
+            if ($lockedTicket->status === TicketStatus::Resolved) {
+                $lockedTicket->update(['status' => TicketStatus::Open, 'resolved_since' => null]);
+            }
+
+            return $lockedTicket;
+        });
     }
 
     /**
@@ -117,35 +122,32 @@ class TicketLifecycleService
         return DB::transaction(function () use ($ticket, $allowedFrom, $to, $closeReason): Ticket {
             $lockedTicket = Ticket::query()->lockForUpdate()->findOrFail($ticket->getKey());
 
-            if ($closeReason === TicketCloseReason::OperatorClosed && $lockedTicket->hasUnfinishedOperatorReply()) {
-                throw new DomainException('Ticket cannot be closed while an operator reply is unfinished.');
-            }
-
             if (! in_array($lockedTicket->status, $allowedFrom, true)
                 || ! $lockedTicket->status->canTransitionTo($to)) {
                 throw new DomainException("Ticket cannot transition from {$lockedTicket->status->value} to {$to->value}.");
             }
 
             $lockedTicket->update(match ($to) {
-                TicketStatus::Open => [
+                TicketStatus::Resolved => [
                     'status' => $to,
-                    'waiting_since' => null,
-                    'closed_at' => null,
-                    'close_reason' => null,
-                ],
-                TicketStatus::WaitingForUser => [
-                    'status' => $to,
-                    'waiting_since' => now(),
+                    'resolved_since' => now(),
                     'closed_at' => null,
                     'close_reason' => null,
                 ],
                 TicketStatus::Closed => [
                     'status' => $to,
-                    'waiting_since' => null,
+                    'resolved_since' => null,
                     'closed_at' => now(),
                     'close_reason' => $closeReason,
                 ],
             });
+
+            if ($to === TicketStatus::Closed) {
+                $lockedTicket->messages()
+                    ->where('direction', MessageDirection::Outbound)
+                    ->whereIn('delivery_status', [DeliveryStatus::Pending, DeliveryStatus::Failed])
+                    ->update(['delivery_status' => DeliveryStatus::Cancelled, 'resolves_ticket' => false]);
+            }
 
             return $lockedTicket;
         });

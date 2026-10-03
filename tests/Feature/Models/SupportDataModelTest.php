@@ -21,7 +21,7 @@ uses(LazilyRefreshDatabase::class);
 test('models expose casts and relationships', function () {
     $participant = TelegramParticipant::factory()->create();
     $update = TelegramUpdate::factory()->for($participant, 'participant')->create();
-    $ticket = Ticket::factory()->for($participant, 'participant')->waitingForUser()->create();
+    $ticket = Ticket::factory()->for($participant, 'participant')->resolved()->create();
     $operator = User::factory()->create();
     $message = Message::factory()
         ->for($participant, 'participant')
@@ -41,8 +41,8 @@ test('models expose casts and relationships', function () {
     ]);
 
     expect($update->received_at)->toBeInstanceOf(DateTimeInterface::class)
-        ->and($ticket->status)->toBe(TicketStatus::WaitingForUser)
-        ->and($ticket->waiting_since)->toBeInstanceOf(DateTimeInterface::class)
+        ->and($ticket->status)->toBe(TicketStatus::Resolved)
+        ->and($ticket->resolved_since)->toBeInstanceOf(DateTimeInterface::class)
         ->and($message->direction)->toBe(MessageDirection::Outbound)
         ->and($message->author)->toBe(MessageAuthor::Operator)
         ->and($message->delivery_status)->toBe(DeliveryStatus::Pending)
@@ -87,7 +87,7 @@ test('postgresql enforces one active ticket per participant', function () {
     $participant = TelegramParticipant::factory()->create();
     Ticket::factory()->for($participant, 'participant')->create();
 
-    expect(fn () => Ticket::factory()->for($participant, 'participant')->waitingForUser()->create())
+    expect(fn () => Ticket::factory()->for($participant, 'participant')->resolved()->create())
         ->toThrow(QueryException::class);
 });
 

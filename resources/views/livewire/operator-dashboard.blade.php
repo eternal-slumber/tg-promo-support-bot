@@ -104,7 +104,7 @@
                             <p class="mt-2 whitespace-pre-wrap text-sm">{{ $message->body }}</p>
                             @if ($message->direction->value === 'outbound')
                                 <p class="mt-2 text-xs text-slate-400">Доставка: {{ $message->delivery_status?->label() }}</p>
-                                @if ($message->ticket_id === $selectedTicket->id && $selectedTicket->status === \App\Enums\TicketStatus::Open && $message->author === \App\Enums\MessageAuthor::Operator && in_array($message->delivery_status, [\App\Enums\DeliveryStatus::Pending, \App\Enums\DeliveryStatus::Failed], true))
+                                @if ($message->ticket_id === $selectedTicket->id && $selectedTicket->status !== \App\Enums\TicketStatus::Closed && $message->author === \App\Enums\MessageAuthor::Operator && in_array($message->delivery_status, [\App\Enums\DeliveryStatus::Pending, \App\Enums\DeliveryStatus::Failed], true))
                                     @if ($message->delivery_status === \App\Enums\DeliveryStatus::Failed)
                                         <p class="mt-1 text-xs text-rose-300">Ошибка: {{ $message->last_delivery_error }}</p>
                                         <button wire:click="retryDelivery({{ $message->id }})" type="button" class="mt-2 rounded-md border border-slate-500 px-2 py-1 text-xs hover:bg-slate-800" wire:loading.attr="disabled">Повторить отправку</button>
@@ -130,17 +130,21 @@
                     </nav>
                 @endif
 
-                @if ($selectedTicket->status === \App\Enums\TicketStatus::Open)
+                @if ($selectedTicket->status !== \App\Enums\TicketStatus::Closed)
+                    @if ($selectedTicket->status === \App\Enums\TicketStatus::Resolved)
+                        <p class="mb-3 text-sm text-slate-400">Обращение отмечено решённым и будет закрыто автоматически, если переписка не продолжится.</p>
+                    @endif
                     <form wire:submit="sendReply" class="border-t border-slate-700 pt-4">
                         <label class="block text-sm font-medium" for="replyBody">Ответ участнику</label>
                         <textarea wire:model="replyBody" id="replyBody" rows="4" class="mt-2 w-full rounded-md border border-slate-600 bg-slate-800 p-3"></textarea>
                         @error('replyBody')
                             <p class="mt-1 text-sm text-rose-300">{{ $message }}</p>
                         @enderror
-                        <button type="submit" class="mt-3 rounded-md bg-emerald-500 px-4 py-2 font-medium text-slate-950 hover:bg-emerald-400" wire:loading.attr="disabled">Отправить ответ</button>
+                        <div class="mt-3 flex flex-wrap gap-3">
+                            <button type="submit" class="rounded-md bg-emerald-500 px-4 py-2 font-medium text-slate-950 hover:bg-emerald-400" wire:loading.attr="disabled">Отправить ответ</button>
+                            <button wire:click="sendReply(true)" type="button" class="rounded-md border border-emerald-500 px-4 py-2 font-medium text-emerald-400 hover:bg-slate-800" wire:loading.attr="disabled">Отправить и решить</button>
+                        </div>
                     </form>
-                @elseif ($selectedTicket->status === \App\Enums\TicketStatus::WaitingForUser)
-                    <p class="border-t border-slate-700 pt-4 text-sm text-slate-400">Ожидается подтверждение участника.</p>
                 @else
                     <p class="border-t border-slate-700 pt-4 text-sm text-slate-400">Обращение закрыто и доступно только для просмотра.</p>
                 @endif

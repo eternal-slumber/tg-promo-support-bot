@@ -15,7 +15,7 @@ beforeEach(function () {
 });
 
 test('legacy inline callbacks cannot change any ticket or delivery address', function (TicketStatus $status, string $action) {
-    $ticket = Ticket::factory()->create(['status' => $status, 'waiting_since' => $status === TicketStatus::WaitingForUser ? now() : null]);
+    $ticket = Ticket::factory()->create(['status' => $status, 'resolved_since' => $status === TicketStatus::Resolved ? now() : null]);
     $participant = $ticket->participant;
     $before = $ticket->refresh()->toArray();
     Queue::fake();
@@ -37,7 +37,7 @@ test('legacy inline callbacks cannot change any ticket or delivery address', fun
 })->with(TicketStatus::cases())->with(['resolved', 'unresolved']);
 
 test('legacy callbacks still require webhook authentication', function (?string $secret) {
-    $ticket = Ticket::factory()->waitingForUser()->create();
+    $ticket = Ticket::factory()->resolved()->create();
     Queue::fake();
     Http::preventStrayRequests();
     $this->flushHeaders();
@@ -47,7 +47,7 @@ test('legacy callbacks still require webhook authentication', function (?string 
 
     $this->postJson(route('telegram.webhook'), legacyInlineUpdate($ticket, 'resolved'))->assertForbidden();
 
-    expect($ticket->refresh()->status)->toBe(TicketStatus::WaitingForUser);
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Resolved);
     $this->assertDatabaseCount('telegram_updates', 0);
     Queue::assertNothingPushed();
     Http::assertNothingSent();

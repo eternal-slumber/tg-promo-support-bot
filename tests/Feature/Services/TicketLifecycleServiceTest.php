@@ -28,17 +28,17 @@ test('rejects a second active ticket', function () {
     expect(fn () => $service->create($participant))->toThrow(DomainException::class);
 });
 
-test('moves an open ticket to waiting and back to open', function () {
+test('marks an open ticket resolved and reopens it without closing', function () {
     $ticket = Ticket::factory()->create();
     $service = new TicketLifecycleService;
 
-    $waitingTicket = $service->waitForUser($ticket);
-    $openTicket = $service->markUnresolved($waitingTicket);
+    $resolvedTicket = $service->resolve($ticket);
+    $openTicket = $service->reopen($resolvedTicket);
 
-    expect($waitingTicket->status)->toBe(TicketStatus::WaitingForUser)
-        ->and($waitingTicket->waiting_since)->not->toBeNull()
+    expect($resolvedTicket->status)->toBe(TicketStatus::Resolved)
+        ->and($resolvedTicket->resolved_since)->not->toBeNull()
         ->and($openTicket->status)->toBe(TicketStatus::Open)
-        ->and($openTicket->waiting_since)->toBeNull()
+        ->and($openTicket->resolved_since)->toBeNull()
         ->and($openTicket->closed_at)->toBeNull()
         ->and($openTicket->close_reason)->toBeNull();
 });
@@ -46,7 +46,7 @@ test('moves an open ticket to waiting and back to open', function () {
 test('closes an open or waiting ticket manually', function (string $initialState) {
     $ticket = $initialState === TicketStatus::Open->value
         ? Ticket::factory()->create()
-        : Ticket::factory()->waitingForUser()->create();
+        : Ticket::factory()->resolved()->create();
     $service = new TicketLifecycleService;
 
     $closedTicket = $service->closeManually($ticket);
@@ -56,27 +56,25 @@ test('closes an open or waiting ticket manually', function (string $initialState
         ->and($closedTicket->closed_at)->not->toBeNull();
 })->with([
     'open ticket' => TicketStatus::Open->value,
-    'waiting ticket' => TicketStatus::WaitingForUser->value,
+    'waiting ticket' => TicketStatus::Resolved->value,
 ]);
 
-test('closes a waiting ticket when the participant confirms resolution', function () {
-    $ticket = Ticket::factory()->waitingForUser()->create();
+test('resolving an open ticket does not close it', function () {
+    $ticket = Ticket::factory()->create();
 
-    $closedTicket = (new TicketLifecycleService)->resolve($ticket);
+    $resolvedTicket = (new TicketLifecycleService)->resolve($ticket);
 
-    expect($closedTicket->status)->toBe(TicketStatus::Closed)
-        ->and($closedTicket->close_reason)->toBe(TicketCloseReason::UserConfirmed);
+    expect($resolvedTicket->status)->toBe(TicketStatus::Resolved)
+        ->and($resolvedTicket->close_reason)->toBeNull()
+        ->and($resolvedTicket->closed_at)->toBeNull();
 });
 
-test('rejects transitions from an unexpected state', function (string $operation) {
+test('rejects automatic closure of an open ticket', function () {
     $ticket = Ticket::factory()->create();
     $service = new TicketLifecycleService;
 
-    expect(fn () => $service->{$operation}($ticket))->toThrow(DomainException::class);
-})->with([
-    'resolve an open ticket' => 'resolve',
-    'mark an open ticket unresolved' => 'markUnresolved',
-]);
+    expect(fn () => $service->closeAutomatically($ticket))->toThrow(DomainException::class);
+});
 
 test('closed is terminal and repeated closing is rejected', function (string $operation) {
     $ticket = Ticket::factory()->closed()->create();
@@ -84,10 +82,10 @@ test('closed is terminal and repeated closing is rejected', function (string $op
 
     expect(fn () => $service->{$operation}($ticket))->toThrow(DomainException::class);
 })->with([
-    'wait for user' => 'waitForUser',
     'manual close' => 'closeManually',
     'resolve' => 'resolve',
-    'mark unresolved' => 'markUnresolved',
+    'reopen' => 'reopen',
+    'automatic close' => 'closeAutomatically',
 ]);
 
 test('closed tickets are not returned as active', function () {

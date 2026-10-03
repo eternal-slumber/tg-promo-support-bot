@@ -7,7 +7,6 @@ use App\Enums\DeliveryStatus;
 use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
 use App\Enums\SupportDecisionType;
-use App\Enums\TicketStatus;
 use App\Jobs\DeliverTelegramMessage;
 use App\Models\Message;
 use App\Models\SupportDecision;
@@ -39,10 +38,6 @@ class SupportDecisionService
 
             if ($activeTicket !== null) {
                 $this->tickets->attachParticipantMessage($activeTicket, $lockedMessage);
-
-                if ($activeTicket->status === TicketStatus::WaitingForUser) {
-                    $this->tickets->markUnresolved($activeTicket);
-                }
 
                 return null;
             }

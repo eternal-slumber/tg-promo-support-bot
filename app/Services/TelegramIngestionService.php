@@ -8,7 +8,6 @@ use App\Enums\DeliveryStatus;
 use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
 use App\Enums\TelegramUpdateKind;
-use App\Enums\TicketStatus;
 use App\Jobs\DeliverTelegramMessage;
 use App\Jobs\ProcessIncomingMessage;
 use App\Models\Message;
@@ -77,6 +76,10 @@ class TelegramIngestionService
         $activeTicket = $this->tickets->activeFor($participant);
 
         if ($update->kind === TelegramUpdateKind::NonTextMessage) {
+            if ($activeTicket !== null) {
+                $this->tickets->reopen($activeTicket);
+            }
+
             $this->createPendingMessage($participant, $activeTicket?->id, MessageAuthor::System, self::NonTextMessageWarning);
 
             return new TelegramIngestionResult(false, false);
@@ -109,12 +112,6 @@ class TelegramIngestionService
 
         if ($sanitized->wasRedacted) {
             $this->createPendingMessage($participant, $activeTicket?->id, MessageAuthor::System, self::RedactionWarning);
-        }
-
-        if ($activeTicket?->status === TicketStatus::WaitingForUser) {
-            $this->tickets->applyUserResponse($activeTicket, $message->body);
-
-            return new TelegramIngestionResult(false, false);
         }
 
         if ($this->isStartCommand($update->text)) {

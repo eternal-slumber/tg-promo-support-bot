@@ -19,6 +19,25 @@ use Livewire\Livewire;
 
 uses(LazilyRefreshDatabase::class);
 
+test('manual closure cancels unfinished replies without requiring individual cancellation', function (DeliveryStatus $status) {
+    Queue::fake();
+    $ticket = Ticket::factory()->resolved()->create();
+    $reply = cancellableOperatorReply($ticket, ['delivery_status' => $status]);
+    $this->actingAs(User::factory()->create());
+
+    Livewire::test(OperatorDashboard::class)
+        ->call('selectTicket', $ticket->id)
+        ->call('closeTicket')
+        ->assertHasNoErrors();
+
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
+    expect($reply->refresh()->delivery_status)->toBe(DeliveryStatus::Cancelled);
+    $client = Mockery::mock(TelegramBotClient::class);
+    $client->shouldNotReceive('sendMessage');
+    (new DeliverTelegramMessage($reply->id))->handle($client, app(TelegramMessagePresentation::class), app(TicketLifecycleService::class));
+    Queue::assertNothingPushed();
+})->with(['pending' => DeliveryStatus::Pending, 'failed' => DeliveryStatus::Failed]);
+
 test('another operator can cancel a permanently rejected reply and close the ticket', function () {
     Queue::fake();
     $ticket = Ticket::factory()->create();
@@ -31,8 +50,6 @@ test('another operator can cancel a permanently rejected reply and close the tic
     Livewire::test(OperatorDashboard::class)
         ->call('selectTicket', $ticket->id)
         ->assertSee('Отменить доставку')
-        ->call('closeTicket')
-        ->assertHasErrors('ticket')
         ->call('cancelDelivery', $reply->id)
         ->assertHasNoErrors()
         ->assertSee('Доставка: Отменено')
@@ -98,8 +115,6 @@ test('an operator can cancel an orphaned pending reply and send a replacement', 
         ->call('selectTicket', $ticket->id)
         ->assertSee('Отменить доставку')
         ->assertDontSee('Повторить отправку')
-        ->call('closeTicket')
-        ->assertHasErrors('ticket')
         ->call('cancelDelivery', $reply->id)
         ->assertHasNoErrors()
         ->set('replyBody', 'Новый ответ')

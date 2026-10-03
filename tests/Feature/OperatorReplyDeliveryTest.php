@@ -4,6 +4,8 @@ use App\Data\TelegramOutboundMessage;
 use App\Enums\DeliveryStatus;
 use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
+use App\Enums\TicketStatus;
+use App\Jobs\AutoCloseTicket;
 use App\Jobs\DeliverTelegramMessage;
 use App\Livewire\OperatorDashboard;
 use App\Models\Message;
@@ -19,6 +21,63 @@ use Illuminate\Support\Facades\Queue;
 use Livewire\Livewire;
 
 uses(LazilyRefreshDatabase::class);
+
+test('the operator panel offers ordinary sending and explicit resolution on active tickets', function (bool $resolveTicket) {
+    Queue::fake();
+    $ticket = Ticket::factory()->resolved()->create();
+    $this->actingAs(User::factory()->create());
+
+    Livewire::test(OperatorDashboard::class)
+        ->call('selectTicket', $ticket->id)
+        ->assertSee(['Отправить ответ', 'Отправить и решить'])
+        ->set('replyBody', 'Ответ оператора')
+        ->call('sendReply', $resolveTicket)
+        ->assertHasNoErrors()
+        ->assertSet('replyBody', '');
+
+    $reply = Message::query()->sole();
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
+    expect($reply->resolves_ticket)->toBe($resolveTicket);
+    Queue::assertPushed(DeliverTelegramMessage::class, fn (DeliverTelegramMessage $job): bool => $job->messageId === $reply->id);
+    Queue::assertNotPushed(AutoCloseTicket::class);
+})->with(['ordinary answer' => false, 'send and resolve' => true]);
+
+test('requires authentication to send resolve or close a ticket', function (string $action, array $parameters) {
+    Queue::fake();
+    $ticket = Ticket::factory()->create();
+
+    Livewire::test(OperatorDashboard::class)
+        ->set('selectedTicketId', $ticket->id)
+        ->set('replyBody', 'Ответ')
+        ->call($action, ...$parameters)
+        ->assertForbidden();
+
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
+    $this->assertDatabaseCount('messages', 0);
+    Queue::assertNothingPushed();
+})->with([
+    'ordinary reply' => ['sendReply', [false]],
+    'send and resolve' => ['sendReply', [true]],
+    'manual close' => ['closeTicket', []],
+]);
+
+test('the explicit resolve action cannot send or reopen a closed ticket', function () {
+    Queue::fake();
+    $ticket = Ticket::factory()->closed()->create();
+    $this->actingAs(User::factory()->create());
+
+    Livewire::test(OperatorDashboard::class)
+        ->call('selectFilter', 'closed')
+        ->call('selectTicket', $ticket->id)
+        ->assertDontSee('Отправить и решить')
+        ->set('replyBody', 'Ответ')
+        ->call('sendReply', true)
+        ->assertHasErrors('replyBody');
+
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
+    $this->assertDatabaseCount('messages', 0);
+    Queue::assertNothingPushed();
+});
 
 test('persists a sanitized pending operator reply and queues delivery in the same transaction', function (string $body, string $expected, array $redactionTypes) {
     Queue::fake();
@@ -89,7 +148,7 @@ test('statistics use the first delivered operator reply after a failed answer is
 
     expect($ticket->refresh()->first_operator_replied_at?->toDateTimeString())->toBe('2026-10-03 12:07:00');
     expect($delivered->refresh()->delivered_at?->toDateTimeString())->toBe('2026-10-03 12:07:00');
-    app(TicketLifecycleService::class)->markUnresolved($ticket);
+    app(TicketLifecycleService::class)->reopen($ticket);
     $this->travel(3)->minutes();
     $followUp = $replies->create($operator, $ticket, 'Уточнение');
     $this->travel(2)->minutes();
