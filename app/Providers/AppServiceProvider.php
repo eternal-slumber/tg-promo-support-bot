@@ -6,6 +6,7 @@ use App\Services\OpenAiLlmClient;
 use App\Services\SupportLlmClient;
 use App\Services\TelegramBotApiClient;
 use App\Services\TelegramBotClient;
+use Illuminate\Foundation\DevCommands;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,6 +25,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        DevCommands::artisan('queue:listen database --queue=ai,default --sleep=1 --tries=3 --timeout=150', 'queue');
     }
 }

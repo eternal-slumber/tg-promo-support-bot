@@ -69,42 +69,55 @@ Capability обеспечивает надёжную обработку вопр
 - **AND** для оставшейся части создаётся одно обращение
 - **AND** участник получает его номер
 
-### Requirement: Валидированный structured analysis и детерминированное decision building
-Результат LLM MUST соответствовать заданной структурированной схеме смысловых частей до применения. Application layer MUST детерминированно вывести финальное решение из валидированных частей: grounded части дают ответ, unresolved части дают эскалацию, а их сочетание даёт mixed; prompt injection даёт безопасный отказ. Неизвестная категория, отсутствие обязательных полей или противоречивый analysis MUST NOT приводить к автоматическому ответу.
+### Requirement: Один structured decision и deterministic validation
+Модель MUST одним основным запросом понять сообщение и вернуть ровно `decision`, `reason`, `answer`, `evidence`. Допустимые пары MUST быть `answer/rule_answer`, `mixed/mixed_request`, `escalate/participant_specific`, `escalate/not_in_rules` или `refuse/prompt_injection`; reason `llm_failure` MUST создаваться только приложением. PHP MUST выполнять deterministic validation без второго LLM verifier и без построения решения из списка parts.
 
-Grounded part MUST содержать непустой `evidence` из `{rule_id, quote}`. Сервер MUST проверить существование ID и наличие цитаты в соответствующем пункте `promo-rules.md`. Factual response MUST формироваться из полного текста проверенных пунктов, а не из неподтверждённого free-form `answer`. Provider `source_rules` сами по себе MUST NOT считаться evidence. Sanitized participant text MUST передаваться отдельно в user-role message, никогда внутри runtime system content.
+`answer` и `mixed` MUST иметь конкретный непустой пользовательский answer и непустой evidence из `{rule_id, quote}`. Каждый rule_id MUST существовать в promo rules, а непустая quote MUST принадлежать именно указанному rule; нормализуется только whitespace. `escalate` MUST иметь answer null и evidence []; `refuse` MUST иметь безопасный answer «Я не могу выполнить этот запрос.» и evidence [], исключая передачу фактов акции под видом отказа. Невалидный JSON, неизвестные или дополнительные поля, неподходящий тип и противоречие decision/reason/answer/evidence MUST сразу вызывать существующую safe escalation без factual answer или повторной генерации.
+
+Валидный answer MUST оставаться текстом для пользователя; evidence подтверждает источник, а не заменяет answer полным текстом правила. Deterministic quote membership не является доказательством семантической правильности всех свободных утверждений модели; отдельная LLM verification MUST NOT выполняться.
+
+#### Scenario: Один запрос для grounded answer
+- **GIVEN** модель возвращает answer/rule_answer с допустимым answer и evidence
+- **WHEN** deterministic validation завершается успешно
+- **THEN** answer сохраняется и отправляется участнику
+- **AND** выполняется ровно один LLM HTTP request без запроса approval
 
 #### Scenario: Ложный grounding
-- **GIVEN** LLM возвращает grounded part без evidence, с неизвестным ID `999.42` или цитатой, отсутствующей в указанном пункте
-- **WHEN** validator проверяет analysis
-- **THEN** попытка обработки завершается ошибкой без factual response
-- **AND** после исчерпания retry применяется существующая `llm_failure` escalation
+- **GIVEN** модель возвращает answer или mixed без evidence, с неизвестным ID либо цитатой, отсутствующей в указанном пункте
+- **WHEN** PHP проверяет result
+- **THEN** немедленно применяется существующая llm_failure escalation
+- **AND** factual answer не сохраняется и не отправляется, другого LLM request нет
 
-#### Scenario: Выдуманный ответ с реальным evidence
-- **GIVEN** free-form answer модели содержит факт, которого нет в правилах, но evidence валиден
-- **WHEN** строится финальный ответ
-- **THEN** ответ содержит только полный текст проверенных пунктов каталога
-- **AND** выдуманный free-form текст не сохраняется как ответ и не отправляется участнику
+#### Scenario: Конкретный расчёт вместо цитирования правил
+- **GIVEN** вопрос содержит 7 участвующих питьевых йогуртов и 2 неучаствующих творожка в одном чеке
+- **WHEN** answer с результатом 3 шанса имеет допустимый контракт и evidence
+- **THEN** участнику отправляется этот answer с явным результатом, а не полный текст пунктов правил
+
+#### Scenario: Следующий розыгрыш по московскому времени
+- **GIVEN** текущее время в Москве — 6 октября 2026 года 00:05
+- **WHEN** участник спрашивает о следующем еженедельном розыгрыше
+- **THEN** единственный основной LLM request получает это московское время в trusted system context
+- **AND** answer модели с валидным evidence указывает 6 октября 2026 года в 15:00 МСК
 
 #### Scenario: Разделение доверенных инструкций и participant text
 - **GIVEN** участник отправил sanitized adversarial сообщение
 - **WHEN** provider adapter формирует payload
-- **THEN** system-role содержит только application prompt, output contract и правила
-- **AND** user-role содержит только sanitized participant text
+- **THEN** system-role содержит только application prompt, output contract, правила и trusted московское время
+- **AND** user-role содержит sanitized participant text
 
-#### Scenario: Mixed выводится из смысловых частей
-- **GIVEN** LLM возвращает participant-specific часть и grounded rule-answer часть
-- **WHEN** приложение валидирует analysis и строит final decision
-- **THEN** применяется `mixed` с grounded ответом и одной эскалацией
+#### Scenario: Модель возвращает mixed
+- **GIVEN** сообщение содержит covered и participant-specific запросы
+- **WHEN** модель возвращает mixed/mixed_request с ответом только на covered часть и valid evidence
+- **THEN** PHP проверяет result и применяет прежние mixed side effects: grounded answer и одну эскалацию
 
 #### Scenario: Невалидный structured output
-- **GIVEN** LLM возвращает невалидный или неполный structured analysis
-- **WHEN** валидация завершается ошибкой
-- **THEN** автоматический ответ не отправляется
-- **AND** обработка следует retry/failure policy
+- **GIVEN** модель возвращает невалидный JSON или неполный structured result
+- **WHEN** deterministic validation отклоняет его
+- **THEN** safe escalation выполняется сразу после первой попытки
+- **AND** job завершается как failed, повтор job не создаёт второго обращения или запроса
 
 ### Requirement: Retry и безопасный fallback LLM
-AI job MUST повторять временно неуспешный вызов с backoff. После исчерпания retry система MUST создать или использовать единственное открытое обращение с причиной `llm_failure`, не теряя входящее сообщение.
+AI job MUST повторять только один основной временно неуспешный LLM request с backoff, максимум 3 provider attempts на participant message. На каждой попытке MUST выполняться не более одного LLM HTTP request; вложенный HTTP retry и generation × verification MUST NOT выполняться. Настройки attempts выше трёх MUST ограничиваться тремя. Постоянная ошибка с retryable=false MUST сразу применить существующий fallback без повторного LLM-вызова. После исчерпания retry система MUST создать или использовать единственное открытое обращение с причиной `llm_failure`, не теряя входящее сообщение.
 
 #### Scenario: LLM timeout
 - **GIVEN** LLM не отвечает до настроенного timeout
@@ -119,7 +132,7 @@ AI job MUST повторять временно неуспешный вызов 
 - **AND** fallback-обращение `llm_failure` не создаётся
 
 #### Scenario: Retry исчерпаны
-- **GIVEN** все допустимые попытки LLM завершились ошибкой или невалидным результатом
+- **GIVEN** три допустимые попытки LLM завершились transient ошибкой
 - **WHEN** job окончательно завершается неуспешно
 - **THEN** входящее сообщение остаётся сохранённым
 - **AND** создаётся не более одного обращения с причиной `llm_failure`
@@ -130,6 +143,12 @@ AI job MUST повторять временно неуспешный вызов 
 - **WHEN** тот же AI job запускается повторно
 - **THEN** LLM повторно не вызывается
 - **AND** ответ, обращение и статистический результат повторно не создаются
+
+#### Scenario: Постоянная ошибка LLM
+- **GIVEN** provider отклонил запрос с retryable=false
+- **WHEN** job обрабатывает ошибку
+- **THEN** входящее сообщение получает существующий llm_failure fallback сразу
+- **AND** повтор job не делает второго provider request или уведомления
 
 ### Requirement: Безопасный отказ для adversarial-ввода
 Система MUST отказать в раскрытии инструкций, изменении своей роли, назначении победителя, создании фиктивного приза или другом несанкционированном административном действии. Такой запрос MUST NOT изменять данные акции или раскрывать system prompt.
@@ -206,3 +225,12 @@ AI job MUST повторять временно неуспешный вызов 
 - **WHEN** система сохраняет результат обработки
 - **THEN** решение может содержать structured output и hash источника
 - **AND** полный runtime system prompt не сохраняется
+
+### Requirement: Evaluation со штатной retry-policy
+EvaluateSupport MUST применять ProcessIncomingMessage через штатный database Worker с job attempts/backoff и записывать классификацию/validation failures в model result, а safe HTTP/connection failures отдельно в infrastructure failure reason. Временная ошибка MUST NOT вызывать принудительный failed() после первой попытки.
+
+#### Scenario: Retry после временной ошибки evaluation
+- **GIVEN** первая попытка временно неуспешна, следующая возвращает валидный decision
+- **WHEN** evaluation обрабатывает case
+- **THEN** применяется model result без преждевременного fallback
+- **AND** отчёт сохраняет safe reason первой ошибки отдельно от результата

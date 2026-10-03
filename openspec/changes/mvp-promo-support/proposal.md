@@ -31,7 +31,8 @@
 ### Implementation decisions
 
 - Входящий Telegram update идемпотентно сохраняется в PostgreSQL до обращения к LLM; AI-обработка запускается после commit через Laravel Queue с database driver.
-- LLM job использует retry с backoff. Сохранённое решение, ticket, исходящее сообщение и статистический результат защищаются от повторного создания при retry.
+- Один основной LLM request возвращает `decision/reason/answer/evidence`; PHP выполняет только deterministic validation, без отдельного verifier и builder. Валидный answer остаётся текстом для пользователя, trusted system context содержит московское время.
+- LLM job ограничен тремя provider attempts с одним HTTP request на попытку и retry с backoff только для временных ошибок; invalid result сразу эскалируется; постоянные ошибки сразу передаются в существующий fallback. Сохранённое решение, ticket, исходящее сообщение и статистический результат защищаются от повторного создания при retry.
 - Исходящие Telegram-сообщения имеют состояния `pending`, `sent`, `failed`; запись сообщения и успешная доставка являются разными фактами.
 - Обращение использует статусы `open`, `waiting_for_user`, `closed` и причины закрытия `user_confirmed`, `auto_closed`, `operator_closed`.
 - Callback `resolved` / `unresolved` проверяет владельца обращения по Telegram user и обрабатывается идемпотентно.

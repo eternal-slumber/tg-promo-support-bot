@@ -10,7 +10,7 @@ x-app-environment: &app-environment
   DB_PASSWORD: ${DB_PASSWORD:-tg_promo}
   QUEUE_CONNECTION: database
   DB_QUEUE_CONNECTION: pgsql
-  DB_QUEUE_RETRY_AFTER: ${DB_QUEUE_RETRY_AFTER:-120}
+  DB_QUEUE_RETRY_AFTER: ${DB_QUEUE_RETRY_AFTER:-180}
   QUEUE_FAILED_DRIVER: database-uuids
   CACHE_STORE: database
   SESSION_DRIVER: database
@@ -24,8 +24,9 @@ x-app-environment: &app-environment
   LLM_ENDPOINT: ${LLM_ENDPOINT:-https://api.openai.com/v1/chat/completions}
   LLM_MODEL: ${LLM_MODEL:-}
   LLM_API_KEY: ${LLM_API_KEY:-}
+  LLM_RESPONSE_FORMAT: ${LLM_RESPONSE_FORMAT:-json_object}
   LLM_CONNECT_TIMEOUT: ${LLM_CONNECT_TIMEOUT:-5}
-  LLM_TIMEOUT: ${LLM_TIMEOUT:-30}
+  LLM_TIMEOUT: ${LLM_TIMEOUT:-120}
   LLM_MAX_ATTEMPTS: ${LLM_MAX_ATTEMPTS:-3}
   LLM_RETRY_BACKOFF: ${LLM_RETRY_BACKOFF:-5,15,30}
 
@@ -68,7 +69,7 @@ services:
   queue:
     build:
       context: .
-    command: ["php", "artisan", "queue:work", "database", "--sleep=1", "--tries=3", "--timeout=90"]
+    command: ["php", "artisan", "queue:work", "database", "--queue=ai,default", "--sleep=1", "--tries=3", "--timeout=150"]
     depends_on:
       app:
         condition: service_healthy

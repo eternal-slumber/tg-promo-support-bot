@@ -28,10 +28,10 @@ class PromotionRules
         return $catalog;
     }
 
-    public function systemPrompt(string $promotionRules): string
+    public function systemPrompt(string $promotionRules, string $currentTime): string
     {
         $template = file_get_contents(resource_path('prompts/support-system.md')) ?: throw new \RuntimeException('Support system prompt is unavailable.');
 
-        return str_replace('{{PROMOTION_RULES}}', $promotionRules, $template);
+        return str_replace(['{{PROMOTION_RULES}}', '{{CURRENT_TIME_MSK}}'], [$promotionRules, $currentTime], $template);
     }
 }

@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use App\Data\SupportLlmRequest;
-use App\Data\ValidatedLlmAnalysis;
+use App\Data\ValidatedSupportDecision;
 
 interface SupportLlmClient
 {
-    public function analyze(SupportLlmRequest $request): ValidatedLlmAnalysis;
+    public function analyze(SupportLlmRequest $request): ValidatedSupportDecision;
 }

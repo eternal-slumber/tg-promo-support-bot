@@ -17,12 +17,9 @@ use Illuminate\Support\Facades\DB;
 
 class SupportDecisionService
 {
-    /**
-     * @param  array<string, mixed>|null  $structuredOutput
-     */
-    public function apply(Message $message, ValidatedSupportDecision $decision, string $rulesHash, ?array $structuredOutput = null): ?SupportDecision
+    public function apply(Message $message, ValidatedSupportDecision $decision, string $rulesHash): ?SupportDecision
     {
-        return DB::transaction(function () use ($message, $decision, $rulesHash, $structuredOutput): ?SupportDecision {
+        return DB::transaction(function () use ($message, $decision, $rulesHash): ?SupportDecision {
             $lockedMessage = Message::query()->lockForUpdate()->findOrFail($message->id);
             $existingDecision = SupportDecision::query()->where('message_id', $lockedMessage->id)->first();
 
@@ -41,7 +38,7 @@ class SupportDecisionService
                 'reason' => $decision->reason,
                 'answer_text' => $decision->answer,
                 'knowledge_source_hash' => $rulesHash,
-                'structured_output' => $structuredOutput ?? $decision->toStructuredOutput(),
+                'structured_output' => $decision->toStructuredOutput(),
             ]);
 
             $participant = TelegramParticipant::query()->lockForUpdate()->findOrFail($lockedMessage->participant_id);

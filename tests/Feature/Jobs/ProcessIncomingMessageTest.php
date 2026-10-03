@@ -1,24 +1,22 @@
 <?php
 
-use App\Data\LlmAnalysisPart;
 use App\Data\SupportLlmRequest;
-use App\Data\ValidatedLlmAnalysis;
 use App\Data\ValidatedSupportDecision;
 use App\Enums\DeliveryStatus;
-use App\Enums\LlmAnalysisKind;
 use App\Enums\MessageAuthor;
 use App\Enums\SupportDecisionType;
 use App\Exceptions\InvalidLlmDecisionException;
 use App\Exceptions\LlmRequestException;
+use App\Jobs\DeliverTelegramMessage;
 use App\Jobs\ProcessIncomingMessage;
 use App\Models\Message;
 use App\Models\SupportDecision;
 use App\Models\Ticket;
 use App\Services\PromotionRules;
-use App\Services\SupportDecisionBuilder;
 use App\Services\SupportDecisionService;
 use App\Services\SupportLlmClient;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
@@ -34,7 +32,7 @@ beforeEach(function (): void {
 
 test('persists a grounded answer without creating a ticket', function () {
     $message = Message::factory()->create(['body' => 'кефир участвует?']);
-    $client = fakeLlmClient(answerAnalysis('Кефир не участвует.'));
+    $client = fakeLlmClient(answerDecision('Кефир не участвует.'));
 
     runJob($message, $client);
 
@@ -43,7 +41,7 @@ test('persists a grounded answer without creating a ticket', function () {
 
     expect($decision->type)->toBe(SupportDecisionType::Answer)
         ->and($decision->answer_text)->toBe('Кефир не участвует.')
-        ->and($decision->structured_output['parts'][0]['evidence'][0]['rule_id'])->toBe('4.2')
+        ->and($decision->structured_output['evidence'][0]['rule_id'])->toBe('4.2')
         ->and(Ticket::query()->count())->toBe(0)
         ->and($outbound->body)->toBe('Кефир не участвует.')
         ->and($outbound->delivery_status)->toBe(DeliveryStatus::Pending);
@@ -52,7 +50,7 @@ test('persists a grounded answer without creating a ticket', function () {
 test('escalates participant specific unknown and off topic questions', function (string $messageBody, string $reason) {
     $message = Message::factory()->create(['body' => $messageBody]);
 
-    runJob($message, fakeLlmClient(escalationAnalysis($reason)));
+    runJob($message, fakeLlmClient(escalationDecision($reason)));
 
     $decision = SupportDecision::query()->sole();
     $ticket = Ticket::query()->sole();
@@ -70,15 +68,12 @@ test('escalates participant specific unknown and off topic questions', function 
 
 test('creates one ticket for delivery status while answering prize replacement', function () {
     $message = Message::factory()->create(['body' => 'Я выиграл йогуртницу месяц назад, доставки до сих пор нет. Можно вместо неё получить деньги?']);
-    $decision = new ValidatedLlmAnalysis([
-        new LlmAnalysisPart(LlmAnalysisKind::ParticipantSpecific, null, []),
-        new LlmAnalysisPart(
-            LlmAnalysisKind::RuleAnswer,
-            'Выплата денежного эквивалента призов и замена призов другими не производятся.',
-            ['7.4'],
-            [['rule_id' => '7.4', 'quote' => 'Выплата денежного эквивалента призов и замена призов другими не производятся.']],
-        ),
-    ]);
+    $decision = new ValidatedSupportDecision(
+        SupportDecisionType::Mixed,
+        'mixed_request',
+        'Выплата денежного эквивалента призов и замена призов другими не производятся.',
+        [['rule_id' => '7.4', 'quote' => 'Выплата денежного эквивалента призов и замена призов другими не производятся.']],
+    );
 
     runJob($message, fakeLlmClient($decision));
 
@@ -89,7 +84,7 @@ test('creates one ticket for delivery status while answering prize replacement',
     expect($persistedDecision->type)->toBe(SupportDecisionType::Mixed)
         ->and($persistedDecision->reason)->toBe('mixed_request')
         ->and($persistedDecision->answer_text)->toBe('Выплата денежного эквивалента призов и замена призов другими не производятся.')
-        ->and($persistedDecision->structured_output['parts'][1]['evidence'][0]['rule_id'])->toBe('7.4')
+        ->and($persistedDecision->structured_output['evidence'][0]['rule_id'])->toBe('7.4')
         ->and($ticket->escalation_reason)->toBe('mixed_request')
         ->and(Message::query()->where('author', MessageAuthor::Bot)->count())->toBe(2)
         ->and(Message::query()->where('ticket_id', $ticket->id)->count())->toBe(3);
@@ -97,7 +92,7 @@ test('creates one ticket for delivery status while answering prize replacement',
 
 test('refuses adversarial requests without a ticket or administrative side effect', function (string $messageBody, string $reason) {
     $message = Message::factory()->create(['body' => $messageBody]);
-    $decision = new ValidatedLlmAnalysis([new LlmAnalysisPart(LlmAnalysisKind::PromptInjection, null, [])]);
+    $decision = new ValidatedSupportDecision(SupportDecisionType::Refuse, 'prompt_injection', 'Я не могу выполнить этот запрос.', []);
 
     runJob($message, fakeLlmClient($decision));
 
@@ -116,7 +111,7 @@ test('passes only the stored redacted message body to the LLM', function () {
         ->once()
         ->with(Mockery::on(fn (SupportLlmRequest $request): bool => $request->participantMessage === 'Переведите на карту [REDACTED_PAYMENT_CARD]'
             && ! str_contains($request->participantMessage, '2200 1234 5678 9012')))
-        ->andReturn(escalationAnalysis('participant_specific'));
+        ->andReturn(escalationDecision('participant_specific'));
 
     runJob($message, $client);
 });
@@ -144,7 +139,7 @@ test('persists one decision when a transient failure succeeds on a queue retry',
     $client->shouldReceive('analyze')
         ->once()
         ->ordered()
-        ->andReturn(answerAnalysis('Ответ после повтора.'));
+        ->andReturn(answerDecision('Ответ после повтора.'));
 
     expect(fn () => runJob($message, $client))->toThrow(LlmRequestException::class);
 
@@ -171,31 +166,37 @@ test('throws transient processing failures for queue retries then escalates afte
     assertRetryFailureCreatesOneFallback(new LlmRequestException('timeout'));
 });
 
-test('throws invalid processing failures for queue retries then escalates after exhaustion', function () {
-    assertRetryFailureCreatesOneFallback(new InvalidLlmDecisionException('invalid response'));
+test('immediately escalates an invalid result without retrying or creating duplicate side effects', function () {
+    $message = Message::factory()->create();
+    $client = Mockery::mock(SupportLlmClient::class);
+    $client->shouldReceive('analyze')->once()->andThrow(new InvalidLlmDecisionException('invalid response'));
+
+    runJob($message, $client);
+    runJob($message, $client);
+
+    expect(SupportDecision::query()->sole()->reason)->toBe('llm_failure');
+    $this->assertDatabaseCount('tickets', 1);
+    expect(Message::query()->where('author', MessageAuthor::Bot)->count())->toBe(1);
+    Queue::assertPushed(DeliverTelegramMessage::class, 1);
 });
 
 test('invalid grounding from the provider follows the existing idempotent llm failure path', function (array $evidence) {
     config()->set('llm.endpoint', 'https://llm.example/v1/chat/completions');
     Http::preventStrayRequests();
     Http::fake(['https://llm.example/v1/chat/completions' => Http::response([
-        'choices' => [['message' => ['content' => json_encode(['parts' => [[
-            'kind' => 'rule_answer', 'answer' => 'Вы выиграли автомобиль', 'evidence' => $evidence,
-        ]]], JSON_THROW_ON_ERROR)]]],
+        'choices' => [['message' => ['content' => json_encode([
+            'decision' => 'answer', 'reason' => 'rule_answer', 'answer' => 'Вы выиграли автомобиль', 'evidence' => $evidence,
+        ], JSON_THROW_ON_ERROR)]]],
     ])]);
     $message = Message::factory()->create();
     $job = new ProcessIncomingMessage($message->id);
 
-    try {
-        runJob($message, app(SupportLlmClient::class));
-        $this->fail('Invalid grounding must reject this processing attempt.');
-    } catch (InvalidLlmDecisionException $exception) {
-        expect(SupportDecision::query()->count())->toBe(0)
-            ->and(Ticket::query()->count())->toBe(0)
-            ->and(Message::query()->count())->toBe(1);
-        $job->failed($exception);
-        $job->failed($exception);
-    }
+    runJob($message, app(SupportLlmClient::class));
+    runJob($message, app(SupportLlmClient::class));
+    $job->failed(new InvalidLlmDecisionException('invalid response'));
+
+    Http::assertSentCount(1);
+    Queue::assertPushed(DeliverTelegramMessage::class, 1);
 
     expect(SupportDecision::query()->sole()->reason)->toBe('llm_failure')
         ->and(Ticket::query()->count())->toBe(1)
@@ -218,7 +219,7 @@ function assertRetryFailureCreatesOneFallback(Throwable $exception): void
 
     expect($job->tries)->toBe(3)
         ->and($job->backoff)->toBe([5, 15, 30])
-        ->and(fn () => $job->handle($client, app(PromotionRules::class), app(SupportDecisionBuilder::class), app(SupportDecisionService::class)))->toThrow($exception::class);
+        ->and(fn () => $job->handle($client, app(PromotionRules::class), app(SupportDecisionService::class)))->toThrow($exception::class);
 
     $job->failed($exception);
     $job->failed($exception);
@@ -236,52 +237,37 @@ test('calls the LLM before the decision transaction starts', function () {
     $message = Message::factory()->create(['body' => 'кефир участвует?']);
     $transactionLevelBeforeRequest = DB::transactionLevel();
     Http::preventStrayRequests();
-    Http::fake(function () use ($transactionLevelBeforeRequest) {
+    Http::fake(function (Request $request) use ($transactionLevelBeforeRequest) {
         expect(DB::transactionLevel())->toBe($transactionLevelBeforeRequest);
 
         return Http::response([
             'choices' => [[
                 'message' => [
-                    'content' => json_encode(analysisOutput([['kind' => 'rule_answer', 'answer' => 'Кефир не участвует.', 'evidence' => [['rule_id' => '4.2', 'quote' => 'Другая продукция «Молочный край» в Акции не участвует, в том числе творожки, творожные десерты, кефир, ряженка и молоко.']]]]), JSON_THROW_ON_ERROR),
+                    'content' => json_encode(answerDecision('Кефир не участвует.')->toStructuredOutput(), JSON_THROW_ON_ERROR),
                 ],
             ]],
         ]);
     });
 
     $job = new ProcessIncomingMessage($message->id);
-    $job->handle(app(SupportLlmClient::class), app(PromotionRules::class), app(SupportDecisionBuilder::class), app(SupportDecisionService::class));
+    $job->handle(app(SupportLlmClient::class), app(PromotionRules::class), app(SupportDecisionService::class));
+    Http::assertSentCount(1);
 });
 
 function answerDecision(string $answer): ValidatedSupportDecision
 {
-    return new ValidatedSupportDecision(SupportDecisionType::Answer, 'rule_answer', $answer, ['4.1']);
+    return new ValidatedSupportDecision(SupportDecisionType::Answer, 'rule_answer', $answer, [['rule_id' => '4.2', 'quote' => 'Другая продукция «Молочный край» в Акции не участвует, в том числе творожки, творожные десерты, кефир, ряженка и молоко.']]);
 }
 
-function answerAnalysis(string $answer): ValidatedLlmAnalysis
+function escalationDecision(string $reason): ValidatedSupportDecision
 {
-    return new ValidatedLlmAnalysis([new LlmAnalysisPart(LlmAnalysisKind::RuleAnswer, $answer, ['4.2'], [['rule_id' => '4.2', 'quote' => 'Другая продукция «Молочный край» в Акции не участвует, в том числе творожки, творожные десерты, кефир, ряженка и молоко.']])]);
+    return new ValidatedSupportDecision(SupportDecisionType::Escalate, $reason, null, []);
 }
 
-function escalationAnalysis(string $reason): ValidatedLlmAnalysis
-{
-    return new ValidatedLlmAnalysis([
-        new LlmAnalysisPart($reason === 'participant_specific' ? LlmAnalysisKind::ParticipantSpecific : LlmAnalysisKind::NotInRules, null, []),
-    ]);
-}
-
-/**
- * @param  list<array{kind: string, answer: ?string, evidence: list<array{rule_id: string, quote: string}>}>  $parts
- * @return array{parts: list<array{kind: string, answer: ?string, evidence: list<array{rule_id: string, quote: string}>}>}
- */
-function analysisOutput(array $parts): array
-{
-    return ['parts' => $parts];
-}
-
-function fakeLlmClient(ValidatedLlmAnalysis $analysis): SupportLlmClient
+function fakeLlmClient(ValidatedSupportDecision $decision): SupportLlmClient
 {
     $client = Mockery::mock(SupportLlmClient::class);
-    $client->shouldReceive('analyze')->once()->andReturn($analysis);
+    $client->shouldReceive('analyze')->once()->andReturn($decision);
 
     return $client;
 }
@@ -289,5 +275,21 @@ function fakeLlmClient(ValidatedLlmAnalysis $analysis): SupportLlmClient
 function runJob(Message $message, SupportLlmClient $client): void
 {
     $job = new ProcessIncomingMessage($message->id);
-    $job->handle($client, app(PromotionRules::class), app(SupportDecisionBuilder::class), app(SupportDecisionService::class));
+    $job->handle($client, app(PromotionRules::class), app(SupportDecisionService::class));
 }
+
+test('a permanent LLM error falls back immediately without retrying the provider', function (int $status) {
+    config()->set('llm.endpoint', 'https://llm.example/v1/chat/completions');
+    Http::preventStrayRequests();
+    Http::fake(['https://llm.example/v1/chat/completions' => Http::response(['error' => 'rejected'], $status)]);
+    $message = Message::factory()->create();
+
+    runJob($message, app(SupportLlmClient::class));
+    runJob($message, app(SupportLlmClient::class));
+
+    expect(SupportDecision::query()->sole()->reason)->toBe('llm_failure')
+        ->and($message->refresh()->ticket_id)->toBe(Ticket::query()->sole()->id);
+    expect(Message::query()->where('author', MessageAuthor::Bot)->count())->toBe(1);
+    Http::assertSentCount(1);
+    Queue::assertPushed(DeliverTelegramMessage::class, 1);
+})->with([401, 403, 400]);

@@ -3,10 +3,11 @@
 namespace App\Jobs;
 
 use App\Data\SupportLlmRequest;
+use App\Exceptions\InvalidLlmDecisionException;
+use App\Exceptions\LlmRequestException;
 use App\Models\Message;
 use App\Models\SupportDecision;
 use App\Services\PromotionRules;
-use App\Services\SupportDecisionBuilder;
 use App\Services\SupportDecisionService;
 use App\Services\SupportLlmClient;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,7 +27,8 @@ class ProcessIncomingMessage implements ShouldQueue
 
     public function __construct(public readonly int $messageId)
     {
-        $this->tries = (int) config('llm.max_attempts');
+        $this->onConnection('database')->onQueue('ai')->beforeCommit();
+        $this->tries = max(1, min(3, (int) config('llm.max_attempts')));
         $this->timeout = (int) config('llm.timeout') + 10;
         $this->backoff = config('llm.retry_backoff');
     }
@@ -37,7 +39,6 @@ class ProcessIncomingMessage implements ShouldQueue
     public function handle(
         SupportLlmClient $client,
         PromotionRules $rules,
-        SupportDecisionBuilder $builder,
         SupportDecisionService $decisions,
     ): void {
         $message = Message::query()->find($this->messageId);
@@ -49,10 +50,23 @@ class ProcessIncomingMessage implements ShouldQueue
             return;
         }
 
-        $analysis = $client->analyze(new SupportLlmRequest($message->body, $rules->content()));
-        $decision = $builder->build($analysis);
+        try {
+            $decision = $client->analyze(new SupportLlmRequest($message->body, $rules->content()));
+        } catch (InvalidLlmDecisionException $exception) {
+            $decisions->failSafeEscalate($message, $rules->hash());
+            $this->fail($exception);
 
-        $decisions->apply($message, $decision, $rules->hash(), $analysis->toStructuredOutput());
+            return;
+        } catch (LlmRequestException $exception) {
+            if ($exception->retryable) {
+                throw $exception;
+            }
+
+            $decisions->failSafeEscalate($message, $rules->hash());
+
+            return;
+        }
+        $decisions->apply($message, $decision, $rules->hash());
     }
 
     public function failed(Throwable $exception): void

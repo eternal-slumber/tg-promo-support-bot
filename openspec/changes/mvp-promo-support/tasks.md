@@ -59,8 +59,8 @@
 
 ## 9. Evaluation и документация поведения
 
-- [ ] 9.1 Создать повторяемый evaluation runner для всех 25 сообщений из `docs/assignment/requests.md` через тот же application boundary и проверить, что отчёт содержит вопрос, ответ, признак эскалации, оценку и комментарий для всех 25 строк.
-- [ ] 9.2 Зафиксировать результаты evaluation, спорные mixed/off-topic cases и изменения prompt в требуемой таблице; проверить наличие строк 1–25, redaction case №22 и отсутствие raw card/OTP/password values.
+- [x] 9.1 Создать повторяемый evaluation runner для всех 25 сообщений из `docs/assignment/requests.md` через тот же application boundary и проверить, что отчёт содержит вопрос, ответ, признак эскалации, оценку и комментарий для всех 25 строк.
+- [x] 9.2 Зафиксировать результаты evaluation, спорные mixed/off-topic cases и изменения prompt в требуемой таблице; проверить наличие строк 1–25, redaction case №22 и отсутствие raw card/OTP/password values.
 - [ ] 9.3 Обновить README инструкцией запуска с нуля, assumptions, provisional definitions, известными ограничениями и production follow-ups; проверить команды README в чистом Docker Compose запуске.
 - [ ] 9.4 Добавить схему PostgreSQL и краткое объяснение ключей, partial unique active-ticket constraint, transactions и delivery state; сверить диаграмму с фактическими migrations.
 
@@ -70,3 +70,9 @@
 - [ ] 10.2 Запустить `vendor/bin/pint --dirty --format agent`, `npm run build` и `openspec validate mvp-promo-support --strict`; проверить успешное завершение всех команд.
 - [ ] 10.3 Выполнить Docker smoke flow: принять grounded question, создать escalation, ответить оператором, обработать resolved/unresolved и auto-close, затем сверить три метрики и delivery states.
 - [ ] 10.4 Проверить repository secrets scan и итоговый diff: отсутствуют реальные Telegram/LLM keys, raw card/OTP/password values, sensitive message bodies в logging paths, незаявленная инфраструктура и функциональность вне specs.
+
+## 12. Один основной LLM-запрос
+
+- [x] 12.1 Заменить analysis parts и второй LLM verifier одним structured decision с answer/evidence; deterministic PHP validation, trusted московская дата, сохранение пользовательского answer; удалить verifier prompt и ненужные production dependencies.
+- [x] 12.2 Ограничить provider attempts тремя на сообщение: один HTTP request на queue attempt, retries только transient errors; invalid result сразу использует существующую safe escalation; ticket lifecycle, operator dashboard и delivery semantics не менять.
+- [x] 12.3 Обновить OpenSpec, README и regression tests для single-call contract, evidence validation, safe fallback и HTTP request counts; выполнить узкие Pest tests, Pint и OpenSpec validation без реальных LLM-запросов.

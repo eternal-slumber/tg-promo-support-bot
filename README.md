@@ -84,3 +84,30 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Безопасность и ограничения AI
+
+[Единственный prompt](resources/prompts/support-system.md) задаёт результат `decision/reason/answer/evidence`. Модель одновременно понимает вопрос, выбирает решение, формирует конкретный русский answer и цитаты из правил. Provider получает system instructions + правила + trusted московское время; sanitized participant text передаётся только в user role.
+
+PHP проверяет JSON/schema, допустимые пары decision/reason, наличие rule ID и принадлежность непустой quote указанному пункту. `answer`/`mixed` требуют answer и evidence; `escalate` требует null answer и пустой evidence; `refuse/prompt_injection` допускает только безопасное «Я не могу выполнить этот запрос.» без фактов акции. Валидный answer сохраняется и отправляется как текст пользователя, без подмены полным правилом. Проверка реальности цитаты не доказывает правильность всех утверждений free-form answer; отдельного LLM verifier нет.
+
+На попытку выполняется один LLM HTTP request с `LLM_TIMEOUT`. Штатная queue повторяет только transient errors, максимум три provider attempts на сообщение; даже `LLM_MAX_ATTEMPTS` выше трёх ограничивается тремя. Вложенного HTTP retry нет. Invalid result или permanent provider error сразу использует существующую safe escalation; после трёх transient failures применяется тот же fallback. Participant rate limits считают входящие запросы.
+
+По умолчанию `LLM_TIMEOUT=120`, timeout AI job — 130 секунд, AI worker/listener — 150 секунд, `DB_QUEUE_RETRY_AFTER=180`. Reservation превышает execution timeout, чтобы долгий запрос не забрал второй worker. При изменении `LLM_TIMEOUT` согласуйте эти лимиты; уже поставленные в очередь jobs сохраняют timeout, заданный при создании. Три запроса, исчерпавшие по 120 секунд, и backoff 5 + 15 секунд займут около 6 минут 20 секунд без учёта ожидания в очереди и обработки результата.
+
+Mixed request даёт grounded часть и эскалацию остатка. Обычный off-topic тоже эскалируется по буквальному требованию задания; prompt injection даёт безопасный отказ. Mixed/off-topic и определения метрик — допущения для уточнения менеджером. Модель не имеет административных tools и не подтверждает персональное состояние акции.
+
+## Проверка ИИ и evaluation
+
+[Evaluation всех 25 обращений](docs/evaluation.md) содержит результаты обработки и ручную оценку по правилам; [первый прогон](docs/evaluation-initial.md) сохраняет обнаруженные ошибки до уточнения prompt. Последний полный прогон 03.10.2026 выполнен на локальной `google/gemma-4-e4b` в LM Studio: 17 верно, 6 неверно, 2 спорно. В №9 модель ошибочно разрешила регистрацию чека 3 ноября, в №12 выдумала запрет на чек родственника; оба ответа прошли вторую LLM-проверку. Ещё пять cases завершились `llm_failure`. Эта конфигурация не продемонстрировала достаточного качества для пилота; отдельная проверка той же моделью не гарантирует семантическую корректность. Case 22 маскирован. Протокол: один isolated participant на вопрос, ProcessIncomingMessage выполняется штатным database Worker с tries/backoff/fallback; Telegram не вызывается, fixtures откатываются. Model result включает validation failures, infrastructure failure reason содержит HTTP/connection сбои; attempts записываются отдельно. Это отдельные cases с retry, не multi-turn conversation. Этот исторический прогон относится к прежнему pipeline со вторым verifier. Новый single-call pipeline проверен точечно на OpenRouter; сценарий №19 прошёл штатные webhook и workers, а последующий ручной повтор при LLM_TIMEOUT=120 завершился доставленным полным ответом без эскалации. Подробности и ограничения проверок сохранены в отчёте.
+
+Повторный evaluation (требует реального LLM и test image, не отправляет Telegram и откатывает fixtures):
+
+```bash
+docker compose -f compose.testing.yaml run --rm tests php artisan migrate --force --no-interaction
+docker compose -f compose.testing.yaml run --rm --env-from-file /absolute/path/private-llm.env -v "$PWD/docs:/app/evaluation-output" tests php artisan support:evaluate --output=/app/evaluation-output/evaluation.md --no-interaction
+```
+
+Создайте private env file вне репозитория с `LLM_ENDPOINT`, `LLM_MODEL`, `LLM_API_KEY`, `LLM_CONNECT_TIMEOUT`, `LLM_TIMEOUT`, ограничьте permissions и удалите после прогона. Команда перезаписывает отчёт с отметкой «требует проверки»: вручную оцените все строки. Не запускайте её одновременно с tests/refresh на этой БД. Eval использует rollback transaction вокруг LLM только в offline test run; записи/Telegram jobs не уходят в production.
+
+Для LM Studio из Docker используйте `LLM_ENDPOINT=http://host.docker.internal:1234/v1/chat/completions`, ID загруженной модели и `LLM_RESPONSE_FORMAT=json_schema`: локальный API может отклонять стандартный для приложения `json_object`. Одна схема `support_decision` требует `decision`, `reason`, `answer`, `evidence`; JSON и связи decision/reason/answer/evidence, ID и quote membership проверяются в PHP. Режим `text` также доступен, но не гарантирует JSON со стороны provider.
