@@ -8,6 +8,8 @@ use App\Exceptions\InvalidLlmDecisionException;
 
 class LlmDecisionValidator
 {
+    public const string RefusalAnswer = 'Я не могу выполнить этот запрос.';
+
     public function validate(mixed $structuredOutput, string $promotionRules): ValidatedSupportDecision
     {
         if (! is_array($structuredOutput)
@@ -40,7 +42,7 @@ class LlmDecisionValidator
         $valid = match ($type) {
             SupportDecisionType::Answer, SupportDecisionType::Mixed => $answer !== null && $answer !== '' && $evidence !== [],
             SupportDecisionType::Escalate => $answer === null && $evidence === [],
-            SupportDecisionType::Refuse => $answer === 'Я не могу выполнить этот запрос.' && $evidence === [],
+            SupportDecisionType::Refuse => $answer === self::RefusalAnswer && $evidence === [],
         };
 
         if (! $valid) {

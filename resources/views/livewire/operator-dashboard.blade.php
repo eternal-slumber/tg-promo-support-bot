@@ -11,7 +11,7 @@
 
     <dl aria-label="Статистика поддержки" class="mb-6 grid gap-4 sm:grid-cols-3">
         <div class="rounded-xl border border-slate-700 bg-slate-900 p-4">
-            <dt class="text-sm text-slate-400">Отправлено ботом без оператора</dt>
+            <dt class="text-sm text-slate-400">Доставлено ответов по правилам без оператора</dt>
             <dd class="mt-2">
                 <span class="text-2xl font-semibold">{{ $statistics['bot_resolved'] }}</span>
                 <p class="mt-2 text-xs text-slate-400">Подготовлено: {{ $statistics['bot_prepared'] }}</p>

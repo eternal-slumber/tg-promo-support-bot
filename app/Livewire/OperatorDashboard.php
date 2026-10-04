@@ -11,6 +11,7 @@ use App\Jobs\DeliverTelegramMessage;
 use App\Models\Message;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Services\LlmDecisionValidator;
 use App\Services\OperatorReplyService;
 use App\Services\TicketLifecycleService;
 use DomainException;
@@ -180,6 +181,8 @@ class OperatorDashboard extends Component
     }
 
     /**
+     * Unticketed bot messages are grounded answers or the validator's fixed refusal.
+     *
      * @return array{
      *     bot_resolved: int,
      *     bot_prepared: int,
@@ -197,20 +200,22 @@ class OperatorDashboard extends Component
             ->where('direction', MessageDirection::Outbound)
             ->where('author', MessageAuthor::Bot)
             ->whereNull('ticket_id')
+            ->where('body', '!=', LlmDecisionValidator::RefusalAnswer)
             ->toBase()
-            ->selectRaw('delivery_status, COUNT(*) AS aggregate')
+            ->selectRaw('delivery_status, COUNT(*) AS aggregate, COUNT(delivered_at) AS delivered')
             ->groupBy('delivery_status')
-            ->pluck('aggregate', 'delivery_status');
+            ->get()
+            ->keyBy('delivery_status');
         $average = Ticket::query()->whereNotNull('first_operator_replied_at')
             ->selectRaw('AVG(EXTRACT(EPOCH FROM (first_operator_replied_at - created_at))) AS seconds')
             ->value('seconds');
 
         return [
-            'bot_resolved' => (int) $botDeliveries->get(DeliveryStatus::Sent->value, 0),
-            'bot_prepared' => (int) $botDeliveries->sum(),
-            'bot_pending' => (int) $botDeliveries->get(DeliveryStatus::Pending->value, 0),
-            'bot_failed' => (int) $botDeliveries->get(DeliveryStatus::Failed->value, 0),
-            'bot_cancelled' => (int) $botDeliveries->get(DeliveryStatus::Cancelled->value, 0),
+            'bot_resolved' => (int) ($botDeliveries->get(DeliveryStatus::Sent->value)?->delivered ?? 0),
+            'bot_prepared' => (int) $botDeliveries->sum('aggregate'),
+            'bot_pending' => (int) ($botDeliveries->get(DeliveryStatus::Pending->value)?->aggregate ?? 0),
+            'bot_failed' => (int) ($botDeliveries->get(DeliveryStatus::Failed->value)?->aggregate ?? 0),
+            'bot_cancelled' => (int) ($botDeliveries->get(DeliveryStatus::Cancelled->value)?->aggregate ?? 0),
             'escalated' => Ticket::query()->count(),
             'average_operator_response_seconds' => $average === null ? null : (float) $average,
             'operator_cancelled' => Message::query()

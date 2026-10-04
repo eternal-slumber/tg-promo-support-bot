@@ -161,6 +161,41 @@ test('statistics use the first delivered operator reply after a failed answer is
     Queue::assertPushed(DeliverTelegramMessage::class, 3);
 });
 
+test('measures the first successful operator reply after retry and ignores later replies', function () {
+    $this->travelTo(now()->setDate(2026, 10, 3)->setTime(12, 0));
+    $operator = User::factory()->create();
+    $ticket = Ticket::factory()->create();
+    Queue::fake([DeliverTelegramMessage::class]);
+    config()->set('telegram.api_base_url', 'https://telegram.example');
+    config()->set('telegram.bot_token', 'test-token');
+    Http::preventStrayRequests();
+    Http::fake(['https://telegram.example/bottest-token/sendMessage' => Http::sequence()
+        ->push(['ok' => false], 400)
+        ->push(['ok' => true, 'result' => ['message_id' => 789]])
+        ->push(['ok' => true, 'result' => ['message_id' => 790]])]);
+    $replies = app(OperatorReplyService::class);
+    $this->actingAs($operator);
+    $this->travel(2)->minutes();
+    $firstReply = $replies->create($operator, $ticket, 'Ответ с повторной доставкой');
+    app()->call([new DeliverTelegramMessage($firstReply->id), 'handle']);
+    expect($firstReply->refresh()->delivery_status)->toBe(DeliveryStatus::Failed);
+    expect($ticket->refresh()->first_operator_replied_at)->toBeNull();
+    Livewire::test(OperatorDashboard::class)->assertViewHas('statistics', fn (array $statistics): bool => $statistics['average_operator_response_seconds'] === null);
+    $this->travel(5)->minutes();
+
+    app()->call([new DeliverTelegramMessage($firstReply->id), 'handle']);
+    $followUp = $replies->create($operator, $ticket, 'Позднейшее уточнение');
+    $this->travel(5)->minutes();
+    app()->call([new DeliverTelegramMessage($followUp->id), 'handle']);
+
+    expect($ticket->refresh()->first_operator_replied_at?->toDateTimeString())->toBe('2026-10-03 12:07:00');
+    expect($firstReply->refresh()->delivered_at?->toDateTimeString())->toBe('2026-10-03 12:07:00');
+    expect($followUp->refresh()->delivered_at?->toDateTimeString())->toBe('2026-10-03 12:12:00');
+    Livewire::test(OperatorDashboard::class)->assertViewHas('statistics', fn (array $statistics): bool => $statistics['average_operator_response_seconds'] === 420.0);
+    Http::assertSentCount(3);
+    Queue::assertPushed(DeliverTelegramMessage::class, 2);
+});
+
 test('preserves operator instructions about passwords and sms codes', function () {
     Queue::fake();
     $ticket = Ticket::factory()->create();

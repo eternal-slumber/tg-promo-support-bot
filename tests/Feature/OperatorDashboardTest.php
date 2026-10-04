@@ -14,11 +14,13 @@ use App\Models\SupportDecision;
 use App\Models\TelegramParticipant;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Services\LlmDecisionValidator;
 use App\Services\SupportDecisionService;
 use App\Services\TicketLifecycleService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Livewire\Livewire;
 
@@ -122,6 +124,25 @@ test('shows readable ticket status and escalation reason labels without changing
     'no reason' => [TicketStatus::Open, null, 'Открыто', 'Не указана'],
     'unknown reason' => [TicketStatus::Open, 'unknown', 'Открыто', 'Не указана'],
     'unrecognized historical reason' => [TicketStatus::Open, 'legacy_reason', 'Открыто', 'Не указана'],
+]);
+
+test('shows readable close reasons without changing historical ticket data', function (?TicketCloseReason $reason, string $label) {
+    $this->freezeTime();
+    $ticket = Ticket::factory()->closed()->create(['close_reason' => $reason]);
+    $storedAttributes = $ticket->refresh()->getRawOriginal();
+    $this->actingAs(User::factory()->create());
+
+    Livewire::test(OperatorDashboard::class)->call('selectFilter', 'closed')->call('selectTicket', $ticket->id)
+        ->assertSeeText('Способ закрытия: '.$label)
+        ->assertDontSeeText(['user_confirmed', 'auto_closed', 'operator_closed'])
+        ->call('$refresh')->assertSeeText('Способ закрытия: '.$label);
+
+    expect($ticket->refresh()->getRawOriginal())->toBe($storedAttributes);
+})->with([
+    'participant confirmed' => [TicketCloseReason::UserConfirmed, 'Участник подтвердил решение'],
+    'automatic closure' => [TicketCloseReason::AutoClosed, 'Закрыто автоматически'],
+    'operator closure' => [TicketCloseReason::OperatorClosed, 'Закрыто оператором'],
+    'historical ticket without a reason' => [null, 'Не указан'],
 ]);
 
 test('isolates histories of sequential closed tickets for the same participant', function () {
@@ -621,16 +642,20 @@ test('uses index scans for the queue and history when the archive grows', functi
     }
 });
 
-test('statistics distinguish prepared bot answers from delivery and average only the first delivered operator response', function () {
+test('statistics exclude refusals and distinguish prepared grounded answers from delivery', function () {
     Http::preventStrayRequests();
     Queue::fake();
     $this->freezeTime();
     $this->actingAs(User::factory()->create());
     $decisions = app(SupportDecisionService::class);
-    foreach ([SupportDecisionType::Answer, SupportDecisionType::Refuse] as $type) {
+    foreach ([
+        ['decision' => 'answer', 'reason' => 'rule_answer', 'answer' => 'Деньгами заменить приз нельзя.', 'evidence' => [['rule_id' => '7.4', 'quote' => 'Денежная замена не предусмотрена.']]],
+        ['decision' => 'refuse', 'reason' => 'prompt_injection', 'answer' => 'Я не могу выполнить этот запрос.', 'evidence' => []],
+    ] as $output) {
+        $decision = app(LlmDecisionValidator::class)->validate($output, '7.4. Денежная замена не предусмотрена.');
         foreach (DeliveryStatus::cases() as $status) {
             $question = Message::factory()->create();
-            $decisions->apply($question, new ValidatedSupportDecision($type, 'rule_answer', 'Ответ бота.', []), 'rules-hash');
+            $decisions->apply($question, $decision, 'rules-hash');
             Message::query()->where('participant_id', $question->participant_id)->where('direction', MessageDirection::Outbound)->sole()->update([
                 'delivery_status' => $status,
                 'delivered_at' => $status === DeliveryStatus::Sent ? now() : null,
@@ -669,16 +694,36 @@ test('statistics distinguish prepared bot answers from delivery and average only
     ]);
     Message::factory()->count(3)->for($first)->create(['participant_id' => $first->participant_id]);
     $expected = [
-        'bot_resolved' => 2, 'bot_prepared' => 8, 'bot_pending' => 2, 'bot_failed' => 2, 'bot_cancelled' => 2,
+        'bot_resolved' => 1, 'bot_prepared' => 4, 'bot_pending' => 1, 'bot_failed' => 1, 'bot_cancelled' => 1,
         'escalated' => 5, 'average_operator_response_seconds' => 240.0, 'operator_cancelled' => 1,
     ];
     $counts = [Message::query()->count(), Ticket::query()->count(), SupportDecision::query()->count()];
 
     Livewire::test(OperatorDashboard::class)->assertViewHas('statistics', $expected)
         ->call('$refresh')->assertViewHas('statistics', $expected)
-        ->assertSee(['4,0 мин', 'Отправлено ботом без оператора', 'Подготовлено: 8', 'Отменено ответов оператора: 1']);
+        ->assertSee(['4,0 мин', 'Доставлено ответов по правилам без оператора', 'Подготовлено: 4', 'Отменено ответов оператора: 1']);
 
     expect([Message::query()->count(), Ticket::query()->count(), SupportDecision::query()->count()])->toBe($counts);
     Http::assertNothingSent();
     Queue::assertPushed(DeliverTelegramMessage::class, 11);
+});
+
+test('does not count a sent bot answer without a successful delivery timestamp as resolved', function () {
+    $this->freezeTime();
+    $question = Message::factory()->create();
+    Queue::fake([DeliverTelegramMessage::class]);
+    app(SupportDecisionService::class)->apply($question, new ValidatedSupportDecision(
+        SupportDecisionType::Answer, 'rule_answer', 'Кефир не участвует.', [['rule_id' => '4.2', 'quote' => 'Кефир не участвует.']],
+    ), 'rules-hash');
+    $answer = Message::query()->where('author', MessageAuthor::Bot)->sole();
+    $answer->update(['delivery_status' => DeliveryStatus::Sent]);
+    $this->actingAs(User::factory()->create());
+
+    Livewire::test(OperatorDashboard::class)->assertViewHas('statistics', [
+        'bot_resolved' => 0, 'bot_prepared' => 1, 'bot_pending' => 0, 'bot_failed' => 0, 'bot_cancelled' => 0,
+        'escalated' => 0, 'average_operator_response_seconds' => null, 'operator_cancelled' => 0,
+    ]);
+
+    expect($answer->refresh()->delivered_at)->toBeNull();
+    Queue::assertPushed(DeliverTelegramMessage::class, 1);
 });
