@@ -297,15 +297,18 @@ test('pending and failed operator replies block the next reply until explicit ca
 
     $panel = Livewire::test(OperatorDashboard::class)->call('selectTicket', $ticket->id)
         ->assertViewHas('hasUnfinishedReply', true)
+        ->assertSeeHtml('data-reply-blocked="true"')
         ->assertSee('Отменить доставку')
         ->set('replyBody', 'Второй ответ')
         ->call('sendReply')->assertHasErrors('replyBody')
         ->assertSet('replyBody', 'Второй ответ');
+    expect($panel->html())->toMatch('/<textarea\b[^>]*\bid="replyBody"[^>]*\bdisabled(?:[ >])/');
     $this->assertDatabaseCount('messages', 1);
     Queue::assertPushed(DeliverTelegramMessage::class, 1);
 
     $panel->call('cancelDelivery', $reply->id)->assertHasNoErrors()
         ->assertViewHas('hasUnfinishedReply', false)
+        ->assertSeeHtml('data-reply-blocked="false"')
         ->call('sendReply')->assertHasNoErrors();
 
     expect($reply->refresh()->delivery_status)->toBe(DeliveryStatus::Cancelled);

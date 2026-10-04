@@ -568,12 +568,50 @@ test('appends an operator reply while retaining the complete conversation histor
     $ticket = Ticket::factory()->create();
     Message::factory()->count(51)->for($ticket->participant, 'participant')->for($ticket)->create(['body' => 'История участника.']);
     $this->actingAs(User::factory()->create());
-    $component = Livewire::test(OperatorDashboard::class)->call('selectTicket', $ticket->id);
-    $component->set('replyBody', 'Новый ответ оператора.')
+    $component = Livewire::test(OperatorDashboard::class)->call('selectTicket', $ticket->id)
+        ->assertSeeHtml('x-data="operatorReplyComposer"')
+        ->assertSeeHtml('x-on:submit.prevent="submit()"')
+        ->assertSeeHtml('x-on:keydown="onKeydown($event)"')
+        ->assertSeeHtml('rows="1"')
+        ->assertSeeHtml('resize-none')
+        ->assertDontSeeHtml('wire:submit="sendReply"');
+    $component->set('replyBody', "Новый ответ оператора.\nПроверяем ваш чек.")
         ->call('sendReply')->assertHasNoErrors()->assertSet('replyBody', '')->assertSee('Новый ответ оператора.');
 
     expect($component->viewData('messages'))->toHaveCount(52);
-    $this->assertDatabaseHas('messages', ['ticket_id' => $ticket->id, 'body' => 'Новый ответ оператора.', 'delivery_status' => 'pending']);
+    $this->assertDatabaseHas('messages', ['ticket_id' => $ticket->id, 'body' => "Новый ответ оператора.\nПроверяем ваш чек.", 'delivery_status' => 'pending']);
+    Queue::assertPushed(DeliverTelegramMessage::class, 1);
+});
+
+test('rejects empty operator drafts without clearing them or dispatching delivery', function (string $body) {
+    Queue::fake([DeliverTelegramMessage::class]);
+    $ticket = Ticket::factory()->create();
+    $this->actingAs(User::factory()->create());
+
+    Livewire::test(OperatorDashboard::class)->call('selectTicket', $ticket->id)
+        ->set('replyBody', $body)->call('sendReply')
+        ->assertHasErrors(['replyBody' => 'required'])->assertSet('replyBody', $body);
+
+    $this->assertDatabaseCount('messages', 0);
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
+    Queue::assertNothingPushed();
+})->with(['empty' => '', 'spaces' => '   ', 'line breaks and tabs' => "\n\t  \n"]);
+
+test('does not create or dispatch a duplicate operator reply on repeated submit', function () {
+    Queue::fake([DeliverTelegramMessage::class]);
+    $ticket = Ticket::factory()->create();
+    $this->actingAs(User::factory()->create());
+    $component = Livewire::test(OperatorDashboard::class)->call('selectTicket', $ticket->id)
+        ->set('replyBody', 'Единственный ответ')->call('sendReply')
+        ->assertHasNoErrors()->assertSet('replyBody', '');
+    $reply = $ticket->messages()->sole();
+
+    $component->set('replyBody', 'Единственный ответ')->call('sendReply')
+        ->assertHasErrors('replyBody')->assertSet('replyBody', 'Единственный ответ');
+
+    $this->assertDatabaseCount('messages', 1);
+    expect($reply->refresh()->delivery_status)->toBe(DeliveryStatus::Pending);
+    expect($reply->delivered_at)->toBeNull();
     Queue::assertPushed(DeliverTelegramMessage::class, 1);
 });
 
@@ -921,4 +959,125 @@ test('paginates bot answers independently and refreshes their delivery while ret
     $component->call('resetPage', 'botRepliesCursor');
     expect($component->viewData('botReplies')->onFirstPage())->toBeTrue();
     $this->assertDatabaseCount('tickets', 0);
+});
+
+test('shows an operator reply as sending and starts targeted polling after dispatch without confirming delivery', function () {
+    Queue::fake([DeliverTelegramMessage::class]);
+    Http::preventStrayRequests();
+    $ticket = Ticket::factory()->create();
+    $this->actingAs(User::factory()->create());
+
+    $component = Livewire::test(OperatorDashboard::class)->call('selectTicket', $ticket->id)
+        ->assertSeeHtml('data-local-reply')->assertSeeHtml('wire:loading.flex')->assertSeeHtml('x-text="sendingBody"')
+        ->set('replyBody', 'Проверяем ваш чек.')->call('sendReply')
+        ->assertSee(['Проверяем ваш чек.', 'Доставка: Отправляется…'])->assertSet('replyBody', '');
+
+    $reply = $ticket->messages()->sole();
+    $component->assertSeeHtml('wire:poll.1s="refreshOperatorReply('.$reply->id.')"')
+        ->assertSeeHtml('wire:poll.15s.visible');
+    expect($reply->delivery_status)->toBe(DeliveryStatus::Pending)
+        ->and($reply->delivered_at)->toBeNull();
+    $this->assertDatabaseCount('messages', 1);
+    Queue::assertPushed(DeliverTelegramMessage::class, 1);
+    Http::assertNothingSent();
+});
+
+test('reads only the pending operator delivery status without rerendering dashboard queries', function () {
+    $ticket = Ticket::factory()->create();
+    $reply = Message::factory()->for($ticket->participant, 'participant')->for($ticket)->create([
+        'author' => MessageAuthor::Operator, 'direction' => MessageDirection::Outbound, 'delivery_status' => DeliveryStatus::Pending,
+    ]);
+    $this->actingAs(User::factory()->create());
+    $component = Livewire::test(OperatorDashboard::class)->call('selectTicket', $ticket->id)->set('replyBody', 'Черновик');
+    DB::enableQueryLog();
+    DB::flushQueryLog();
+
+    try {
+        $component->call('refreshOperatorReply', $reply->id)->assertSet('replyBody', 'Черновик');
+        $queries = collect(DB::getQueryLog())->pluck('query');
+        expect($queries)->toHaveCount(1);
+        expect($queries->first())->toContain('select "delivery_status" from "messages"', '"ticket_id" = ?', 'limit 1');
+    } finally {
+        DB::disableQueryLog();
+        DB::flushQueryLog();
+    }
+});
+
+test('updates delivery UI and stops frequent polling at each terminal state without writes or Telegram calls', function (DeliveryStatus $status, string $label, bool $unfinished) {
+    $this->freezeTime();
+    $ticket = Ticket::factory()->create();
+    $reply = Message::factory()->for($ticket->participant, 'participant')->for($ticket)->create([
+        'author' => MessageAuthor::Operator, 'direction' => MessageDirection::Outbound, 'delivery_status' => DeliveryStatus::Pending,
+    ]);
+    $this->actingAs(User::factory()->create());
+    $component = Livewire::test(OperatorDashboard::class)->call('selectTicket', $ticket->id)
+        ->set('replyBody', 'Черновик следующего ответа');
+    $reply->update([
+        'delivery_status' => $status, 'delivered_at' => $status === DeliveryStatus::Sent ? now() : null,
+        'last_delivery_error' => $status === DeliveryStatus::Failed ? 'telegram_delivery_exhausted' : null,
+    ]);
+    $storedReply = $reply->refresh()->getRawOriginal();
+    $storedTicket = $ticket->refresh()->getRawOriginal();
+    Queue::fake();
+    Http::preventStrayRequests();
+
+    $component->call('refreshOperatorReply', $reply->id)->assertSee('Доставка: '.$label)
+        ->assertSet('replyBody', 'Черновик следующего ответа')
+        ->assertViewHas('hasUnfinishedReply', $unfinished)
+        ->assertSeeHtml('data-reply-blocked="'.($unfinished ? 'true' : 'false').'"')
+        ->assertDontSeeHtml('wire:poll.1s')->assertSeeHtml('wire:poll.15s.visible');
+    expect((bool) preg_match('/<textarea\b[^>]*\bid="replyBody"[^>]*\bdisabled(?:[ >])/', $component->html()))->toBe($unfinished);
+    if ($status === DeliveryStatus::Failed) {
+        $component->assertSee(['Повторить отправку', 'telegram_delivery_exhausted', 'Отменить доставку']);
+        $component->assertSeeText(['Не удалось отправить', 'Повторить', 'Отменить']);
+    } else {
+        $component->assertDontSee(['Повторить отправку', 'Отменить доставку']);
+    }
+
+    expect($reply->refresh()->getRawOriginal())->toBe($storedReply);
+    expect($ticket->refresh()->getRawOriginal())->toBe($storedTicket);
+    Queue::assertNothingPushed();
+    Http::assertNothingSent();
+})->with([
+    'sent' => [DeliveryStatus::Sent, 'Отправлено', false],
+    'failed' => [DeliveryStatus::Failed, 'Ошибка отправки', true],
+    'cancelled' => [DeliveryStatus::Cancelled, 'Отменено', false],
+]);
+
+test('ignores delivery checks for another ticket or a non-operator message', function () {
+    $ticket = Ticket::factory()->create();
+    $otherReply = Message::factory()->for(Ticket::factory())->create([
+        'author' => MessageAuthor::Operator, 'direction' => MessageDirection::Outbound, 'delivery_status' => DeliveryStatus::Sent,
+    ]);
+    $botReply = Message::factory()->for($ticket->participant, 'participant')->for($ticket)->create([
+        'author' => MessageAuthor::Bot, 'direction' => MessageDirection::Outbound, 'delivery_status' => DeliveryStatus::Pending,
+    ]);
+    $this->actingAs(User::factory()->create());
+    $component = Livewire::test(OperatorDashboard::class)->call('selectTicket', $ticket->id);
+
+    foreach ([$otherReply->id, $botReply->id, 0] as $messageId) {
+        $component->call('refreshOperatorReply', $messageId)->assertHasNoErrors()->assertSet('selectedTicketId', $ticket->id);
+        expect($component->effects)->not->toHaveKey('html');
+    }
+});
+
+test('rejects an unauthenticated delivery status check', function () {
+    Livewire::test(OperatorDashboard::class)->call('refreshOperatorReply', 1)->assertForbidden();
+});
+
+test('resumes frequent polling after retry and removes it after cancellation', function () {
+    Queue::fake([DeliverTelegramMessage::class]);
+    $ticket = Ticket::factory()->create();
+    $reply = Message::factory()->for($ticket->participant, 'participant')->for($ticket)->create([
+        'author' => MessageAuthor::Operator, 'direction' => MessageDirection::Outbound, 'delivery_status' => DeliveryStatus::Failed,
+    ]);
+    $this->actingAs(User::factory()->create());
+
+    Livewire::test(OperatorDashboard::class)->call('selectTicket', $ticket->id)->assertDontSeeHtml('wire:poll.1s')
+        ->call('retryDelivery', $reply->id)->assertSeeHtml('wire:poll.1s="refreshOperatorReply('.$reply->id.')"')
+        ->call('cancelDelivery', $reply->id)->assertDontSeeHtml('wire:poll.1s')->assertSee('Доставка: Отменено');
+
+    expect($reply->refresh()->delivery_status)->toBe(DeliveryStatus::Cancelled);
+    $this->assertDatabaseCount('messages', 1);
+    Queue::assertPushed(DeliverTelegramMessage::class, 1);
 });

@@ -138,6 +138,22 @@ class OperatorDashboard extends Component
         $this->resetValidation();
     }
 
+    public function refreshOperatorReply(int $messageId): void
+    {
+        $this->operator();
+
+        $deliveryStatus = Message::query()
+            ->whereKey($messageId)
+            ->where('ticket_id', $this->selectedTicketId)
+            ->where('direction', MessageDirection::Outbound)
+            ->where('author', MessageAuthor::Operator)
+            ->value('delivery_status');
+
+        if ($deliveryStatus === null || $deliveryStatus === DeliveryStatus::Pending) {
+            $this->skipRender();
+        }
+    }
+
     public function retryDelivery(int $messageId, OperatorReplyService $operatorReplies): void
     {
         $this->operator();

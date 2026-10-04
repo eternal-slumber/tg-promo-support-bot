@@ -13,6 +13,8 @@ function createChat(messageId = 1, height = 1000) {
         dataset: { latestMessageId: String(messageId) },
         clientHeight: 400,
         scrollHeight: height,
+        localReplyVisible: false,
+        querySelector() { return { getClientRects: () => this.localReplyVisible ? [{}] : [] }; },
         get scrollTop() { return position; },
         set scrollTop(value) { position = Math.max(0, Math.min(value, this.scrollHeight - this.clientHeight)); },
         addEventListener(name, callback) { listeners[name] = callback; },
@@ -81,6 +83,32 @@ test('follows a new message at the 80 pixel boundary', () => {
     ui.chat.scrollTo(520);
     ui.poll(2, 1200);
     assert.equal(ui.chat.scrollTop, 800);
+});
+
+test('follows the local sending bubble only when the reader was near the bottom', () => {
+    const ui = mount();
+    ui.chat.localReplyVisible = true;
+    ui.poll(1, 1100);
+    assert.equal(ui.chat.scrollTop, 700);
+});
+
+test('keeps the reader position when the local sending bubble appears while reading history', () => {
+    const ui = mount();
+    ui.chat.scrollTo(200);
+    ui.chat.localReplyVisible = true;
+    ui.poll(1, 1100);
+    assert.equal(ui.chat.scrollTop, 200);
+});
+
+test('does not treat a visible sending bubble as a new message on repeated delivery checks', () => {
+    const ui = mount();
+    ui.chat.localReplyVisible = true;
+    ui.poll(1, 1100);
+    ui.poll(1, 1200);
+    assert.equal(ui.chat.scrollTop, 700);
+    ui.chat.localReplyVisible = false;
+    ui.poll(1, 1100);
+    assert.equal(ui.chat.scrollTop, 700);
 });
 
 test('preserves the position while reading above the bottom boundary across repeated polls', () => {
