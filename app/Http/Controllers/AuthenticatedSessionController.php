@@ -17,6 +17,12 @@ class AuthenticatedSessionController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $password = $request->input('password');
+
+        if (is_string($password)) {
+            $request->merge(['password' => preg_replace('/[\s\p{Z}\x{FEFF}]+/u', '', $password)]);
+        }
+
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],

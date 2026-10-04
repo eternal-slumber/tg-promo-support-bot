@@ -19,6 +19,10 @@ class DatabaseSeeder extends Seeder
         $email = config('support.operator.email');
         $password = config('support.operator.password');
 
+        if (is_string($password)) {
+            $password = preg_replace('/[\s\p{Z}\x{FEFF}]+/u', '', $password);
+        }
+
         if (! is_string($email) || ! filter_var($email, FILTER_VALIDATE_EMAIL)
             || ! is_string($password) || trim($password) === '') {
             throw new RuntimeException('Operator bootstrap requires a valid OPERATOR_EMAIL and a non-empty OPERATOR_PASSWORD.');

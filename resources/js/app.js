@@ -13,6 +13,28 @@ document.addEventListener('click', (event) => {
 });
 
 document.addEventListener('alpine:init', () => {
+    window.Alpine.data('operatorLogin', () => ({
+        normalizePassword() {
+            const input = this.$refs.password;
+            const value = input.value;
+            const normalize = (text) => text.replace(/[\s\p{Z}]+/gu, '');
+            const normalized = normalize(value);
+
+            if (normalized === value) {
+                return;
+            }
+
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const direction = input.selectionDirection;
+            input.value = normalized;
+
+            if (start !== null && end !== null) {
+                input.setSelectionRange(normalize(value.slice(0, start)).length, normalize(value.slice(0, end)).length, direction);
+            }
+        },
+    }));
+
     window.Alpine.data('operatorReplyComposer', () => ({
         submitting: false,
         height: '36px',
