@@ -11,6 +11,8 @@ use App\Models\TelegramParticipant;
 use App\Models\TelegramUpdate;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Services\LlmDecisionValidator;
+use App\Services\PromotionRules;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -35,9 +37,17 @@ test('models expose casts and relationships', function () {
             'sensitive_data_redacted' => true,
             'redaction_types' => ['payment_card'],
         ]);
+    $structuredOutput = [
+        'decision' => 'mixed',
+        'reason' => 'mixed_request',
+        'answer' => 'Деньгами заменить приз нельзя.',
+        'evidence' => [['rule_id' => '7.4', 'quote' => 'Выплата денежного эквивалента призов и замена призов другими не производятся.']],
+    ];
     $decision = SupportDecision::factory()->for($message)->create([
         'type' => SupportDecisionType::Mixed,
-        'structured_output' => ['type' => 'mixed'],
+        'reason' => 'mixed_request',
+        'answer_text' => $structuredOutput['answer'],
+        'structured_output' => $structuredOutput,
     ]);
 
     expect($update->received_at)->toBeInstanceOf(DateTimeInterface::class)
@@ -49,7 +59,7 @@ test('models expose casts and relationships', function () {
         ->and($message->sensitive_data_redacted)->toBeTrue()
         ->and($message->redaction_types)->toBe(['payment_card'])
         ->and($decision->type)->toBe(SupportDecisionType::Mixed)
-        ->and($decision->structured_output)->toBe(['type' => 'mixed'])
+        ->and($decision->structured_output)->toBe($structuredOutput)
         ->and($participant->updates->sole()->is($update))->toBeTrue()
         ->and($participant->tickets->sole()->is($ticket))->toBeTrue()
         ->and($participant->messages->sole()->is($message))->toBeTrue()
@@ -60,6 +70,16 @@ test('models expose casts and relationships', function () {
         ->and($message->decision->is($decision))->toBeTrue()
         ->and($operator->messages->sole()->is($message))->toBeTrue()
         ->and($decision->message->is($message))->toBeTrue();
+});
+
+test('the decision factory persists the current validated structured output contract', function () {
+    $decision = SupportDecision::factory()->create()->refresh();
+
+    $validated = app(LlmDecisionValidator::class)->validate($decision->structured_output, app(PromotionRules::class)->content());
+
+    expect($validated->type)->toBe($decision->type);
+    expect($validated->reason)->toBe($decision->reason);
+    expect($validated->answer)->toBe($decision->answer_text);
 });
 
 test('telegram update id is unique', function () {

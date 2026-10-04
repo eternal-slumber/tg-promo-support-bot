@@ -19,13 +19,20 @@ class SupportDecisionFactory extends Factory
      */
     public function definition(): array
     {
+        $answer = fake()->sentence();
+
         return [
             'message_id' => Message::factory(),
             'type' => SupportDecisionType::Answer,
-            'reason' => null,
-            'answer_text' => fake()->sentence(),
+            'reason' => 'rule_answer',
+            'answer_text' => $answer,
             'knowledge_source_hash' => hash('sha256', 'promo-rules'),
-            'structured_output' => ['type' => SupportDecisionType::Answer->value],
+            'structured_output' => [
+                'decision' => SupportDecisionType::Answer->value,
+                'reason' => 'rule_answer',
+                'answer' => $answer,
+                'evidence' => [['rule_id' => '7.4', 'quote' => 'Выплата денежного эквивалента призов и замена призов другими не производятся.']],
+            ],
         ];
     }
 }
