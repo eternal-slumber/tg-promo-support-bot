@@ -26,7 +26,6 @@ class TelegramMessagePresentation
         return new TelegramOutboundMessage(
             $message->participant->chat_id,
             $text,
-            $this->replyMarkup($message),
         );
     }
 
@@ -45,23 +44,6 @@ class TelegramMessagePresentation
         }
 
         return $text;
-    }
-
-    /** @return array<string, mixed>|null */
-    private function replyMarkup(Message $message): ?array
-    {
-        if ($message->author !== MessageAuthor::Operator || $message->ticket_id === null) {
-            return null;
-        }
-
-        return [
-            'keyboard' => [[
-                ['text' => TicketLifecycleService::ResolvedResponse],
-                ['text' => TicketLifecycleService::UnresolvedResponse],
-            ]],
-            'resize_keyboard' => true,
-            'one_time_keyboard' => true,
-        ];
     }
 
     private function quote(Ticket $ticket): ?string

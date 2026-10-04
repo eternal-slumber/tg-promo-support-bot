@@ -16,11 +16,10 @@ class TelegramBotApiClient implements TelegramBotClient
             throw new TelegramDeliveryException('telegram_message_too_long', false);
         }
 
-        $response = $this->request('sendMessage', array_filter([
+        $response = $this->request('sendMessage', [
             'chat_id' => $message->chatId,
             'text' => $message->text,
-            'reply_markup' => $message->replyMarkup,
-        ], fn (mixed $value): bool => $value !== null));
+        ]);
         $messageId = data_get($response, 'result.message_id');
 
         if (! is_int($messageId)) {

@@ -23,13 +23,13 @@ test('support enums expose the persisted values', function (string $enum, array 
 test('ticket status permits only designed transitions', function (TicketStatus $from, TicketStatus $to, bool $allowed) {
     expect($from->canTransitionTo($to))->toBe($allowed);
 })->with([
-    'open to waiting' => [TicketStatus::Open, TicketStatus::Resolved, true],
+    'open to resolved' => [TicketStatus::Open, TicketStatus::Resolved, true],
     'open to closed' => [TicketStatus::Open, TicketStatus::Closed, true],
     'open to open' => [TicketStatus::Open, TicketStatus::Open, false],
-    'waiting to open' => [TicketStatus::Resolved, TicketStatus::Open, true],
-    'waiting to closed' => [TicketStatus::Resolved, TicketStatus::Closed, true],
-    'waiting to waiting' => [TicketStatus::Resolved, TicketStatus::Resolved, false],
+    'resolved to open' => [TicketStatus::Resolved, TicketStatus::Open, true],
+    'resolved to closed' => [TicketStatus::Resolved, TicketStatus::Closed, true],
+    'resolved to resolved' => [TicketStatus::Resolved, TicketStatus::Resolved, false],
     'closed to open' => [TicketStatus::Closed, TicketStatus::Open, false],
-    'closed to waiting' => [TicketStatus::Closed, TicketStatus::Resolved, false],
+    'closed to resolved' => [TicketStatus::Closed, TicketStatus::Resolved, false],
     'closed to closed' => [TicketStatus::Closed, TicketStatus::Closed, false],
 ]);

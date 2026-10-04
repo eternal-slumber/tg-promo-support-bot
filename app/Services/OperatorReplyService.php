@@ -35,12 +35,11 @@ class OperatorReplyService
                         ->lockForUpdate()
                         ->findOrFail($messageId);
 
-                    if ($lockedTicket->status === TicketStatus::Closed
-                        || ! in_array($message->delivery_status, [DeliveryStatus::Pending, DeliveryStatus::Failed], true)) {
-                        throw new DomainException('Only unfinished operator replies on active tickets can be cancelled.');
+                    if (! in_array($message->delivery_status, [DeliveryStatus::Pending, DeliveryStatus::Failed], true)) {
+                        throw new DomainException('Only unfinished operator replies can be cancelled.');
                     }
 
-                    $message->update(['delivery_status' => DeliveryStatus::Cancelled, 'resolves_ticket' => false]);
+                    $message->update(['delivery_status' => DeliveryStatus::Cancelled]);
 
                     return true;
                 });
@@ -51,15 +50,53 @@ class OperatorReplyService
         }
     }
 
-    public function create(User $operator, Ticket $ticket, string $body, bool $resolveTicket = false): Message
+    public function retry(Ticket $ticket, int $messageId): void
+    {
+        $retried = Cache::store('database')->lock('telegram-delivery:'.$messageId, 50)
+            ->get(function () use ($ticket, $messageId): bool {
+                return DB::transaction(function () use ($ticket, $messageId): bool {
+                    $lockedTicket = Ticket::query()->lockForUpdate()->findOrFail($ticket->getKey());
+                    $message = $lockedTicket->messages()
+                        ->where('direction', MessageDirection::Outbound)
+                        ->where('author', MessageAuthor::Operator)
+                        ->lockForUpdate()
+                        ->findOrFail($messageId);
+
+                    if ($message->delivery_status !== DeliveryStatus::Failed) {
+                        throw new DomainException('Only failed operator replies can be retried.');
+                    }
+
+                    $message->update(['delivery_status' => DeliveryStatus::Pending]);
+                    DeliverTelegramMessage::dispatch($message->id);
+
+                    return true;
+                });
+            });
+
+        if (! $retried) {
+            throw new DomainException('Delivery is already in progress.');
+        }
+    }
+
+    public function create(User $operator, Ticket $ticket, string $body): Message
     {
         $sanitized = $this->sanitizer->sanitize($body);
 
-        return DB::transaction(function () use ($operator, $ticket, $sanitized, $resolveTicket): Message {
+        return DB::transaction(function () use ($operator, $ticket, $sanitized): Message {
             $lockedTicket = Ticket::query()->lockForUpdate()->findOrFail($ticket->getKey());
 
             if ($lockedTicket->status === TicketStatus::Closed) {
                 throw new DomainException('Closed tickets cannot receive an operator reply.');
+            }
+
+            if ($lockedTicket->messages()
+                ->where('direction', MessageDirection::Outbound)
+                ->where('author', MessageAuthor::Operator)
+                ->whereIn('delivery_status', [DeliveryStatus::Pending, DeliveryStatus::Failed])
+                ->exists()) {
+                throw ValidationException::withMessages([
+                    'replyBody' => 'Дождитесь отправки предыдущего ответа или отмените его. Для ответа с ошибкой выберите «Повторить» или «Отменить».',
+                ]);
             }
 
             $limit = $this->presentation->operatorReplyLimit($lockedTicket);
@@ -80,7 +117,6 @@ class OperatorReplyService
                 'author' => MessageAuthor::Operator,
                 'body' => $sanitized->text,
                 'delivery_status' => DeliveryStatus::Pending,
-                'resolves_ticket' => $resolveTicket,
                 'sensitive_data_redacted' => $sanitized->wasRedacted,
                 'redaction_types' => $sanitized->redactionTypes ?: null,
             ]);

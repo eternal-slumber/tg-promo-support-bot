@@ -1,5 +1,6 @@
 <?php
 
+use App\Data\TelegramSentMessage;
 use App\Enums\DeliveryStatus;
 use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
@@ -19,7 +20,7 @@ use Livewire\Livewire;
 
 uses(LazilyRefreshDatabase::class);
 
-test('manual closure cancels unfinished replies without requiring individual cancellation', function (DeliveryStatus $status) {
+test('manual closure preserves unfinished replies for delivery', function (DeliveryStatus $status) {
     Queue::fake();
     $ticket = Ticket::factory()->resolved()->create();
     $reply = cancellableOperatorReply($ticket, ['delivery_status' => $status]);
@@ -31,10 +32,12 @@ test('manual closure cancels unfinished replies without requiring individual can
         ->assertHasNoErrors();
 
     expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
-    expect($reply->refresh()->delivery_status)->toBe(DeliveryStatus::Cancelled);
+    expect($reply->refresh()->delivery_status)->toBe($status);
     $client = Mockery::mock(TelegramBotClient::class);
-    $client->shouldNotReceive('sendMessage');
+    $client->shouldReceive('sendMessage')->once()->andReturn(new TelegramSentMessage(789));
     (new DeliverTelegramMessage($reply->id))->handle($client, app(TelegramMessagePresentation::class), app(TicketLifecycleService::class));
+    expect($reply->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
     Queue::assertNothingPushed();
 })->with(['pending' => DeliveryStatus::Pending, 'failed' => DeliveryStatus::Failed]);
 
@@ -161,7 +164,7 @@ test('refuses cancellation of non-operator or inbound messages', function (array
     'inbound' => [['direction' => MessageDirection::Inbound]],
 ]);
 
-test('refuses cancellation on a closed ticket', function () {
+test('allows explicit cancellation on a closed ticket without reopening it', function () {
     Queue::fake();
     $ticket = Ticket::factory()->closed()->create();
     $reply = cancellableOperatorReply($ticket);
@@ -170,11 +173,12 @@ test('refuses cancellation on a closed ticket', function () {
     Livewire::test(OperatorDashboard::class)
         ->call('selectFilter', 'closed')
         ->call('selectTicket', $ticket->id)
-        ->assertDontSee('Отменить доставку')
+        ->assertSee('Отменить доставку')
         ->call('cancelDelivery', $reply->id)
-        ->assertHasErrors('ticket');
+        ->assertHasNoErrors();
 
-    expect($reply->refresh()->delivery_status)->toBe(DeliveryStatus::Failed);
+    expect($reply->refresh()->delivery_status)->toBe(DeliveryStatus::Cancelled);
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
     Queue::assertNothingPushed();
 });
 

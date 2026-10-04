@@ -396,7 +396,7 @@ test('delivers a deduplicated text-only fallback for private media and reopens r
     'photo with a meaningful caption without a ticket' => [
         ['photo' => [['file_id' => 'private-file']], 'caption' => 'Проверьте мой чек'], null,
     ],
-    'photo with meaningful and sensitive caption on a waiting ticket' => [
+    'photo with meaningful and sensitive caption on a resolved ticket' => [
         ['photo' => [['file_id' => 'private-file']], 'caption' => 'Почему отклонили чек? пароль qwerty123'], TicketStatus::Resolved,
     ],
     'document without a ticket' => [['document' => ['file_id' => 'private-file', 'file_name' => 'qwerty123.txt']], null],
@@ -516,7 +516,7 @@ test('attaches a message to an open ticket without queuing normal processing', f
     Queue::assertNothingPushed();
 });
 
-test('attaches a message to a waiting ticket and reopens it without queuing normal processing', function () {
+test('attaches a message to a resolved ticket and reopens it without queuing normal processing', function () {
     Queue::fake([ProcessIncomingMessage::class]);
     Http::preventStrayRequests();
     $participant = TelegramParticipant::factory()->create(['telegram_user_id' => 2011, 'chat_id' => 3011]);

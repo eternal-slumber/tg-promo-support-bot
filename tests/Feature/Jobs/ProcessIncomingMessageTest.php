@@ -322,8 +322,9 @@ test('a late AI result after an operator reply reopens the ticket without sendin
     $first = Message::factory()->for($participant, 'participant')->create();
     runJob($first, fakeLlmClient(escalationDecision('participant_specific')));
     $ticket = Ticket::query()->sole();
-    $reply = app(OperatorReplyService::class)->create(User::factory()->create(), $ticket, 'Ответ оператора', true);
+    $reply = app(OperatorReplyService::class)->create(User::factory()->create(), $ticket, 'Ответ оператора');
     app()->call([new DeliverTelegramMessage($reply->id), 'handle']);
+    app(TicketLifecycleService::class)->resolve($ticket);
     $timer = Queue::pushed(AutoCloseTicket::class)->sole();
     expect($ticket->refresh()->status)->toBe(TicketStatus::Resolved);
     $messageCount = Message::query()->count();

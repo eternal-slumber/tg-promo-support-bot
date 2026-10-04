@@ -85,10 +85,6 @@ class TelegramIngestionService
             return new TelegramIngestionResult(false, false);
         }
 
-        if ($activeTicket === null && in_array(trim($update->text), [TicketLifecycleService::ResolvedResponse, TicketLifecycleService::UnresolvedResponse], true)) {
-            return new TelegramIngestionResult(false, true);
-        }
-
         if ($activeTicket === null && ! $this->isStartCommand($update->text) && ! $this->allowAiRequest($participant)) {
             return new TelegramIngestionResult(false, true);
         }

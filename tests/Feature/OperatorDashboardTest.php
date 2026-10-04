@@ -406,7 +406,7 @@ test('allows an operator to view closed ticket history with a readable closure r
             (string) $participant->telegram_user_id,
             'История закрытого обращения.',
             'Способ закрытия: '.$label,
-            'Обращение закрыто и доступно только для просмотра.',
+            'Обращение закрыто. Ранее созданные ответы продолжают доставляться; их можно повторить или отменить отдельно.',
         ])
         ->assertDontSeeText(['operator_closed', 'auto_closed', 'user_confirmed'])
         ->assertDontSee('Ответ участнику')
@@ -591,7 +591,7 @@ test('keeps queue and conversation row queries bounded without offsets or unused
     try {
         Livewire::test(OperatorDashboard::class)->call('selectTicket', $ticket->id)->call('$refresh');
         $queries = collect(DB::getQueryLog())->pluck('query')->filter(fn (string $query): bool => str_starts_with($query, 'select'));
-        $messageQueries = $queries->filter(fn (string $query): bool => str_contains($query, 'from "messages"') && ! str_contains(strtolower($query), 'count('));
+        $messageQueries = $queries->filter(fn (string $query): bool => str_contains($query, 'from "messages"') && ! str_contains(strtolower($query), 'count(') && ! str_contains(strtolower($query), 'exists('));
         $ticketQueries = $queries->filter(fn (string $query): bool => str_contains($query, 'from "tickets"') && str_contains($query, 'limit'));
 
         expect($messageQueries)->not->toBeEmpty();

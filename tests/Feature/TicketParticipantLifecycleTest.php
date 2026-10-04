@@ -6,6 +6,7 @@ use App\Enums\TicketCloseReason;
 use App\Enums\TicketStatus;
 use App\Jobs\AutoCloseTicket;
 use App\Jobs\DeliverTelegramMessage;
+use App\Jobs\ProcessIncomingMessage;
 use App\Models\Message;
 use App\Models\Ticket;
 use App\Models\User;
@@ -22,13 +23,13 @@ beforeEach(function () {
     $this->withHeader('X-Telegram-Bot-Api-Secret-Token', 'test-webhook-secret');
 });
 
-test('feedback stays in the same ticket and reopens it without AI or automatic confirmation', function (string $text, TicketStatus $status, ?TicketCloseReason $reason) {
+test('participant text stays in the same ticket and reopens it without AI or automatic closure', function (string $text, TicketStatus $status, ?TicketCloseReason $reason) {
     $this->freezeTime();
     $ticket = Ticket::factory()->resolved()->create();
     $resolvedSince = $ticket->resolved_since->toISOString();
     Queue::fake();
     Http::preventStrayRequests();
-    $payload = waitingFeedbackUpdate($ticket, 11001, $text);
+    $payload = ticketParticipantUpdate($ticket, 11001, $text);
 
     $this->postJson(route('telegram.webhook'), $payload)->assertOk()->assertJsonPath('status', 'accepted');
     $this->postJson(route('telegram.webhook'), $payload)->assertOk()->assertJsonPath('status', 'duplicate');
@@ -49,13 +50,13 @@ test('feedback stays in the same ticket and reopens it without AI or automatic c
     Queue::assertNothingPushed();
     Http::assertNothingSent();
 })->with([
-    'confirmed' => ['Проблема решена', TicketStatus::Open, null],
-    'unresolved button' => ['Не решило', TicketStatus::Open, null],
-    'implicit unresolved' => ['Не помогло, ошибка осталась', TicketStatus::Open, null],
+    'former confirmation text' => ['Проблема решена', TicketStatus::Open, null],
+    'former unresolved text' => ['Не решило', TicketStatus::Open, null],
+    'continuation' => ['Не помогло, ошибка осталась', TicketStatus::Open, null],
     'other question' => ['А где посмотреть номер?', TicketStatus::Open, null],
 ]);
 
-test('implicit feedback permits the next operator reply and the old timer cannot close its new cycle', function () {
+test('a participant message permits the next operator reply and the old timer cannot close its new cycle', function () {
     $this->freezeTime();
     $ticket = Ticket::factory()->create();
     $operator = User::factory()->create();
@@ -63,14 +64,17 @@ test('implicit feedback permits the next operator reply and the old timer cannot
     Http::preventStrayRequests();
     Http::fake(['*sendMessage' => Http::response(['ok' => true, 'result' => ['message_id' => 12001]])]);
     $replies = app(OperatorReplyService::class);
-    $replyA = $replies->create($operator, $ticket, 'Ответ A', true);
+    $replyA = $replies->create($operator, $ticket, 'Ответ A');
     app()->call([new DeliverTelegramMessage($replyA->id), 'handle']);
+    app(TicketLifecycleService::class)->resolve($ticket);
     $oldTimer = Queue::pushed(AutoCloseTicket::class)->sole();
 
-    $this->postJson(route('telegram.webhook'), waitingFeedbackUpdate($ticket, 11002, 'Не помогло'))->assertOk();
+    $this->postJson(route('telegram.webhook'), ticketParticipantUpdate($ticket, 11002, 'Не помогло'))->assertOk();
     expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
-    $replyB = $replies->create($operator, $ticket, 'Ответ B', true);
+    $this->travel(1)->seconds();
+    $replyB = $replies->create($operator, $ticket, 'Ответ B');
     app()->call([new DeliverTelegramMessage($replyB->id), 'handle']);
+    app(TicketLifecycleService::class)->resolve($ticket);
     $currentTimer = Queue::pushed(AutoCloseTicket::class)->last();
     expect($replyB->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
     $this->travel(24)->hours();
@@ -83,27 +87,28 @@ test('implicit feedback permits the next operator reply and the old timer cannot
     Http::assertSentCount(2);
 });
 
-test('an old keyboard response after closure does not start AI processing', function () {
+test('former feedback text after closure is processed as a new ordinary question', function () {
     $ticket = Ticket::factory()->closed()->create();
     Queue::fake();
     Http::preventStrayRequests();
 
-    $this->postJson(route('telegram.webhook'), waitingFeedbackUpdate($ticket, 11003, 'Проблема решена'))->assertOk()->assertJsonPath('status', 'ignored');
+    $this->postJson(route('telegram.webhook'), ticketParticipantUpdate($ticket, 11003, 'Проблема решена'))->assertOk()->assertJsonPath('status', 'accepted');
 
     expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
-    $this->assertDatabaseCount('messages', 0);
-    Queue::assertNothingPushed();
+    $this->assertDatabaseCount('messages', 1);
+    expect(Message::query()->sole()->ticket_id)->toBeNull();
+    Queue::assertPushed(ProcessIncomingMessage::class, 1);
     Http::assertNothingSent();
 });
 
-test('text sent before delivery starts cannot confirm an undelivered reply', function () {
+test('text sent before delivery stays in the open conversation', function () {
     $ticket = Ticket::factory()->create();
     Queue::fake();
     Http::preventStrayRequests();
     Http::fake(['*sendMessage' => Http::response(['ok' => true, 'result' => ['message_id' => 12002]])]);
-    $reply = app(OperatorReplyService::class)->create(User::factory()->create(), $ticket, 'Ответ', true);
+    $reply = app(OperatorReplyService::class)->create(User::factory()->create(), $ticket, 'Ответ');
 
-    $this->postJson(route('telegram.webhook'), waitingFeedbackUpdate($ticket, 11004, 'Проблема решена'))->assertOk();
+    $this->postJson(route('telegram.webhook'), ticketParticipantUpdate($ticket, 11004, 'Проблема решена'))->assertOk();
     expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
     $inbound = Message::query()->where('direction', MessageDirection::Inbound)->sole();
     app()->call([new DeliverTelegramMessage($reply->id), 'handle']);
@@ -117,12 +122,12 @@ test('text sent before delivery starts cannot confirm an undelivered reply', fun
     Http::assertSentCount(1);
 });
 
-test('reply keyboard text can only affect the senders own waiting ticket', function () {
+test('participant text can only reopen the senders own resolved ticket', function () {
     $ownerTicket = Ticket::factory()->resolved()->create();
     $senderTicket = Ticket::factory()->resolved()->create();
     Queue::fake();
     Http::preventStrayRequests();
-    $payload = waitingFeedbackUpdate($senderTicket, 11005, 'Проблема решена');
+    $payload = ticketParticipantUpdate($senderTicket, 11005, 'Проблема решена');
     $payload['message']['ticket_id'] = $ownerTicket->id;
 
     $this->postJson(route('telegram.webhook'), $payload)->assertOk();
@@ -136,7 +141,7 @@ test('reply keyboard text can only affect the senders own waiting ticket', funct
 });
 
 /** @return array<string, mixed> */
-function waitingFeedbackUpdate(Ticket $ticket, int $updateId, string $text): array
+function ticketParticipantUpdate(Ticket $ticket, int $updateId, string $text): array
 {
     return [
         'update_id' => $updateId,

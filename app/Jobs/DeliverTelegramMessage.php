@@ -11,9 +11,7 @@ use App\Models\Message;
 use App\Models\Ticket;
 use App\Services\TelegramBotClient;
 use App\Services\TelegramMessagePresentation;
-use App\Services\TicketLifecycleService;
 use DateTimeInterface;
-use DomainException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\TimeoutExceededException;
@@ -48,11 +46,10 @@ class DeliverTelegramMessage implements ShouldQueue
     public function handle(
         TelegramBotClient $client,
         TelegramMessagePresentation $presentation,
-        TicketLifecycleService $ticketLifecycle,
     ): void {
         $completed = Cache::store('database')->lock('telegram-delivery:'.$this->messageId, $this->timeout + 10)
-            ->get(function () use ($client, $presentation, $ticketLifecycle): bool {
-                $this->deliver($client, $presentation, $ticketLifecycle);
+            ->get(function () use ($client, $presentation): bool {
+                $this->deliver($client, $presentation);
 
                 return true;
             });
@@ -76,7 +73,6 @@ class DeliverTelegramMessage implements ShouldQueue
     private function deliver(
         TelegramBotClient $client,
         TelegramMessagePresentation $presentation,
-        TicketLifecycleService $ticketLifecycle,
     ): void {
         $message = DB::transaction(function (): ?Message {
             $queuedMessage = Message::query()->find($this->messageId);
@@ -97,7 +93,8 @@ class DeliverTelegramMessage implements ShouldQueue
                 return null;
             }
 
-            if ($lockedMessage->ticket?->status === TicketStatus::Closed) {
+            if ($lockedMessage->ticket?->status === TicketStatus::Closed
+                && $lockedMessage->author !== MessageAuthor::Operator) {
                 $lockedMessage->update(['delivery_status' => DeliveryStatus::Cancelled]);
 
                 return null;
@@ -105,6 +102,17 @@ class DeliverTelegramMessage implements ShouldQueue
 
             if ($lockedMessage->author === MessageAuthor::Operator
                 && $lockedMessage->ticket === null) {
+                return null;
+            }
+
+            if ($lockedMessage->author === MessageAuthor::Operator && $lockedMessage->ticket->messages()
+                ->where('direction', MessageDirection::Outbound)
+                ->where('author', MessageAuthor::Operator)
+                ->where('id', '<', $lockedMessage->id)
+                ->whereIn('delivery_status', [DeliveryStatus::Pending, DeliveryStatus::Failed])
+                ->exists()) {
+                $this->release(5);
+
                 return null;
             }
 
@@ -164,7 +172,7 @@ class DeliverTelegramMessage implements ShouldQueue
             return;
         }
 
-        DB::transaction(function () use ($message, $sentMessage, $ticketLifecycle): void {
+        DB::transaction(function () use ($message, $sentMessage): void {
             $ticket = $message->ticket_id === null ? null : Ticket::query()->lockForUpdate()->find($message->ticket_id);
             $lockedMessage = Message::query()->lockForUpdate()->findOrFail($this->messageId);
 
@@ -184,18 +192,6 @@ class DeliverTelegramMessage implements ShouldQueue
                     $ticket->update(['first_operator_replied_at' => $lockedMessage->delivered_at]);
                 }
 
-                if (! $lockedMessage->resolves_ticket) {
-                    return;
-                }
-
-                try {
-                    $resolvedTicket = $ticketLifecycle->resolve($ticket);
-                } catch (DomainException) {
-                    return;
-                }
-
-                AutoCloseTicket::dispatch($resolvedTicket->id, $resolvedTicket->resolved_since->toISOString(), $lockedMessage->id)
-                    ->delay($resolvedTicket->resolved_since->copy()->addHours((int) config('support.ticket_auto_close_hours')));
             }
         });
     }

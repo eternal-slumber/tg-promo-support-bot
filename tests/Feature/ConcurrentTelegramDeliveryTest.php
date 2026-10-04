@@ -13,6 +13,7 @@ use App\Jobs\ProcessIncomingMessage;
 use App\Models\Message;
 use App\Models\TelegramParticipant;
 use App\Models\Ticket;
+use App\Models\User;
 use App\Services\OperatorReplyService;
 use App\Services\TelegramIngestionService;
 use App\Services\TicketLifecycleService;
@@ -22,6 +23,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\Process\Exception\ProcessSignaledException;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
@@ -100,7 +102,7 @@ test('concurrent ingestion processes cannot exceed the same participant AI quota
     }
 });
 
-test('early reply keyboard feedback survives delivery retries without AI jobs or new buttons', function (string $mode, string $text, TicketStatus $expectedStatus, ?TicketCloseReason $expectedReason) {
+test('participant messages during delivery survives delivery retries without AI jobs or new buttons', function (string $mode, string $text, TicketStatus $expectedStatus, ?TicketCloseReason $expectedReason) {
     Http::preventStrayRequests();
     config()->set('telegram.webhook_secret', 'test-webhook-secret');
     $ticket = Ticket::factory()->create();
@@ -110,7 +112,6 @@ test('early reply keyboard feedback survives delivery retries without AI jobs or
         'direction' => MessageDirection::Outbound,
         'author' => MessageAuthor::Operator,
         'delivery_status' => DeliveryStatus::Pending,
-        'resolves_ticket' => true,
     ]);
     DeliverTelegramMessage::dispatch($message->id);
     $input = new InputStream;
@@ -173,7 +174,6 @@ test('incoming questions survive delivery finalization rollback and keep the tic
         'direction' => MessageDirection::Outbound,
         'author' => MessageAuthor::Operator,
         'delivery_status' => DeliveryStatus::Pending,
-        'resolves_ticket' => true,
     ]);
     $participant = $ticket->participant;
     app(TelegramIngestionService::class)->ingest(new TelegramUpdateData(92001, TelegramUpdateKind::Message, $participant->telegram_user_id, $participant->chat_id, 92001, 'Не решило'));
@@ -209,7 +209,6 @@ test('two workers send the same message only once', function (DeliveryStatus $st
         'direction' => MessageDirection::Outbound,
         'author' => MessageAuthor::Operator,
         'delivery_status' => $status,
-        'resolves_ticket' => true,
     ]);
     DeliverTelegramMessage::dispatch($message->id);
     DeliverTelegramMessage::dispatch($message->id);
@@ -231,14 +230,14 @@ test('two workers send the same message only once', function (DeliveryStatus $st
         expect($first->wait())->toBe(0);
 
         expect($message->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
-        expect($ticket->refresh()->status)->toBe(TicketStatus::Resolved);
+        expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
         $this->assertDatabaseCount('cache_locks', 0);
         makeTelegramDeliveryAvailable();
         $retry = telegramDeliveryWorker();
         $retry->mustRun();
         expect($retry->getOutput())->not->toContain('sending-message');
         expect($message->refresh()->delivery_attempts)->toBe(1);
-        $this->assertDatabaseCount('jobs', 1);
+        $this->assertDatabaseCount('jobs', 0);
         $this->assertDatabaseCount('failed_jobs', 0);
     } finally {
         $input->close();
@@ -248,6 +247,7 @@ test('two workers send the same message only once', function (DeliveryStatus $st
 
 test('cancellation cannot overlap a worker sending an unfinished operator reply', function (DeliveryStatus $status) {
     $ticket = Ticket::factory()->create();
+    $operator = User::factory()->create();
     $message = Message::factory()->for($ticket)->create([
         'participant_id' => $ticket->participant_id,
         'direction' => MessageDirection::Outbound,
@@ -263,6 +263,11 @@ test('cancellation cannot overlap a worker sending an unfinished operator reply'
         expect($worker->waitUntil(fn (string $type, string $output): bool => str_contains($output, 'sending-message')))->toBeTrue();
         expect(fn () => app(OperatorReplyService::class)->cancel($ticket, $message->id))
             ->toThrow(DomainException::class, 'Delivery is already in progress.');
+        expect(fn () => app(OperatorReplyService::class)->create($operator, $ticket, 'Следующий ответ'))
+            ->toThrow(ValidationException::class);
+        expect(fn () => app(OperatorReplyService::class)->retry($ticket, $message->id))
+            ->toThrow(DomainException::class, 'Delivery is already in progress.');
+        $this->assertDatabaseCount('messages', 1);
         expect($message->refresh()->delivery_status)->toBe($status);
         $input->write("continue\n");
         $input->close();
@@ -539,7 +544,6 @@ test('real workers respect flood control across retries duplicates and manual re
         'direction' => MessageDirection::Outbound,
         'author' => $author,
         'delivery_status' => DeliveryStatus::Pending,
-        'resolves_ticket' => $author === MessageAuthor::Operator,
     ]);
     DeliverTelegramMessage::dispatch($message->id);
 
@@ -575,9 +579,9 @@ test('real workers respect flood control across retries duplicates and manual re
     telegramDeliveryWorker()->mustRun();
     expect($message->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
     expect($message->delivery_attempts)->toBe(2);
-    expect($ticket->refresh()->status)->toBe($author === MessageAuthor::Operator ? TicketStatus::Resolved : TicketStatus::Open);
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
     expect(DB::table('jobs')->where('queue', 'telegram')->count())->toBe(0);
-    expect(DB::table('jobs')->where('queue', 'maintenance')->count())->toBe($author === MessageAuthor::Operator ? 1 : 0);
+    expect(DB::table('jobs')->where('queue', 'maintenance')->count())->toBe(0);
     $this->assertDatabaseCount('failed_jobs', 0);
 })->with(['operator' => [MessageAuthor::Operator], 'bot' => [MessageAuthor::Bot], 'system' => [MessageAuthor::System]]);
 

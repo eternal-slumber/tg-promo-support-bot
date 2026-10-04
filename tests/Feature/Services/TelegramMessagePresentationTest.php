@@ -37,7 +37,7 @@ test('bounds automatic Unicode message presentation without changing stored text
     'system over limit' => [MessageAuthor::System, 1],
 ]);
 
-test('presents an operator response with ticket number safe quote and a reply keyboard', function () {
+test('presents an operator response with ticket number safe quote without a feedback keyboard', function () {
     $participant = TelegramParticipant::factory()->create(['chat_id' => 500]);
     $ticket = Ticket::factory()->for($participant, 'participant')->create();
     Message::factory()->for($participant, 'participant')->for($ticket)->create([
@@ -57,12 +57,7 @@ test('presents an operator response with ticket number safe quote and a reply ke
 
     expect($outbound->chatId)->toBe(500)
         ->and($outbound->text)->toContain("Ответ оператора по обращению #{$ticket->id}", 'Проверим статус доставки.', '[REDACTED_PAYMENT_CARD]')
-        ->and($outbound->text)->not->toContain('+7 910 123-45-67')
-        ->and($outbound->replyMarkup)->toBe([
-            'keyboard' => [[['text' => 'Проблема решена'], ['text' => 'Не решило']]],
-            'resize_keyboard' => true,
-            'one_time_keyboard' => true,
-        ]);
+        ->and($outbound->text)->not->toContain('+7 910 123-45-67');
 });
 
 test('limits a participant quote without exposing a phone number', function () {

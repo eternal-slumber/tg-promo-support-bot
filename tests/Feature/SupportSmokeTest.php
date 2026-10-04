@@ -15,7 +15,7 @@ use Livewire\Livewire;
 
 uses(LazilyRefreshDatabase::class);
 
-test('smoke runs webhook database workers operator replies feedback auto closure and statistics', function () {
+test('smoke runs webhook database workers operator replies explicit resolution auto closure and statistics', function () {
     $this->freezeTime();
     config()->set('telegram.webhook_secret', 'smoke-secret');
     config()->set('telegram.bot_token', 'smoke-token');
@@ -52,8 +52,10 @@ test('smoke runs webhook database workers operator replies feedback auto closure
     $this->actingAs(User::factory()->create());
     $panel = Livewire::test(OperatorDashboard::class)->call('selectTicket', $ticket->id);
     $this->travel(2)->minutes();
-    $panel->set('replyBody', 'Ответ оператора')->call('sendReply', true)->assertHasNoErrors();
+    $panel->set('replyBody', 'Ответ оператора')->call('sendReply')->assertHasNoErrors();
     $worker('telegram');
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
+    $panel->call('resolveTicket')->assertHasNoErrors();
     expect($ticket->refresh()->status)->toBe(TicketStatus::Resolved);
     $incoming(3, 'Не решило');
     expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
@@ -69,8 +71,9 @@ test('smoke runs webhook database workers operator replies feedback auto closure
     $secondTicket = Ticket::query()->latest('id')->firstOrFail();
     $panel->call('selectTicket', $secondTicket->id);
     $this->travel(4)->minutes();
-    $panel->set('replyBody', 'Ответ о доставке')->call('sendReply', true)->assertHasNoErrors();
+    $panel->set('replyBody', 'Ответ о доставке')->call('sendReply')->assertHasNoErrors();
     $worker('telegram');
+    $panel->call('resolveTicket')->assertHasNoErrors();
     $this->travel(24)->hours();
     $worker('maintenance');
     expect($secondTicket->refresh()->close_reason)->toBe(TicketCloseReason::AutoClosed);

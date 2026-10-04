@@ -7,6 +7,7 @@ use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
 use App\Enums\TicketCloseReason;
 use App\Enums\TicketStatus;
+use App\Jobs\AutoCloseTicket;
 use App\Models\Message;
 use App\Models\TelegramParticipant;
 use App\Models\Ticket;
@@ -15,10 +16,6 @@ use Illuminate\Support\Facades\DB;
 
 class TicketLifecycleService
 {
-    public const string ResolvedResponse = 'Проблема решена';
-
-    public const string UnresolvedResponse = 'Не решило';
-
     public function activeFor(TelegramParticipant $participant): ?Ticket
     {
         return $participant->tickets()
@@ -95,13 +92,6 @@ class TicketLifecycleService
                 throw new DomainException('Closed tickets cannot be reopened.');
             }
 
-            $lockedTicket->messages()
-                ->where('direction', MessageDirection::Outbound)
-                ->where('author', MessageAuthor::Operator)
-                ->whereIn('delivery_status', [DeliveryStatus::Pending, DeliveryStatus::Failed])
-                ->where('resolves_ticket', true)
-                ->update(['resolves_ticket' => false]);
-
             if ($lockedTicket->status === TicketStatus::Resolved) {
                 $lockedTicket->update(['status' => TicketStatus::Open, 'resolved_since' => null]);
             }
@@ -145,11 +135,17 @@ class TicketLifecycleService
             if ($to === TicketStatus::Closed) {
                 $lockedTicket->messages()
                     ->where('direction', MessageDirection::Outbound)
+                    ->where('author', '!=', MessageAuthor::Operator)
                     ->whereIn('delivery_status', [DeliveryStatus::Pending, DeliveryStatus::Failed])
-                    ->update(['delivery_status' => DeliveryStatus::Cancelled, 'resolves_ticket' => false]);
+                    ->update(['delivery_status' => DeliveryStatus::Cancelled]);
+
+            } elseif ($to === TicketStatus::Resolved) {
+                AutoCloseTicket::dispatch($lockedTicket->id, $lockedTicket->resolved_since->toISOString())
+                    ->delay($lockedTicket->resolved_since->copy()->addHours((int) config('support.ticket_auto_close_hours')));
             }
 
             return $lockedTicket;
         });
     }
+
 }

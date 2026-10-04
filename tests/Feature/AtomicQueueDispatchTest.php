@@ -116,7 +116,7 @@ test('rolls back a support decision when its outbound message cannot be queued',
     expect($message->refresh()->ticket_id)->toBeNull();
 });
 
-test('rolls back feedback and reopening together when inbound persistence fails', function () {
+test('rolls back participant text and reopening together when inbound persistence fails', function () {
     $ticket = Ticket::factory()->resolved()->create();
     $reply = Message::factory()->for($ticket)->create([
         'participant_id' => $ticket->participant_id,
@@ -145,7 +145,7 @@ test('rolls back feedback and reopening together when inbound persistence fails'
     $this->assertDatabaseCount('jobs', 0);
 });
 
-test('persists delayed autoclose alongside sent state and makes it available only after the waiting period', function () {
+test('persists delayed auto close alongside explicit resolution and makes it available only after the timeout', function () {
     $this->travelTo(Carbon::parse('2026-10-02 12:00:00 UTC'));
     config()->set('support.ticket_auto_close_hours', 24);
     $ticket = Ticket::factory()->create();
@@ -154,7 +154,6 @@ test('persists delayed autoclose alongside sent state and makes it available onl
         'direction' => MessageDirection::Outbound,
         'author' => MessageAuthor::Operator,
         'delivery_status' => DeliveryStatus::Pending,
-        'resolves_ticket' => true,
     ]);
     $client = Mockery::mock(TelegramBotClient::class);
     $client->shouldReceive('sendMessage')->once()->andReturn(new TelegramSentMessage(789));
@@ -162,13 +161,14 @@ test('persists delayed autoclose alongside sent state and makes it available onl
     (new DeliverTelegramMessage($message->id))->handle($client, app(TelegramMessagePresentation::class), app(TicketLifecycleService::class));
 
     expect($message->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
+    app(TicketLifecycleService::class)->resolve($ticket);
     expect($ticket->refresh()->status)->toBe(TicketStatus::Resolved);
     $record = DB::table('jobs')->sole();
     $job = unserialize(json_decode($record->payload, true, 512, JSON_THROW_ON_ERROR)['data']['command']);
     expect($job)->toBeInstanceOf(AutoCloseTicket::class);
     expect($job->ticketId)->toBe($ticket->id);
     expect($job->resolvedSince)->toBe($ticket->resolved_since->toISOString());
-    expect($job->replyMessageId)->toBe($message->id);
     expect($record->available_at)->toBe(1791028800);
     expect(Queue::connection('database')->pop('maintenance'))->toBeNull();
     $this->travel(24)->hours();
@@ -178,28 +178,39 @@ test('persists delayed autoclose alongside sent state and makes it available onl
     expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
 });
 
-test('rolls back sent state and waiting state when autoclose cannot be queued', function () {
+test('rolls back explicit resolution when auto close cannot be queued without undoing delivery', function () {
     $ticket = Ticket::factory()->create();
     $message = Message::factory()->for($ticket)->create([
         'participant_id' => $ticket->participant_id,
         'direction' => MessageDirection::Outbound,
         'author' => MessageAuthor::Operator,
         'delivery_status' => DeliveryStatus::Pending,
-        'resolves_ticket' => true,
     ]);
     $client = Mockery::mock(TelegramBotClient::class);
     $client->shouldReceive('sendMessage')->once()->andReturn(new TelegramSentMessage(789));
+    (new DeliverTelegramMessage($message->id))->handle($client, app(TelegramMessagePresentation::class));
     DB::statement('ALTER TABLE jobs ADD CONSTRAINT reject_job_inserts CHECK (false)');
 
-    expect(fn () => (new DeliverTelegramMessage($message->id))->handle(
-        $client,
-        app(TelegramMessagePresentation::class),
-        app(TicketLifecycleService::class),
-    ))->toThrow(QueryException::class);
+    expect(fn () => app(TicketLifecycleService::class)->resolve($ticket))->toThrow(QueryException::class);
 
-    expect($message->refresh()->delivery_status)->toBe(DeliveryStatus::Pending);
-    expect($message->telegram_message_id)->toBeNull();
+    expect($message->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
+    expect($message->telegram_message_id)->toBe(789);
     expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
     expect($ticket->resolved_since)->toBeNull();
+    $this->assertDatabaseCount('jobs', 0);
+});
+
+test('rolls back a failed operator reply retry when delivery cannot be queued', function () {
+    $ticket = Ticket::factory()->create();
+    $message = Message::factory()->for($ticket->participant, 'participant')->for($ticket)->create([
+        'direction' => MessageDirection::Outbound, 'author' => MessageAuthor::Operator,
+        'delivery_status' => DeliveryStatus::Failed,
+    ]);
+    DB::statement('ALTER TABLE jobs ADD CONSTRAINT reject_job_inserts CHECK (false)');
+
+    expect(fn () => app(OperatorReplyService::class)->retry($ticket, $message->id))->toThrow(QueryException::class);
+
+    expect($message->refresh()->delivery_status)->toBe(DeliveryStatus::Failed);
+    $this->assertDatabaseCount('messages', 1);
     $this->assertDatabaseCount('jobs', 0);
 });

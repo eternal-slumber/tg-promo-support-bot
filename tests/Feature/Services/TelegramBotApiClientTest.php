@@ -28,27 +28,19 @@ test('guards the Telegram Unicode text limit before HTTP', function (int $extraC
     Http::assertSent(fn (Request $request): bool => $request['text'] === $outbound->text);
 })->with(['at limit' => [0], 'over limit' => [1]]);
 
-test('sends a text message with optional reply keyboard', function () {
+test('sends a text message with the configured endpoint chat and text', function () {
     Http::preventStrayRequests();
     Http::fake(['https://telegram.example/bottest-token/sendMessage' => Http::response([
         'ok' => true,
         'result' => ['message_id' => 123],
     ])]);
 
-    $sent = app(TelegramBotApiClient::class)->sendMessage(new TelegramOutboundMessage(100, 'Текст', [
-        'keyboard' => [[['text' => 'Проблема решена'], ['text' => 'Не решило']]],
-        'resize_keyboard' => true,
-        'one_time_keyboard' => true,
-    ]));
+    $sent = app(TelegramBotApiClient::class)->sendMessage(new TelegramOutboundMessage(100, 'Текст'));
 
     expect($sent->messageId)->toBe(123);
     Http::assertSent(fn (Request $request): bool => $request->url() === 'https://telegram.example/bottest-token/sendMessage'
         && $request['chat_id'] === 100
-        && $request['text'] === 'Текст'
-        && $request['reply_markup']['keyboard'][0][0]['text'] === 'Проблема решена'
-        && $request['reply_markup']['keyboard'][0][1]['text'] === 'Не решило'
-        && $request['reply_markup']['one_time_keyboard'] === true
-        && ! isset($request['reply_markup']['inline_keyboard']));
+        && $request['text'] === 'Текст');
 });
 
 test('sends ordinary text without adding a keyboard', function () {

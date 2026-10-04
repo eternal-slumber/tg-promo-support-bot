@@ -27,6 +27,7 @@ use App\Services\TelegramMessagePresentation;
 use App\Services\TicketLifecycleService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Validation\ValidationException;
 use Mockery;
 
 uses(LazilyRefreshDatabase::class);
@@ -37,11 +38,11 @@ test('ordinary replies can be queued and delivered repeatedly without resolving 
     $operator = User::factory()->create();
     $replies = app(OperatorReplyService::class);
     $first = $replies->create($operator, $ticket, 'Сейчас проверю');
-    $second = $replies->create($operator, $ticket, 'Проверка продолжается');
     $client = Mockery::mock(TelegramBotClient::class);
     $client->shouldReceive('sendMessage')->times(3)->andReturn(new TelegramSentMessage(789));
 
     deliver($first, $client);
+    $second = $replies->create($operator, $ticket, 'Проверка продолжается');
     deliver($second, $client);
     $third = $replies->create($operator, $ticket, 'Дополнительная информация');
     deliver($third, $client);
@@ -53,25 +54,28 @@ test('ordinary replies can be queued and delivered repeatedly without resolving 
     Queue::assertNotPushed(AutoCloseTicket::class);
 });
 
-test('a failed resolving reply does not block a new answer and its late retry cannot resolve the ticket', function () {
+test('a failed reply blocks the next answer until the same reply is retried and sent', function () {
     Queue::fake();
     $ticket = Ticket::factory()->create();
     $operator = User::factory()->create();
     $replies = app(OperatorReplyService::class);
-    $first = $replies->create($operator, $ticket, 'Решение', true);
+    $first = $replies->create($operator, $ticket, 'Первый ответ');
     $client = Mockery::mock(TelegramBotClient::class);
     $client->shouldReceive('sendMessage')->once()->ordered()->andThrow(new TelegramDeliveryException('telegram_request_rejected', false));
     $client->shouldReceive('sendMessage')->twice()->ordered()->andReturn(new TelegramSentMessage(789));
     deliver($first, $client);
 
+    expect(fn () => $replies->create($operator, $ticket, 'Продолжаем проверку'))->toThrow(ValidationException::class);
+    $replies->retry($ticket, $first->id);
+    expect($first->refresh()->delivery_status)->toBe(DeliveryStatus::Pending);
+    deliver($first, $client);
     $second = $replies->create($operator, $ticket, 'Продолжаем проверку');
     deliver($second, $client);
-    deliver($first, $client);
 
     expect($first->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
     expect($second->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
     expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
-    Queue::assertPushed(DeliverTelegramMessage::class, 2);
+    Queue::assertPushed(DeliverTelegramMessage::class, 3);
     Queue::assertNotPushed(AutoCloseTicket::class);
 });
 
@@ -81,10 +85,11 @@ test('an operator can continue a resolved conversation and invalidate its timer 
     $ticket = Ticket::factory()->create();
     $operator = User::factory()->create();
     $replies = app(OperatorReplyService::class);
-    $first = $replies->create($operator, $ticket, 'Решение', true);
+    $first = $replies->create($operator, $ticket, 'Решение');
     $client = Mockery::mock(TelegramBotClient::class);
     $client->shouldReceive('sendMessage')->twice()->andReturn(new TelegramSentMessage(789));
     deliver($first, $client);
+    app(TicketLifecycleService::class)->resolve($ticket);
     $timer = Queue::pushed(AutoCloseTicket::class)->sole();
 
     $second = $replies->create($operator, $ticket, 'Ещё одно уточнение');
@@ -99,14 +104,14 @@ test('an operator can continue a resolved conversation and invalidate its timer 
     Queue::assertPushed(AutoCloseTicket::class, 1);
 });
 
-test('another operator reply during HTTP delivery cancels the pending resolve action', function () {
+test('another operator reply is rejected while the first reply is being delivered', function () {
     Queue::fake();
     $ticket = Ticket::factory()->create();
     $operator = User::factory()->create();
-    $first = app(OperatorReplyService::class)->create($operator, $ticket, 'Решение', true);
+    $first = app(OperatorReplyService::class)->create($operator, $ticket, 'Решение');
     $client = Mockery::mock(TelegramBotClient::class);
     $client->shouldReceive('sendMessage')->once()->andReturnUsing(function () use ($ticket, $operator): TelegramSentMessage {
-        app(OperatorReplyService::class)->create($operator, $ticket, 'Продолжение');
+        expect(fn () => app(OperatorReplyService::class)->create($operator, $ticket, 'Продолжение'))->toThrow(ValidationException::class);
 
         return new TelegramSentMessage(789);
     });
@@ -115,14 +120,14 @@ test('another operator reply during HTTP delivery cancels the pending resolve ac
 
     expect($first->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
     expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
-    Queue::assertPushed(DeliverTelegramMessage::class, 2);
+    Queue::assertPushed(DeliverTelegramMessage::class, 1);
     Queue::assertNotPushed(AutoCloseTicket::class);
 });
 
-test('closing during HTTP delivery keeps the ticket terminal after the resolving reply succeeds', function () {
+test('closing during HTTP delivery keeps the ticket terminal after the operator reply succeeds', function () {
     Queue::fake();
     $ticket = Ticket::factory()->create();
-    $reply = app(OperatorReplyService::class)->create(User::factory()->create(), $ticket, 'Решение', true);
+    $reply = app(OperatorReplyService::class)->create(User::factory()->create(), $ticket, 'Решение');
     $client = Mockery::mock(TelegramBotClient::class);
     $client->shouldReceive('sendMessage')->once()->andReturnUsing(function () use ($ticket): TelegramSentMessage {
         app(TicketLifecycleService::class)->closeManually($ticket);
@@ -139,7 +144,7 @@ test('closing during HTTP delivery keeps the ticket terminal after the resolving
     Queue::assertNotPushed(AutoCloseTicket::class);
 });
 
-test('never sends a legacy oversized operator reply or changes the ticket to waiting', function () {
+test('never sends a legacy oversized operator reply or resolves the ticket', function () {
     Queue::fake();
     $ticket = Ticket::factory()->create();
     $message = Message::factory()->for($ticket)->create([
@@ -317,33 +322,28 @@ test('still delivers an escalation notice while the ticket remains active', func
         ->and($notice->delivered_at)->not->toBeNull();
     expect($ticket->refresh()->status)->toBe($status);
     Queue::assertPushed(DeliverTelegramMessage::class, 1);
-})->with(['open' => [TicketStatus::Open], 'waiting for user' => [TicketStatus::Resolved]]);
+})->with(['open' => [TicketStatus::Open], 'resolved' => [TicketStatus::Resolved]]);
 
-test('resolves an open ticket only after delivering an explicitly resolving operator reply', function () {
+test('delivering a reply after explicit resolution does not restart the auto close timer', function () {
     Queue::fake();
-    config()->set('support.ticket_auto_close_hours', 12);
-    $participant = TelegramParticipant::factory()->create();
-    $ticket = Ticket::factory()->for($participant, 'participant')->create();
-    $message = Message::factory()->for($participant, 'participant')->for($ticket)->create([
-        'direction' => MessageDirection::Outbound,
-        'author' => MessageAuthor::Operator,
-        'delivery_status' => DeliveryStatus::Pending,
-        'resolves_ticket' => true,
-    ]);
+    $this->freezeTime();
+    $ticket = Ticket::factory()->create();
+    $reply = app(OperatorReplyService::class)->create(User::factory()->create(), $ticket, 'Ответ');
+    app(TicketLifecycleService::class)->resolve($ticket);
+    $resolvedSince = $ticket->refresh()->resolved_since->toISOString();
+    $this->travel(1)->hours();
     $client = Mockery::mock(TelegramBotClient::class);
     $client->shouldReceive('sendMessage')->once()->andReturn(new TelegramSentMessage(789));
 
-    deliver($message, $client);
+    deliver($reply, $client);
 
-    expect($message->refresh()->delivery_status)->toBe(DeliveryStatus::Sent)
-        ->and($ticket->refresh()->status->value)->toBe('resolved')
-        ->and($ticket->resolved_since)->not->toBeNull();
-
-    Queue::assertPushed(AutoCloseTicket::class, fn (AutoCloseTicket $job): bool => $job->ticketId === $ticket->id
-        && $job->delay?->getTimestamp() === now()->addHours(12)->getTimestamp());
+    expect($reply->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Resolved);
+    expect($ticket->resolved_since->toISOString())->toBe($resolvedSince);
+    Queue::assertPushed(AutoCloseTicket::class, 1);
 });
 
-test('keeps an open ticket open when delivery of a resolving operator reply fails', function () {
+test('keeps an open ticket open when delivery of an operator reply fails', function () {
     Queue::fake();
     $participant = TelegramParticipant::factory()->create();
     $ticket = Ticket::factory()->for($participant, 'participant')->create();
@@ -351,7 +351,6 @@ test('keeps an open ticket open when delivery of a resolving operator reply fail
         'direction' => MessageDirection::Outbound,
         'author' => MessageAuthor::Operator,
         'delivery_status' => DeliveryStatus::Pending,
-        'resolves_ticket' => true,
     ]);
     $client = Mockery::mock(TelegramBotClient::class);
     $client->shouldReceive('sendMessage')->once()->andThrow(new TelegramDeliveryException('telegram_request_rejected', false));
@@ -439,7 +438,6 @@ test('a message between Telegram rejection and retry keeps the delivered reply t
         'direction' => MessageDirection::Outbound,
         'author' => MessageAuthor::Operator,
         'delivery_status' => DeliveryStatus::Pending,
-        'resolves_ticket' => true,
     ]);
     $client = Mockery::mock(TelegramBotClient::class);
     $client->shouldReceive('sendMessage')->once()->ordered()->andThrow(new TelegramDeliveryException('telegram_request_rejected', false));
@@ -467,7 +465,7 @@ test('late AI attachment during Telegram delivery keeps the ticket open even whe
     $decisions = app(SupportDecisionService::class);
     $decisions->apply($current, new ValidatedSupportDecision(SupportDecisionType::Escalate, 'participant_specific', null, []), 'rules-hash');
     $ticket = Ticket::query()->sole();
-    $reply = app(OperatorReplyService::class)->create(User::factory()->create(), $ticket, 'Ответ на текущий вопрос', true);
+    $reply = app(OperatorReplyService::class)->create(User::factory()->create(), $ticket, 'Ответ на текущий вопрос');
     $client = Mockery::mock(TelegramBotClient::class);
     $client->shouldReceive('sendMessage')->once()->andReturnUsing(function () use ($early, $ticket, $decisions): TelegramSentMessage {
         expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
@@ -488,13 +486,13 @@ test('late AI attachment during Telegram delivery keeps the ticket open even whe
     Queue::assertPushed(DeliverTelegramMessage::class, 2);
 });
 
-test('a new participant message during delivery cancels the operators resolve action', function (bool $newInput) {
+test('operator delivery cannot resolve a ticket with or without a new participant message', function (bool $newInput) {
     Queue::fake();
     $participant = TelegramParticipant::factory()->create();
     $question = Message::factory()->for($participant, 'participant')->create(['ticket_id' => null]);
     app(SupportDecisionService::class)->apply($question, new ValidatedSupportDecision(SupportDecisionType::Escalate, 'participant_specific', null, []), 'rules-hash');
     $ticket = Ticket::query()->sole();
-    $reply = app(OperatorReplyService::class)->create(User::factory()->create(), $ticket, 'Ответ оператора', true);
+    $reply = app(OperatorReplyService::class)->create(User::factory()->create(), $ticket, 'Ответ оператора');
     $client = Mockery::mock(TelegramBotClient::class);
     $client->shouldReceive('sendMessage')->once()->andReturnUsing(function () use ($newInput, $participant, $ticket): TelegramSentMessage {
         expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
@@ -509,12 +507,57 @@ test('a new participant message during delivery cancels the operators resolve ac
 
     expect($reply->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
     expect($ticket->refresh()->first_operator_replied_at?->toDateTimeString())->toBe($reply->delivered_at?->toDateTimeString());
-    expect($ticket->refresh()->status)->toBe($newInput ? TicketStatus::Open : TicketStatus::Resolved);
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
     expect($ticket->close_reason)->toBeNull();
-    if ($newInput) {
-        Queue::assertNotPushed(AutoCloseTicket::class);
-    } else {
-        Queue::assertPushed(AutoCloseTicket::class, 1);
-    }
+    Queue::assertNotPushed(AutoCloseTicket::class);
     Queue::assertPushed(DeliverTelegramMessage::class, 2);
 })->with(['no new message' => false, 'new message' => true]);
+
+test('delivers a pending operator reply after the ticket closes before the worker starts', function (bool $automatically) {
+    Queue::fake();
+    $this->freezeTime();
+    $ticket = Ticket::factory()->create();
+    $reply = app(OperatorReplyService::class)->create(User::factory()->create(), $ticket, 'Ответ до закрытия');
+    $lifecycle = app(TicketLifecycleService::class);
+    if ($automatically) {
+        $lifecycle->resolve($ticket);
+        $this->travel(24)->hours();
+        Queue::pushed(AutoCloseTicket::class)->sole()->handle($lifecycle);
+    } else {
+        $lifecycle->closeManually($ticket);
+    }
+    $closedAt = $ticket->refresh()->closed_at;
+    expect($reply->refresh()->delivery_status)->toBe(DeliveryStatus::Pending);
+    $client = Mockery::mock(TelegramBotClient::class);
+    $client->shouldReceive('sendMessage')->once()->andReturn(new TelegramSentMessage(789));
+
+    deliver($reply, $client);
+    deliver($reply, $client);
+
+    expect($reply->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Closed)
+        ->and($ticket->closed_at)->toEqual($closedAt)
+        ->and($ticket->first_operator_replied_at)->toEqual($reply->delivered_at);
+    Queue::assertPushed(AutoCloseTicket::class, $automatically ? 1 : 0);
+})->with(['manual close' => false, 'auto close' => true]);
+
+test('legacy queued operator replies are delivered in order even after closure', function () {
+    $ticket = Ticket::factory()->closed()->create();
+    $replies = Message::factory()->count(2)->for($ticket->participant, 'participant')->for($ticket)->create([
+        'direction' => MessageDirection::Outbound,
+        'author' => MessageAuthor::Operator,
+        'delivery_status' => DeliveryStatus::Pending,
+    ]);
+    $client = Mockery::mock(TelegramBotClient::class);
+    $client->shouldReceive('sendMessage')->twice()->andReturn(new TelegramSentMessage(789));
+    $later = (new DeliverTelegramMessage($replies->last()->id))->withFakeQueueInteractions();
+
+    $later->handle($client, app(TelegramMessagePresentation::class));
+    $later->assertReleased(5);
+    expect($replies->last()->refresh()->delivery_attempts)->toBe(0);
+    deliver($replies->first(), $client);
+    deliver($replies->last(), $client);
+
+    expect($replies->map(fn (Message $reply) => $reply->refresh()->delivery_status)->all())->toBe([DeliveryStatus::Sent, DeliveryStatus::Sent]);
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
+});

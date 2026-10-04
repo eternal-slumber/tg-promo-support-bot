@@ -22,25 +22,49 @@ use Livewire\Livewire;
 
 uses(LazilyRefreshDatabase::class);
 
-test('the operator panel offers ordinary sending and explicit resolution on active tickets', function (bool $resolveTicket) {
+test('the operator panel sends an ordinary answer without resolving an open or resolved ticket', function (bool $resolved) {
     Queue::fake();
-    $ticket = Ticket::factory()->resolved()->create();
+    $ticket = $resolved ? Ticket::factory()->resolved()->create() : Ticket::factory()->create();
     $this->actingAs(User::factory()->create());
 
     Livewire::test(OperatorDashboard::class)
         ->call('selectTicket', $ticket->id)
-        ->assertSee(['Отправить ответ', 'Отправить и решить'])
+        ->assertSee('Отправить ответ')
+        ->assertDontSee('Отправить и решить')
         ->set('replyBody', 'Ответ оператора')
-        ->call('sendReply', $resolveTicket)
+        ->call('sendReply')
         ->assertHasNoErrors()
         ->assertSet('replyBody', '');
 
     $reply = Message::query()->sole();
     expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
-    expect($reply->resolves_ticket)->toBe($resolveTicket);
     Queue::assertPushed(DeliverTelegramMessage::class, fn (DeliverTelegramMessage $job): bool => $job->messageId === $reply->id);
     Queue::assertNotPushed(AutoCloseTicket::class);
-})->with(['ordinary answer' => false, 'send and resolve' => true]);
+})->with(['open' => false, 'resolved' => true]);
+
+test('marking a ticket resolved is independent of the draft and delivery', function () {
+    $this->freezeTime();
+    Queue::fake();
+    config()->set('support.ticket_auto_close_hours', 12);
+    $ticket = Ticket::factory()->create();
+    $this->actingAs(User::factory()->create());
+
+    Livewire::test(OperatorDashboard::class)->call('selectTicket', $ticket->id)
+        ->assertSee('Отметить решённым')
+        ->set('replyBody', 'Неотправленный черновик')
+        ->call('resolveTicket')->assertHasNoErrors()
+        ->assertSet('replyBody', 'Неотправленный черновик')
+        ->assertDontSee('Отметить решённым')
+        ->call('resolveTicket')->assertHasErrors('ticket');
+
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Resolved);
+    $this->assertDatabaseCount('messages', 0);
+    Queue::assertPushed(AutoCloseTicket::class, 1);
+    Queue::assertPushed(AutoCloseTicket::class, fn (AutoCloseTicket $job): bool => $job->ticketId === $ticket->id
+        && $job->resolvedSince === $ticket->resolved_since->toISOString()
+        && $job->delay->getTimestamp() === now()->addHours(12)->getTimestamp());
+    Queue::assertNotPushed(DeliverTelegramMessage::class);
+});
 
 test('requires authentication to send resolve or close a ticket', function (string $action, array $parameters) {
     Queue::fake();
@@ -56,8 +80,8 @@ test('requires authentication to send resolve or close a ticket', function (stri
     $this->assertDatabaseCount('messages', 0);
     Queue::assertNothingPushed();
 })->with([
-    'ordinary reply' => ['sendReply', [false]],
-    'send and resolve' => ['sendReply', [true]],
+    'ordinary reply' => ['sendReply', []],
+    'mark resolved' => ['resolveTicket', []],
     'manual close' => ['closeTicket', []],
 ]);
 
@@ -69,10 +93,9 @@ test('the explicit resolve action cannot send or reopen a closed ticket', functi
     Livewire::test(OperatorDashboard::class)
         ->call('selectFilter', 'closed')
         ->call('selectTicket', $ticket->id)
-        ->assertDontSee('Отправить и решить')
-        ->set('replyBody', 'Ответ')
-        ->call('sendReply', true)
-        ->assertHasErrors('replyBody');
+        ->assertDontSee('Отметить решённым')
+        ->call('resolveTicket')
+        ->assertHasErrors('ticket');
 
     expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
     $this->assertDatabaseCount('messages', 0);
@@ -260,7 +283,51 @@ test('validates Unicode operator replies against the rendered message budget', f
     $component->assertHasNoErrors();
     $reply = Message::query()->where('author', MessageAuthor::Operator)->sole();
     $outbound = app(TelegramMessagePresentation::class)->present($reply);
-    expect(mb_strlen($outbound->text, 'UTF-8'))->toBe(TelegramOutboundMessage::MaxTextLength)
-        ->and($outbound->replyMarkup['keyboard'][0][0]['text'])->toBe('Проблема решена');
+    expect(mb_strlen($outbound->text, 'UTF-8'))->toBe(TelegramOutboundMessage::MaxTextLength);
     Queue::assertPushed(DeliverTelegramMessage::class, 1);
 })->with(['at limit' => [0], 'over limit' => [1]]);
+
+test('pending and failed operator replies block the next reply until explicit cancellation', function (DeliveryStatus $status) {
+    Queue::fake();
+    $ticket = Ticket::factory()->create();
+    $operator = User::factory()->create();
+    $reply = app(OperatorReplyService::class)->create($operator, $ticket, 'Первый ответ');
+    $reply->update(['delivery_status' => $status]);
+    $this->actingAs($operator);
+
+    $panel = Livewire::test(OperatorDashboard::class)->call('selectTicket', $ticket->id)
+        ->assertViewHas('hasUnfinishedReply', true)
+        ->assertSee('Отменить доставку')
+        ->set('replyBody', 'Второй ответ')
+        ->call('sendReply')->assertHasErrors('replyBody')
+        ->assertSet('replyBody', 'Второй ответ');
+    $this->assertDatabaseCount('messages', 1);
+    Queue::assertPushed(DeliverTelegramMessage::class, 1);
+
+    $panel->call('cancelDelivery', $reply->id)->assertHasNoErrors()
+        ->assertViewHas('hasUnfinishedReply', false)
+        ->call('sendReply')->assertHasNoErrors();
+
+    expect($reply->refresh()->delivery_status)->toBe(DeliveryStatus::Cancelled);
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Open);
+    $this->assertDatabaseCount('messages', 2);
+    Queue::assertPushed(DeliverTelegramMessage::class, 2);
+})->with(['pending' => DeliveryStatus::Pending, 'failed' => DeliveryStatus::Failed]);
+
+test('closed tickets allow retry or cancellation of existing replies without reopening', function (string $action) {
+    Queue::fake();
+    $ticket = Ticket::factory()->create();
+    $operator = User::factory()->create();
+    $reply = app(OperatorReplyService::class)->create($operator, $ticket, 'Ответ до закрытия');
+    $reply->update(['delivery_status' => DeliveryStatus::Failed]);
+    app(TicketLifecycleService::class)->closeManually($ticket);
+    $this->actingAs($operator);
+
+    Livewire::test(OperatorDashboard::class)->call('selectFilter', 'closed')->call('selectTicket', $ticket->id)
+        ->assertSee(['Повторить отправку', 'Отменить доставку'])
+        ->call($action, $reply->id)->assertHasNoErrors();
+
+    expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
+    expect($reply->refresh()->delivery_status)->toBe($action === 'retryDelivery' ? DeliveryStatus::Pending : DeliveryStatus::Cancelled);
+    Queue::assertPushed(DeliverTelegramMessage::class, $action === 'retryDelivery' ? 2 : 1);
+})->with(['retry' => 'retryDelivery', 'cancel' => 'cancelDelivery']);

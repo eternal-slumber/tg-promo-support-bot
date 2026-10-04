@@ -43,7 +43,7 @@ test('marks an open ticket resolved and reopens it without closing', function ()
         ->and($openTicket->close_reason)->toBeNull();
 });
 
-test('closes an open or waiting ticket manually', function (string $initialState) {
+test('closes an open or resolved ticket manually', function (string $initialState) {
     $ticket = $initialState === TicketStatus::Open->value
         ? Ticket::factory()->create()
         : Ticket::factory()->resolved()->create();
@@ -56,7 +56,7 @@ test('closes an open or waiting ticket manually', function (string $initialState
         ->and($closedTicket->closed_at)->not->toBeNull();
 })->with([
     'open ticket' => TicketStatus::Open->value,
-    'waiting ticket' => TicketStatus::Resolved->value,
+    'resolved ticket' => TicketStatus::Resolved->value,
 ]);
 
 test('resolving an open ticket does not close it', function () {

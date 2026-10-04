@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[Fillable(['participant_id', 'ticket_id', 'telegram_update_id', 'operator_id', 'direction', 'author', 'body', 'delivery_status', 'telegram_message_id', 'delivered_at', 'delivery_attempts', 'last_delivery_error', 'sensitive_data_redacted', 'redaction_types', 'resolves_ticket'])]
+#[Fillable(['participant_id', 'ticket_id', 'telegram_update_id', 'operator_id', 'direction', 'author', 'body', 'delivery_status', 'telegram_message_id', 'delivered_at', 'delivery_attempts', 'last_delivery_error', 'sensitive_data_redacted', 'redaction_types'])]
 class Message extends Model
 {
     /** @use HasFactory<MessageFactory> */
@@ -54,7 +54,6 @@ class Message extends Model
     protected function casts(): array
     {
         return [
-            'resolves_ticket' => 'boolean',
             'direction' => MessageDirection::class,
             'author' => MessageAuthor::class,
             'delivery_status' => DeliveryStatus::class,

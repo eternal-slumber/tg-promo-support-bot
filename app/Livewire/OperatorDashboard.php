@@ -7,7 +7,6 @@ use App\Enums\DeliveryStatus;
 use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
 use App\Enums\TicketStatus;
-use App\Jobs\DeliverTelegramMessage;
 use App\Models\Message;
 use App\Models\Ticket;
 use App\Models\User;
@@ -64,7 +63,7 @@ class OperatorDashboard extends Component
         $this->selectedTicketId = $ticket->id;
     }
 
-    public function sendReply(OperatorReplyService $operatorReplies, bool $resolveTicket = false): void
+    public function sendReply(OperatorReplyService $operatorReplies): void
     {
         $this->validate([
             'replyBody' => ['required', 'string', 'max:'.TelegramOutboundMessage::MaxTextLength],
@@ -79,7 +78,7 @@ class OperatorDashboard extends Component
         }
 
         try {
-            $operatorReplies->create($this->operator(), $ticket, $this->replyBody, $resolveTicket);
+            $operatorReplies->create($this->operator(), $ticket, $this->replyBody);
         } catch (DomainException) {
             $this->addError('replyBody', 'Новый ответ недоступен: обращение уже закрыто.');
 
@@ -90,33 +89,55 @@ class OperatorDashboard extends Component
         $this->resetPage('messagesCursor');
     }
 
-    public function retryDelivery(int $messageId): void
-    {
-        $this->operator();
-        $ticket = $this->activeTicket();
-
-        if ($ticket === null) {
-            return;
-        }
-
-        $message = Message::query()
-            ->whereKey($messageId)
-            ->where('ticket_id', $ticket->id)
-            ->where('direction', MessageDirection::Outbound->value)
-            ->where('author', MessageAuthor::Operator->value)
-            ->where('delivery_status', DeliveryStatus::Failed->value)
-            ->firstOrFail();
-
-        DeliverTelegramMessage::dispatch($message->id);
-    }
-
-    public function cancelDelivery(int $messageId, OperatorReplyService $operatorReplies): void
+    public function resolveTicket(TicketLifecycleService $ticketLifecycle): void
     {
         $this->operator();
         $ticket = $this->activeTicket();
 
         if ($ticket === null) {
             $this->addError('ticket', 'Обращение уже закрыто.');
+
+            return;
+        }
+
+        try {
+            $ticketLifecycle->resolve($ticket);
+        } catch (DomainException) {
+            $this->addError('ticket', 'Решение недоступно: обращение уже решено или закрыто.');
+
+            return;
+        }
+
+        $this->resetValidation();
+    }
+
+    public function retryDelivery(int $messageId, OperatorReplyService $operatorReplies): void
+    {
+        $this->operator();
+        $ticket = Ticket::query()->find($this->selectedTicketId);
+
+        if ($ticket === null) {
+            return;
+        }
+
+        try {
+            $operatorReplies->retry($ticket, $messageId);
+        } catch (DomainException) {
+            $this->addError('ticket', 'Повтор недоступен: ответ уже отправляется, доставлен или отменён.');
+
+            return;
+        }
+
+        $this->resetValidation();
+    }
+
+    public function cancelDelivery(int $messageId, OperatorReplyService $operatorReplies): void
+    {
+        $this->operator();
+        $ticket = Ticket::query()->find($this->selectedTicketId);
+
+        if ($ticket === null) {
+            $this->addError('ticket', 'Обращение недоступно.');
 
             return;
         }
@@ -172,10 +193,17 @@ class OperatorDashboard extends Component
             ->latest('id')
             ->cursorPaginate(50, ['id', 'ticket_id', 'created_at', 'author', 'body', 'direction', 'delivery_status', 'last_delivery_error'], 'messagesCursor');
 
+        $hasUnfinishedReply = $selectedTicket?->messages()
+            ->where('direction', MessageDirection::Outbound)
+            ->where('author', MessageAuthor::Operator)
+            ->whereIn('delivery_status', [DeliveryStatus::Pending, DeliveryStatus::Failed])
+            ->exists() ?? false;
+
         return view('livewire.operator-dashboard', [
             'tickets' => $tickets,
             'selectedTicket' => $selectedTicket,
             'messages' => $messages,
+            'hasUnfinishedReply' => $hasUnfinishedReply,
             'statistics' => $this->statistics(),
         ]);
     }
