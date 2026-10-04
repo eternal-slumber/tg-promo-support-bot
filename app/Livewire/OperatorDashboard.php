@@ -6,6 +6,7 @@ use App\Data\TelegramOutboundMessage;
 use App\Enums\DeliveryStatus;
 use App\Enums\MessageAuthor;
 use App\Enums\MessageDirection;
+use App\Enums\SupportDecisionType;
 use App\Enums\TicketStatus;
 use App\Models\Message;
 use App\Models\Ticket;
@@ -29,6 +30,33 @@ class OperatorDashboard extends Component
 
     public string $filter = 'active';
 
+    public string $section = 'tickets';
+
+    public ?int $selectedBotReplyId = null;
+
+    public function selectSection(string $section): void
+    {
+        $this->operator();
+
+        if (in_array($section, ['tickets', 'bot', 'statistics'], true)) {
+            $this->section = $section;
+        }
+    }
+
+    public function selectBotReply(int $messageId): void
+    {
+        $this->operator();
+
+        if (! $this->visibleBotReplies()->whereKey($messageId)->exists()) {
+            $this->addError('botReply', 'Ответ бота недоступен.');
+
+            return;
+        }
+
+        $this->selectedBotReplyId = $messageId;
+        $this->resetValidation('botReply');
+    }
+
     public function selectFilter(string $filter): void
     {
         if (! in_array($filter, ['active', 'closed', 'all'], true)) {
@@ -39,7 +67,6 @@ class OperatorDashboard extends Component
         $this->reset('selectedTicketId', 'replyBody');
         $this->resetValidation();
         $this->resetPage('ticketsCursor');
-        $this->resetPage('messagesCursor');
         $this->resetPage('contextCursor');
     }
 
@@ -58,7 +85,6 @@ class OperatorDashboard extends Component
         if ($this->selectedTicketId !== $ticket->id) {
             $this->reset('replyBody');
             $this->resetValidation();
-            $this->resetPage('messagesCursor');
             $this->resetPage('contextCursor');
         }
 
@@ -88,7 +114,6 @@ class OperatorDashboard extends Component
         }
 
         $this->reset('replyBody');
-        $this->resetPage('messagesCursor');
     }
 
     public function resolveTicket(TicketLifecycleService $ticketLifecycle): void
@@ -193,7 +218,7 @@ class OperatorDashboard extends Component
         $messages = $selectedTicket?->messages()
             ->latest('created_at')
             ->latest('id')
-            ->cursorPaginate(50, ['id', 'ticket_id', 'created_at', 'author', 'body', 'direction', 'delivery_status', 'last_delivery_error'], 'messagesCursor');
+            ->get(['id', 'ticket_id', 'ticket_event', 'created_at', 'author', 'body', 'direction', 'delivery_status', 'last_delivery_error']);
 
         $contextMessages = ($selectedTicket?->context_message_ids ?? []) === [] ? collect() : $selectedTicket->contextMessages()
             ->oldest('id')
@@ -205,12 +230,29 @@ class OperatorDashboard extends Component
             ->whereIn('delivery_status', [DeliveryStatus::Pending, DeliveryStatus::Failed])
             ->exists() ?? false;
 
+        $botReplies = $this->section === 'bot' ? $this->visibleBotReplies()
+            ->with('sourceMessage:id,body')
+            ->latest('created_at')
+            ->latest('id')
+            ->cursorPaginate(20, ['id', 'source_message_id', 'body', 'created_at', 'delivery_status'], 'botRepliesCursor') : null;
+
+        $selectedBotReply = $this->section !== 'bot' || $this->selectedBotReplyId === null ? null : $this->visibleBotReplies()
+            ->with([
+                'participant:id,telegram_user_id',
+                'sourceMessage:id,body,created_at,author,direction',
+                'sourceMessage.decision:id,message_id,type,reason,structured_output,knowledge_source_hash',
+            ])
+            ->whereKey($this->selectedBotReplyId)
+            ->first();
+
         return view('livewire.operator-dashboard', [
             'tickets' => $tickets,
             'selectedTicket' => $selectedTicket,
             'messages' => $messages,
             'contextMessages' => $contextMessages,
             'hasUnfinishedReply' => $hasUnfinishedReply,
+            'botReplies' => $botReplies,
+            'selectedBotReply' => $selectedBotReply,
             'statistics' => $this->statistics(),
         ]);
     }
@@ -268,6 +310,19 @@ class OperatorDashboard extends Component
             'all' => Ticket::query(),
             default => Ticket::query()->whereIn('status', [TicketStatus::Open->value, TicketStatus::Resolved->value]),
         };
+    }
+
+    private function visibleBotReplies(): Builder
+    {
+        return Message::query()
+            ->whereNull('ticket_id')
+            ->where('direction', MessageDirection::Outbound)
+            ->where('author', MessageAuthor::Bot)
+            ->whereHas('sourceMessage', fn (Builder $query): Builder => $query
+                ->where('direction', MessageDirection::Inbound)
+                ->where('author', MessageAuthor::Participant)
+                ->whereHas('decision', fn (Builder $decisions): Builder => $decisions
+                    ->whereIn('type', [SupportDecisionType::Answer, SupportDecisionType::Refuse])));
     }
 
     private function activeTicket(): ?Ticket
