@@ -104,13 +104,15 @@ test('reuses an existing participant and updates its chat id', function () {
     Queue::assertPushed(ProcessIncomingMessage::class, 2);
 });
 
-test('ignores group messages without changing the private delivery address', function () {
+test('ignores group messages without changing the private delivery address', function (array $content) {
     Queue::fake();
     Http::preventStrayRequests();
     $participant = TelegramParticipant::factory()->create(['telegram_user_id' => 2003, 'chat_id' => 3003]);
     $ticket = Ticket::factory()->for($participant, 'participant')->create();
     $update = telegramTextUpdate(1014, 2003, -3004, 4014, 'Личный вопрос в группе');
     $update['message']['chat']['type'] = 'group';
+    unset($update['message']['text']);
+    $update['message'] = array_merge($update['message'], $content);
 
     $this->postJson(route('telegram.webhook'), $update)
         ->assertOk()
@@ -123,7 +125,11 @@ test('ignores group messages without changing the private delivery address', fun
     $this->assertDatabaseCount('messages', 0);
     Queue::assertNothingPushed();
     Http::assertNothingSent();
-});
+})->with([
+    'text' => [['text' => 'Личный вопрос в группе']],
+    'photo' => [['photo' => [['file_id' => 'private-file']]]],
+    'voice' => [['voice' => ['file_id' => 'private-file']]],
+]);
 
 test('redacts sensitive text before it reaches persistence or the queued job', function () {
     Queue::fake();
@@ -386,6 +392,7 @@ test('delivers a deduplicated text-only fallback for private media and reopens r
         && $request['chat_id'] === 3015 && $request['text'] === $outbound->body);
     Http::assertSentCount(1);
 })->with([
+    'photo without a caption or ticket' => [['photo' => [['file_id' => 'private-file']]], null],
     'photo with a meaningful caption without a ticket' => [
         ['photo' => [['file_id' => 'private-file']], 'caption' => 'Проверьте мой чек'], null,
     ],
@@ -394,6 +401,9 @@ test('delivers a deduplicated text-only fallback for private media and reopens r
     ],
     'document without a ticket' => [['document' => ['file_id' => 'private-file', 'file_name' => 'qwerty123.txt']], null],
     'voice on an open ticket' => [['voice' => ['file_id' => 'private-file']], TicketStatus::Open],
+    'sticker without a ticket' => [['sticker' => ['file_id' => 'private-file']], null],
+    'video without a ticket' => [['video' => ['file_id' => 'private-file']], null],
+    'contact without a ticket' => [['contact' => ['phone_number' => '+7 999 123-45-67', 'first_name' => 'qwerty123']], null],
 ]);
 
 test('limits repeated non-text fallback notices and allows another after one minute', function () {

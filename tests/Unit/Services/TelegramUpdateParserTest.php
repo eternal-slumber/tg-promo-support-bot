@@ -104,6 +104,7 @@ test('distinguishes private non-text messages from service events without carryi
     expect($update?->isTextMessage())->toBeFalse();
     expect(serialize($update))->not->toContain('photo-file', 'voice-file', 'document-file', 'qwerty123');
 })->with([
+    'photo without a caption' => [['from' => ['id' => 300], 'photo' => [['file_id' => 'photo-file']]], true],
     'photo with caption' => [[
         'from' => ['id' => 300],
         'photo' => [['file_id' => 'photo-file', 'file_unique_id' => 'photo-id', 'width' => 320, 'height' => 240]],
@@ -111,6 +112,9 @@ test('distinguishes private non-text messages from service events without carryi
     ], true],
     'document' => [['from' => ['id' => 300], 'document' => ['file_id' => 'document-file']], true],
     'voice' => [['from' => ['id' => 300], 'voice' => ['file_id' => 'voice-file', 'file_unique_id' => 'voice-id', 'duration' => 10]], true],
+    'sticker' => [['from' => ['id' => 300], 'sticker' => ['file_id' => 'photo-file']], true],
+    'video' => [['from' => ['id' => 300], 'video' => ['file_id' => 'photo-file']], true],
+    'contact' => [['from' => ['id' => 300], 'contact' => ['phone_number' => '+7 999 123-45-67', 'first_name' => 'qwerty123']], true],
     'service event without sender' => [['delete_chat_photo' => true], false],
     'service event with sender' => [['from' => ['id' => 300], 'delete_chat_photo' => true], false],
 ]);
