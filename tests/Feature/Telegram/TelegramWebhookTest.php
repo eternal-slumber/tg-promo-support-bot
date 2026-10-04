@@ -198,9 +198,15 @@ test('keeps common secret formats out of persistence queue payloads and the prov
         ['qwerty', 'reset', 'secret.word'],
         ['password'],
     ],
+    'confirmed secret edge cases' => [
+        'Карта 2200123456789012; код из SMS: 123-456; Пароль qwerty123. Почему отклонили чек?',
+        'Карта [REDACTED_PAYMENT_CARD]; код из SMS: [REDACTED_OTP]; Пароль [REDACTED_PASSWORD]. Почему отклонили чек?',
+        ['2200123456789012', '123-456', 'qwerty123'],
+        ['payment_card', 'otp', 'password'],
+    ],
 ]);
 
-test('preserves ordinary password and sms questions in storage and the provider request', function () {
+test('preserves ordinary password and sms questions in storage and the provider request', function (string $body) {
     Queue::fake();
     Http::preventStrayRequests();
     config()->set('llm.endpoint', 'https://llm.example/v1/chat/completions');
@@ -209,8 +215,6 @@ test('preserves ordinary password and sms questions in storage and the provider 
             'decision' => 'escalate', 'reason' => 'participant_specific', 'answer' => null, 'evidence' => [],
         ], JSON_THROW_ON_ERROR)]]]]),
     ]);
-    $body = 'Как поменять пароль в личном кабинете? Код из смс пришел вчера.';
-
     $this->postJson(route('telegram.webhook'), telegramTextUpdate(1021, 2021, 3021, 4021, $body))->assertOk();
 
     $message = Message::query()->where('direction', 'inbound')->sole();
@@ -226,7 +230,11 @@ test('preserves ordinary password and sms questions in storage and the provider 
     expect($message->refresh()->body)->toBe($body)
         ->and($message->ticket_id)->not->toBeNull()
         ->and(Message::query()->where('author', MessageAuthor::System)->count())->toBe(0);
-});
+})->with([
+    'Russian questions' => 'Как поменять пароль в личном кабинете? Код из смс пришел вчера.',
+    'English password and OTP questions' => 'Password change does not work. SMS code arrives after 10 minutes.',
+    'ordinary numeric identifiers' => 'Номер операции 2200123456789012, номер обращения 123-456. Почему отклонили чек?',
+]);
 
 test('creates one redaction notification for multiple hidden values', function () {
     Queue::fake();

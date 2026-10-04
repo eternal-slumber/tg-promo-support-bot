@@ -36,6 +36,20 @@ test('redacts a plain card number when it passes luhn', function () {
         ->and($result->redactionTypes)->toBe(['payment_card']);
 });
 
+test('redacts explicitly labelled plain card secrets without requiring luhn', function (string $input, string $expected) {
+    $result = (new SensitiveDataSanitizer)->sanitize($input);
+
+    expect($result->text)->toBe($expected);
+    expect($result->wasRedacted)->toBeTrue();
+    expect($result->redactionTypes)->toBe(['payment_card']);
+})->with([
+    'plain Russian card' => ['Моя карта 2200123456789012, проверьте оплату', 'Моя карта [REDACTED_PAYMENT_CARD], проверьте оплату'],
+    'card number declaration' => ['Номер карты: 2200123456789012. Почему отклонили чек?', 'Номер карты: [REDACTED_PAYMENT_CARD]. Почему отклонили чек?'],
+    'transfer destination' => ['Переведите на карту 2200123456789012 100 рублей', 'Переведите на карту [REDACTED_PAYMENT_CARD] 100 рублей'],
+    'English card number' => ['Card number: 2200123456789012; check payment', 'Card number: [REDACTED_PAYMENT_CARD]; check payment'],
+    'Unicode separator' => ["Карта:\u{00A0}2200123456789012", "Карта:\u{00A0}[REDACTED_PAYMENT_CARD]"],
+]);
+
 test('redacts cards without absorbing adjacent amounts', function (string $input, string $expected) {
     $result = (new SensitiveDataSanitizer)->sanitize($input);
 
@@ -104,6 +118,18 @@ test('redacts complete spaced otp values while preserving surrounding text', fun
     'Unicode spaces' => ["СМС-код: 123\u{00A0}456", 'СМС-код: [REDACTED_OTP]'],
     'line boundary' => ["код из смс: 123456\n1000 баллов", "код из смс: [REDACTED_OTP]\n1000 баллов"],
     'value on next line' => ["код из смс:\n123 456\nНе могу войти", "код из смс:\n[REDACTED_OTP]\nНе могу войти"],
+    'hyphenated SMS reproduction' => ['код из SMS: 123-456', 'код из SMS: [REDACTED_OTP]'],
+    'hyphenated digits' => ['OTP: 1-2-3-4-5-6. Почему отклонили чек?', 'OTP: [REDACTED_OTP]. Почему отклонили чек?'],
+    'mixed separators' => ['одноразовый код: 12 - 34 56, проверьте вход', 'одноразовый код: [REDACTED_OTP], проверьте вход'],
+    'Unicode dash' => ['СМС-код: 123‑456; проверьте вход', 'СМС-код: [REDACTED_OTP]; проверьте вход'],
+    'Unicode spaces and dash' => ["OTP: 123\u{202F}—\u{00A0}456", 'OTP: [REDACTED_OTP]'],
+    'English SMS code' => ['SMS code: 123-456', 'SMS code: [REDACTED_OTP]'],
+    'English OTP code' => ['OTP code: 123 456', 'OTP code: [REDACTED_OTP]'],
+    'English code from SMS' => ['Code from SMS: 123456', 'Code from SMS: [REDACTED_OTP]'],
+    'hyphenated alphanumeric code' => ['OTP: ABC-123, check login', 'OTP: [REDACTED_OTP], check login'],
+    'spaced alphanumeric code' => ['SMS code: A1 B2 C3, check login', 'SMS code: [REDACTED_OTP], check login'],
+    'alphanumeric code with separate letter groups' => ['OTP: AB CD 12, check login', 'OTP: [REDACTED_OTP], check login'],
+    'alphanumeric code starting with digits' => ['OTP: 1234-AB; check login', 'OTP: [REDACTED_OTP]; check login'],
 ]);
 
 test('handles password values without changing explicit surrounding context', function (string $input, string $expected, array $types = ['password']) {
@@ -146,6 +172,14 @@ test('handles password values without changing explicit surrounding context', fu
     'quoted Cyrillic without colon' => ['пароль «секретные слова»; проверьте вход', 'пароль [REDACTED_PASSWORD]; проверьте вход'],
     'Cyrillic declaration' => ['пароль: секретные слова; проверьте вход', 'пароль: [REDACTED_PASSWORD]; проверьте вход'],
     'Cyrillic with digits without colon' => ['пароль ёжик123; проверьте вход', 'пароль [REDACTED_PASSWORD]; проверьте вход'],
+    'sentence boundary reproduction' => ['Пароль qwerty123. Почему отклонили чек?', 'Пароль [REDACTED_PASSWORD]. Почему отклонили чек?'],
+    'declared sentence boundary' => ['Пароль: qwerty123. Почему отклонили чек?', 'Пароль: [REDACTED_PASSWORD]. Почему отклонили чек?'],
+    'bare value before a question' => ['Password hunter2? Why was the receipt rejected?', 'Password [REDACTED_PASSWORD]? Why was the receipt rejected?'],
+    'bare value before an instruction' => ['Пароль qwerty123 проверьте вход', 'Пароль [REDACTED_PASSWORD] проверьте вход'],
+    'owned sentence boundary' => ['Мой пароль qwerty. Почему отклонили чек?', 'Мой пароль [REDACTED_PASSWORD]. Почему отклонили чек?'],
+    'internal password punctuation' => ['Пароль secret.word123. Почему отклонили чек?', 'Пароль [REDACTED_PASSWORD]. Почему отклонили чек?'],
+    'quoted sentence punctuation' => ['Пароль: "secret. word123". Почему отклонили чек?', 'Пароль: [REDACTED_PASSWORD]. Почему отклонили чек?'],
+    'quoted value before an instruction' => ['Пароль: "qwerty123" проверьте вход', 'Пароль: [REDACTED_PASSWORD] проверьте вход'],
 ]);
 
 test('preserves ordinary questions and instructions about passwords and sms codes', function (string $input) {
@@ -170,6 +204,11 @@ test('preserves ordinary questions and instructions about passwords and sms code
     'delayed sms' => 'СМС-код приходит с задержкой',
     'expired code' => 'Одноразовый код истек',
     'operator instruction' => 'Измените пароль в личном кабинете. Код из смс приходит на указанный телефон.',
+    'English change question with later digits' => 'Password change does not work after 2 attempts',
+    'English missing OTP' => 'OTP code does not arrive',
+    'English expired SMS code' => 'SMS code expired yesterday',
+    'English delayed SMS code with later digits' => 'SMS code arrives after 10 minutes',
+    'missing SMS with later digits' => 'Код из SMS не приходит уже 10 минут',
 ]);
 
 test('preserves a password question while redacting a later disclosed secret', function () {
@@ -194,6 +233,11 @@ test('preserves ordinary numeric text and phone numbers', function (string $inpu
     'invalid long identifier' => 'Номер операции 1234567890123',
     'password mentioned without a value' => 'Как восстановить пароль?',
     'unlabelled spaced digits' => 'Номер обращения 123 456',
+    'unlabelled hyphenated digits' => 'Номер обращения 123-456',
+    'unlabelled invalid card-like number' => 'Номер операции 2200123456789012',
+    'invalid card-like receipt number' => 'Номер чека: 2200123456789012',
+    'short card reference' => 'Карта заканчивается на 9012',
+    'overlong labelled identifier' => 'Карта: 123456789012345678901',
 ]);
 
 test('metadata never contains detected secret values', function () {

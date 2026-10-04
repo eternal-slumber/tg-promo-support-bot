@@ -6,7 +6,7 @@ use App\Data\SanitizedText;
 
 /**
  * ponytail: heuristic detection of card-like numbers and labelled secrets; extend patterns for new input formats.
- * Unquoted password phrases end at a newline, comma or semicolon; quoted values may include separators.
+ * Declared password phrases end at a newline, comma, semicolon or sentence boundary; bare values are single tokens.
  * Without a separator, values need quotes, a digit/password punctuation, or a single token after мой/my.
  * Plain alphabetic phrases need a separator or quotes; OTP values must contain digits.
  * Explicit/quoted values are processed before owned tokens, so quoted separators cannot split a secret.
@@ -31,18 +31,29 @@ final class SensitiveDataSanitizer
 
         $text = preg_replace_callback(
             [
+                '~\b(?<label>карт(?:а|у|ы)|card(?:\h+number)?)\b(?<separator>\s*[:=№#—-]?\s*)(?<secret>[0-9]{13,19})(?!\d)~iu',
                 '~(?<!\d)(?:[0-9]{4}(?:[\h\p{Pd}\x{2212}]+[0-9]{4}){3}|[0-9]{13,19})(?!\d)~u',
                 '~(?<!\d)[0-9]+(?:[\h\p{Pd}\x{2212}]+[0-9]+)*(?!\d)~u',
             ],
             function (array $matches) use (&$redactionTypes): string {
+                if (isset($matches['secret'])) {
+                    $redactionTypes[] = self::PaymentCard;
+
+                    return $matches['label'].$matches['separator'].self::PaymentCardMask;
+                }
+
                 return $this->redactCardRun($matches[0], $redactionTypes);
             },
             $text,
         ) ?? $text;
 
         $text = preg_replace_callback(
-            '~\b(?<label>(?:код\s+из\s+(?:смс|sms)|(?:смс|sms)\s*[- ]?код|otp|одноразовый\s+код))(?<separator>\s*[:=№#-]?\s*)(?<secret>[0-9](?:\h*[0-9]){3,}|(?=[a-zа-я0-9]{4,8}\b)(?=[a-zа-я0-9]*[0-9])[a-zа-я0-9]{4,8})\b~iu',
+            '~\b(?<label>(?:код\s+из\s+(?:смс|sms)|code\s+from\s+sms|(?:смс|sms)\h*[\p{Pd}\x{2212}]?\h*(?:код|code)|otp(?:\h+code)?|одноразовый\s+код))(?<separator>\s*[:=№#-]?\s*)(?<secret>[0-9](?:[\h\p{Pd}\x{2212}]*[0-9]){3,}(?![a-zа-я0-9\p{Pd}\x{2212}])|[a-zа-я0-9](?:[\h\p{Pd}\x{2212}]*[a-zа-я0-9]){3,7}(?![a-zа-я0-9\p{Pd}\x{2212}]))\b~iu',
             function (array $matches) use (&$redactionTypes): string {
+                if (preg_match('/[0-9]/', $matches['secret']) !== 1) {
+                    return $matches[0];
+                }
+
                 $redactionTypes[] = self::Otp;
 
                 return $matches['label'].$matches['separator'].self::OtpMask;
@@ -52,8 +63,9 @@ final class SensitiveDataSanitizer
 
         $text = preg_replace_callback(
             [
-                '~\b(?<label>(?:мой\s+)?(?:пароль|password|pwd))(?<separator>\s*[:=—-]\s*|\h+(?=["\'«]|[^\h\r\n,;]*[0-9!#@$%^&*_=+\-]))(?<secret>"[^"\r\n]+"|\'[^\'\r\n]+\'|«[^»\r\n]+»|[^\h\r\n,;][^\r\n,;]*)~iu',
-                '~\b(?<label>(?:мой|my)\h+(?:пароль|password|pwd))(?<separator>\h+)(?<secret>[^:=—\-\h\r\n,;][^\h\r\n,;]*)(?=\h*(?:[,;\r\n]|$))~iu',
+                '~\b(?<label>(?:мой\s+)?(?:пароль|password|pwd))(?<separator>\s*[:=—-]\s*|\h+(?=["\'«]))(?<secret>\[REDACTED_PASSWORD\]|"[^"\r\n]+"|\'[^\'\r\n]+\'|«[^»\r\n]+»|[^\h\r\n,;][^\r\n,;]*?(?=[.!?]\h|[,;\r\n]|$))~iu',
+                '~\b(?<label>(?:мой\s+)?(?:пароль|password|pwd))(?<separator>\h+)(?<secret>(?=[^\h\r\n,;]*[0-9!#@$%^&*_=+\-])[^\h\r\n,;]+?)(?=[.!?]\h|[\h\r\n,;]|$)~iu',
+                '~\b(?<label>(?:мой|my)\h+(?:пароль|password|pwd))(?<separator>\h+)(?<secret>[^:=—\-\h\r\n,;][^\h\r\n,;]*?)(?=[.!?]\h|\h*(?:[,;\r\n]|$))~iu',
             ],
             function (array $matches) use (&$redactionTypes): string {
                 if (mb_trim($matches['secret']) === self::PasswordMask) {
