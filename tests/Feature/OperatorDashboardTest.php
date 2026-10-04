@@ -530,7 +530,7 @@ test('loads the complete selected ticket history into a fixed height chat withou
     expect($component->html())->toMatch('/Сообщение 000\..*Сообщение 110\./s');
     $component->assertDontSee(['История предыдущего обращения.', 'Контекст без обращения.', 'История другого участника.'])
         ->assertDontSeeHtml('messagesCursor')->assertSeeHtml('h-[36rem]')
-        ->assertSeeHtml('data-ticket-chat')->assertSeeHtml('overflow-y-auto');
+        ->assertSeeHtml('data-ticket-chat x-ref="chat"')->assertSeeHtml('overflow-y-auto');
 
     $queueCursor = $component->get('paginators.ticketsCursor');
     $component->set('replyBody', 'Черновик текущего участника')->call('selectTicket', $ticket->id)->call('$refresh')

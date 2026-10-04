@@ -106,7 +106,7 @@
                             <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Участник: {{ $selectedTicket->participant->telegram_user_id }}</p>
                         </div>
                     </header>
-                    <div data-ticket-chat data-latest-message-id="{{ $messages->max('id') ?? 0 }}" wire:key="conversation-{{ $selectedTicket->id }}" class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 [overflow-anchor:none]">
+                    <div data-ticket-chat x-ref="chat" data-latest-message-id="{{ $messages->max('id') ?? 0 }}" wire:key="conversation-{{ $selectedTicket->id }}" class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 [overflow-anchor:none]">
                         @if ($contextMessages->isNotEmpty())
                             <details wire:ignore.self wire:key="context-panel-{{ $selectedTicket->id }}" aria-label="Контекст до обращения" class="mb-4 text-slate-500 dark:text-slate-400">
                                 <summary class="cursor-pointer py-1 text-xs">Контекст до обращения</summary>

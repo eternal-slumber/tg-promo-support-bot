@@ -68,13 +68,21 @@ document.addEventListener('alpine:init', () => {
             this.submitting = true;
             this.sendingBody = body;
             this.$wire.replyBody = body;
+            const chat = this.$refs.chat;
+            let submitted = false;
 
             try {
                 await this.$wire.sendReply();
+                submitted = this.$wire.replyBody === '';
             } finally {
                 await this.$nextTick();
                 this.submitting = false;
                 this.resize();
+                await this.$nextTick();
+
+                if (submitted && chat && this.$refs.chat === chat) {
+                    this.$dispatch('operator-reply-submitted', { chat });
+                }
             }
         },
     }));
@@ -85,7 +93,7 @@ const dashboard = document.querySelector('[data-operator-dashboard]');
 if (dashboard) {
     let chatState = null;
 
-    const isNearBottom = (chat) => chat.scrollHeight - chat.clientHeight - chat.scrollTop <= 80;
+    const isNearBottom = (chat) => chat.scrollHeight - chat.clientHeight - chat.scrollTop < 100;
 
     const syncConversationScroll = () => {
         const chat = dashboard.querySelector('[data-ticket-chat]');
@@ -106,6 +114,7 @@ if (dashboard) {
                 localReplyVisible: false,
                 initial: true,
                 newMessage: false,
+                forceBottom: false,
                 frame: null,
             };
 
@@ -132,15 +141,44 @@ if (dashboard) {
                 return;
             }
 
-            chat.scrollTop = state.initial || (state.newMessage && state.nearBottom)
-                ? chat.scrollHeight : state.position;
+            if (state.initial || state.forceBottom || (state.newMessage && state.nearBottom)) {
+                chat.scrollTo({ top: chat.scrollHeight, behavior: state.initial ? 'auto' : 'smooth' });
+            } else if (chat.scrollTop !== state.position) {
+                chat.scrollTop = state.position;
+            }
+
             state.position = chat.scrollTop;
             state.nearBottom = isNearBottom(chat);
             state.initial = false;
             state.newMessage = false;
+            state.forceBottom = false;
             state.frame = null;
         });
     };
+
+    document.addEventListener('livewire:init', () => {
+        window.Livewire.interceptMessage(({ message, onSuccess }) => {
+            if (message.component.el !== dashboard) {
+                return;
+            }
+
+            onSuccess(({ onMorphed }) => {
+                if (chatState) {
+                    chatState.position = chatState.element.scrollTop;
+                    chatState.nearBottom = isNearBottom(chatState.element);
+                }
+
+                onMorphed(syncConversationScroll);
+            });
+        });
+    });
+
+    dashboard.addEventListener('operator-reply-submitted', (event) => {
+        if (chatState?.element === event.detail.chat) {
+            chatState.forceBottom = true;
+            syncConversationScroll();
+        }
+    });
 
     new MutationObserver(syncConversationScroll).observe(dashboard, {
         childList: true,

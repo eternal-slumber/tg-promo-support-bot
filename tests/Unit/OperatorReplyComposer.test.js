@@ -16,6 +16,7 @@ function mount(body = 'Ответ участнику', send) {
         get scrollHeight() { return this.value.split('\n').length * 20 + 16; },
     };
     const submitted = [];
+    const dispatched = [];
 
     runInNewContext(script, {
         document: {
@@ -28,9 +29,10 @@ function mount(body = 'Ответ участнику', send) {
     listeners['alpine:init']();
 
     const composer = createComposer();
-    composer.$refs = { reply: textarea };
+    composer.$refs = { reply: textarea, chat: {} };
     composer.$el = { dataset: { replyBlocked: 'false' } };
     composer.$nextTick = async (callback) => callback?.();
+    composer.$dispatch = (name, detail) => dispatched.push({ name, detail });
     composer.$watch = (property, callback) => { watcher = callback; };
     composer.$wire = {
         get replyBody() { return textarea.value; },
@@ -47,7 +49,7 @@ function mount(body = 'Ответ участнику', send) {
     };
     composer.init();
 
-    return { composer, textarea, submitted, poll: () => watcher() };
+    return { composer, textarea, submitted, dispatched, poll: () => watcher() };
 }
 
 function key(overrides = {}) {
@@ -172,6 +174,7 @@ test('a validation rejection retains the draft and its height for correction', a
     assert.equal(ui.textarea.value, 'Первая строка\nВторая строка');
     assert.equal(ui.composer.height, '56px');
     assert.equal(ui.composer.submitting, false);
+    assert.deepEqual(ui.dispatched, []);
 });
 
 test('a failed request unlocks the composer without losing the draft', async () => {
@@ -179,6 +182,7 @@ test('a failed request unlocks the composer without losing the draft', async () 
     await assert.rejects(ui.composer.submit(), /network error/);
 
     assert.equal(ui.textarea.value, 'Ответ');
+    assert.deepEqual(ui.dispatched, []);
     assert.equal(ui.composer.submitting, false);
 });
 
@@ -230,4 +234,61 @@ test('refreshing a draft preserves its height and internal scroll position', asy
     assert.equal(ui.textarea.style.height, '136px');
     assert.equal(ui.textarea.scrollTop, 20);
     assert.equal(ui.textarea.value, '1\n2\n3\n4\n5\n6\n7');
+});
+
+test('signals conversation scrolling only after the accepted reply renders and the composer collapses', async () => {
+    let finish;
+    const request = new Promise((resolve) => { finish = resolve; });
+    const ui = mount('1\n2\n3\n4\n5\n6\n7', async (wire) => { await request; wire.replyBody = ''; });
+    const ticks = [];
+    ui.composer.$nextTick = () => new Promise((resolve) => ticks.push(resolve));
+    const chat = ui.composer.$refs.chat;
+    const pending = ui.composer.submit();
+
+    assert.deepEqual(ui.dispatched, []);
+    assert.equal(ui.composer.height, '136px');
+    finish();
+    await new Promise(setImmediate);
+    assert.deepEqual(ui.dispatched, []);
+    assert.equal(ticks.length, 1);
+
+    ticks.shift()();
+    await new Promise(setImmediate);
+    assert.equal(ui.textarea.style.height, '36px');
+    assert.equal(ui.composer.submitting, false);
+    assert.deepEqual(ui.dispatched, []);
+
+    ticks.shift()();
+    await pending;
+    assert.equal(ui.dispatched.length, 1);
+    assert.equal(ui.dispatched[0].name, 'operator-reply-submitted');
+    assert.equal(ui.dispatched[0].detail.chat, chat);
+});
+
+test('an accepted reply does not scroll another ticket opened while the request was running', async () => {
+    let finish;
+    const request = new Promise((resolve) => { finish = resolve; });
+    const ui = mount('Ответ', async (wire) => { await request; wire.replyBody = ''; });
+    const pending = ui.composer.submit();
+    ui.composer.$refs.chat = {};
+    finish();
+    await pending;
+
+    assert.equal(ui.textarea.value, '');
+    assert.equal(ui.composer.height, '36px');
+    assert.deepEqual(ui.dispatched, []);
+});
+
+test('an accepted reply finishes safely after the conversation and textarea have been removed', async () => {
+    let finish;
+    const request = new Promise((resolve) => { finish = resolve; });
+    const ui = mount('Ответ', async (wire) => { await request; wire.replyBody = ''; });
+    const pending = ui.composer.submit();
+    delete ui.composer.$refs.reply;
+    delete ui.composer.$refs.chat;
+    finish();
+    await pending;
+
+    assert.equal(ui.composer.submitting, false);
+    assert.deepEqual(ui.dispatched, []);
 });
