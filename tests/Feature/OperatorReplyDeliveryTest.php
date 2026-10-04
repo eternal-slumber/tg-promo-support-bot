@@ -329,5 +329,5 @@ test('closed tickets allow retry or cancellation of existing replies without reo
 
     expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
     expect($reply->refresh()->delivery_status)->toBe($action === 'retryDelivery' ? DeliveryStatus::Pending : DeliveryStatus::Cancelled);
-    Queue::assertPushed(DeliverTelegramMessage::class, $action === 'retryDelivery' ? 2 : 1);
+    Queue::assertPushed(DeliverTelegramMessage::class, $action === 'retryDelivery' ? 3 : 2);
 })->with(['retry' => 'retryDelivery', 'cancel' => 'cancelDelivery']);

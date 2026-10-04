@@ -93,8 +93,9 @@ class DeliverTelegramMessage implements ShouldQueue
                 return null;
             }
 
-            if ($lockedMessage->ticket?->status === TicketStatus::Closed
-                && $lockedMessage->author !== MessageAuthor::Operator) {
+            if (($lockedMessage->isTicketClosureNotice() && $lockedMessage->ticket?->status !== TicketStatus::Closed)
+                || ($lockedMessage->ticket?->status === TicketStatus::Closed
+                    && $lockedMessage->author !== MessageAuthor::Operator && ! $lockedMessage->isTicketClosureNotice())) {
                 $lockedMessage->update(['delivery_status' => DeliveryStatus::Cancelled]);
 
                 return null;

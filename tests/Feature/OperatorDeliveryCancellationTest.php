@@ -38,7 +38,9 @@ test('manual closure preserves unfinished replies for delivery', function (Deliv
     (new DeliverTelegramMessage($reply->id))->handle($client, app(TelegramMessagePresentation::class), app(TicketLifecycleService::class));
     expect($reply->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
     expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
-    Queue::assertNothingPushed();
+    $closure = $ticket->messages()->where('ticket_event', Message::TicketClosedEvent)->sole();
+    Queue::assertPushed(DeliverTelegramMessage::class, fn (DeliverTelegramMessage $job): bool => $job->messageId === $closure->id);
+    Queue::assertPushed(DeliverTelegramMessage::class, 1);
 })->with(['pending' => DeliveryStatus::Pending, 'failed' => DeliveryStatus::Failed]);
 
 test('another operator can cancel a permanently rejected reply and close the ticket', function () {
@@ -63,7 +65,9 @@ test('another operator can cancel a permanently rejected reply and close the tic
     expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
     expect($reply->refresh()->delivery_status->value)->toBe('cancelled');
     expect($reply->last_delivery_error)->toBe('telegram_request_rejected');
-    Queue::assertNothingPushed();
+    $closure = $ticket->messages()->where('ticket_event', Message::TicketClosedEvent)->sole();
+    Queue::assertPushed(DeliverTelegramMessage::class, fn (DeliverTelegramMessage $job): bool => $job->messageId === $closure->id);
+    Queue::assertPushed(DeliverTelegramMessage::class, 1);
 });
 
 test('cancelling a failed reply permits a replacement while stale delivery jobs do nothing', function () {

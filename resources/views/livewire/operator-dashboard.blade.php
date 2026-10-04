@@ -75,6 +75,29 @@
                 <p class="mb-3 text-sm text-rose-300">{{ $message }}</p>
             @enderror
             @if ($selectedTicket !== null)
+                @if ($contextMessages->isNotEmpty())
+                    <section aria-label="Контекст до обращения" class="mb-5 border-b border-slate-600 pb-5">
+                        <h2 class="font-semibold text-slate-300">Контекст до обращения</h2>
+                        <div class="mt-3 space-y-3">
+                            @foreach ($contextMessages as $contextMessage)
+                                <article wire:key="context-{{ $selectedTicket->id }}-{{ $contextMessage->id }}" class="text-sm text-slate-300">
+                                    <p class="text-xs text-slate-400">{{ $contextMessage->author === \App\Enums\MessageAuthor::Participant ? 'Пользователь' : 'Бот' }} · {{ $contextMessage->created_at->copy()->timezone('Europe/Moscow')->format('d.m.Y H:i') }} МСК</p>
+                                    <p class="mt-1 whitespace-pre-wrap break-words">{{ $contextMessage->body }}</p>
+                                </article>
+                            @endforeach
+                        </div>
+                        @if ($contextMessages->hasPages())
+                            <nav aria-label="Страницы контекста" class="mt-4 flex gap-2 text-sm">
+                                @if ($cursor = $contextMessages->previousCursor())
+                                    <button wire:click="setPage('{{ $cursor->encode() }}', 'contextCursor')" type="button" class="rounded border border-slate-600 px-3 py-2 hover:bg-slate-800" wire:loading.attr="disabled">Раньше</button>
+                                @endif
+                                @if ($cursor = $contextMessages->nextCursor())
+                                    <button wire:click="setPage('{{ $cursor->encode() }}', 'contextCursor')" type="button" class="rounded border border-slate-600 px-3 py-2 hover:bg-slate-800" wire:loading.attr="disabled">Позже</button>
+                                @endif
+                            </nav>
+                        @endif
+                    </section>
+                @endif
                 <header class="border-b border-slate-700 pb-4">
                     <div class="flex flex-wrap items-start justify-between gap-3">
                         <div>
@@ -98,6 +121,7 @@
                 </header>
 
                 <div class="space-y-3 py-5">
+                    <p class="border-b border-slate-700 pb-3 text-center text-sm text-slate-400">Обращение №{{ $selectedTicket->id }} создано</p>
                     @foreach ($messages->getCollection()->reverse() as $message)
                         <article wire:key="message-{{ $message->id }}" class="rounded-lg border border-slate-700 p-3">
                             <div class="flex flex-wrap justify-between gap-2 text-xs text-slate-400">

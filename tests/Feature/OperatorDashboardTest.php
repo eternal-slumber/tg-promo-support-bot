@@ -159,6 +159,7 @@ test('isolates histories of sequential closed tickets for the same participant',
         'delivery_status' => DeliveryStatus::Sent,
     ]);
     $lifecycle->closeManually($firstTicket);
+    $firstClosure = $firstTicket->messages()->where('ticket_event', Message::TicketClosedEvent)->sole();
     $secondTicket = $lifecycle->create($participant);
     $secondQuestion = Message::factory()->for($participant, 'participant')->for($secondTicket)->create(['body' => 'Вопрос второго обращения.']);
     $secondReply = Message::factory()->for($participant, 'participant')->for($secondTicket)->for($operator, 'operator')->create([
@@ -168,6 +169,7 @@ test('isolates histories of sequential closed tickets for the same participant',
         'delivery_status' => DeliveryStatus::Sent,
     ]);
     $lifecycle->closeManually($secondTicket);
+    $secondClosure = $secondTicket->messages()->where('ticket_event', Message::TicketClosedEvent)->sole();
     $messageTickets = Message::query()->orderBy('id')->pluck('ticket_id', 'id')->all();
     $this->actingAs($operator);
 
@@ -175,13 +177,13 @@ test('isolates histories of sequential closed tickets for the same participant',
         ->call('selectTicket', $firstTicket->id)
         ->assertSee(['Вопрос первого обращения.', 'Ответ первого обращения.'])
         ->assertDontSee(['Вопрос второго обращения.', 'Ответ второго обращения.']);
-    expect($component->viewData('messages')->pluck('id')->all())->toBe([$firstReply->id, $firstQuestion->id]);
+    expect($component->viewData('messages')->pluck('id')->all())->toBe([$firstClosure->id, $firstReply->id, $firstQuestion->id]);
 
     $component->call('selectTicket', $secondTicket->id)
         ->assertSee(['Вопрос второго обращения.', 'Ответ второго обращения.'])
         ->assertDontSee(['Вопрос первого обращения.', 'Ответ первого обращения.'])
         ->call('$refresh');
-    expect($component->viewData('messages')->pluck('id')->all())->toBe([$secondReply->id, $secondQuestion->id]);
+    expect($component->viewData('messages')->pluck('id')->all())->toBe([$secondClosure->id, $secondReply->id, $secondQuestion->id]);
     expect(Message::query()->orderBy('id')->pluck('ticket_id', 'id')->all())->toBe($messageTickets);
     expect($firstTicket->refresh()->status)->toBe(TicketStatus::Closed);
     expect($secondTicket->refresh()->status)->toBe(TicketStatus::Closed);
@@ -214,15 +216,17 @@ test('displays ticket and message timestamps in Moscow time without changing sto
     expect($message->refresh()->getRawOriginal())->toBe($messageAttributes);
 });
 
-test('excludes unticketed pre-escalation context without reassigning messages to the ticket', function () {
+test('shows unticketed pre-escalation context separately without reassigning messages to the ticket', function () {
     $this->freezeTime();
     Queue::fake();
     Http::preventStrayRequests();
+    Http::fake(['*sendMessage' => Http::response(['ok' => true, 'result' => ['message_id' => 1700]])]);
     $participant = TelegramParticipant::factory()->create();
     $question = Message::factory()->for($participant, 'participant')->create(['body' => 'Сколько шансов дают 7 йогуртов?']);
     $decisions = app(SupportDecisionService::class);
     $decisions->apply($question, new ValidatedSupportDecision(SupportDecisionType::Answer, 'rule_answer', 'У вас будет 3 шанса.', [['rule_id' => '5.5', 'quote' => 'Каждые 2 (две) единицы участвующей продукции в одном чеке дают 1 (один) шанс в розыгрышах.']]), 'rules-hash');
     $botAnswer = Message::query()->where('author', MessageAuthor::Bot)->sole();
+    app()->call([new DeliverTelegramMessage($botAnswer->id), 'handle']);
     $followUp = Message::factory()->for($participant, 'participant')->create(['body' => 'Не понял ответ, позовите оператора.']);
     $decisions->apply($followUp, new ValidatedSupportDecision(SupportDecisionType::Escalate, 'not_in_rules', null, []), 'rules-hash');
     $ticket = Ticket::query()->sole();
@@ -231,11 +235,12 @@ test('excludes unticketed pre-escalation context without reassigning messages to
     $this->actingAs(User::factory()->create());
 
     $component = Livewire::test(OperatorDashboard::class)->call('selectTicket', $ticket->id)
-        ->assertSee(['Не понял ответ, позовите оператора.', 'Ваш вопрос передан оператору.'])
-        ->assertDontSee(['Сколько шансов дают 7 йогуртов?', 'У вас будет 3 шанса.', 'Переписка другого участника.']);
+        ->assertSee(['Контекст до обращения', 'Сколько шансов дают 7 йогуртов?', 'У вас будет 3 шанса.', 'Не понял ответ, позовите оператора.', 'Ваш вопрос передан оператору.'])
+        ->assertDontSee('Переписка другого участника.');
     $component->call('$refresh');
 
     expect($component->viewData('messages')->pluck('id')->all())->toBe([$escalationNotice->id, $followUp->id]);
+    expect($component->viewData('contextMessages')->pluck('id')->all())->toBe([$question->id, $botAnswer->id, $followUp->id]);
     expect($component->html())->toMatch('/Не понял ответ.*Ваш вопрос передан оператору/s');
     expect($question->refresh()->ticket_id)->toBeNull();
     expect($botAnswer->refresh()->ticket_id)->toBeNull();
@@ -245,7 +250,7 @@ test('excludes unticketed pre-escalation context without reassigning messages to
     $this->assertDatabaseCount('messages', 5);
     $this->assertDatabaseCount('support_decisions', 2);
     Queue::assertPushed(DeliverTelegramMessage::class, 2);
-    Http::assertNothingSent();
+    Http::assertSentCount(1);
 });
 
 test('excludes earlier ticket history and rejects its delivery actions from the selected ticket', function (string $action) {

@@ -40,6 +40,7 @@ class OperatorDashboard extends Component
         $this->resetValidation();
         $this->resetPage('ticketsCursor');
         $this->resetPage('messagesCursor');
+        $this->resetPage('contextCursor');
     }
 
     public function selectTicket(int $ticketId): void
@@ -58,6 +59,7 @@ class OperatorDashboard extends Component
             $this->reset('replyBody');
             $this->resetValidation();
             $this->resetPage('messagesCursor');
+            $this->resetPage('contextCursor');
         }
 
         $this->selectedTicketId = $ticket->id;
@@ -193,6 +195,10 @@ class OperatorDashboard extends Component
             ->latest('id')
             ->cursorPaginate(50, ['id', 'ticket_id', 'created_at', 'author', 'body', 'direction', 'delivery_status', 'last_delivery_error'], 'messagesCursor');
 
+        $contextMessages = ($selectedTicket?->context_message_ids ?? []) === [] ? collect() : $selectedTicket->contextMessages()
+            ->oldest('id')
+            ->cursorPaginate(50, ['id', 'author', 'body', 'created_at'], 'contextCursor');
+
         $hasUnfinishedReply = $selectedTicket?->messages()
             ->where('direction', MessageDirection::Outbound)
             ->where('author', MessageAuthor::Operator)
@@ -203,6 +209,7 @@ class OperatorDashboard extends Component
             'tickets' => $tickets,
             'selectedTicket' => $selectedTicket,
             'messages' => $messages,
+            'contextMessages' => $contextMessages,
             'hasUnfinishedReply' => $hasUnfinishedReply,
             'statistics' => $this->statistics(),
         ]);

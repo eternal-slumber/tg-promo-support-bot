@@ -76,6 +76,7 @@ test('smoke runs webhook database workers operator replies explicit resolution a
     $panel->call('resolveTicket')->assertHasNoErrors();
     $this->travel(24)->hours();
     $worker('maintenance');
+    $worker('telegram');
     expect($secondTicket->refresh()->close_reason)->toBe(TicketCloseReason::AutoClosed);
     $panel->call('$refresh')->assertViewHas('statistics', [
         'bot_resolved' => 1, 'bot_prepared' => 1, 'bot_pending' => 0, 'bot_failed' => 0, 'bot_cancelled' => 0,
@@ -84,5 +85,5 @@ test('smoke runs webhook database workers operator replies explicit resolution a
     expect(DB::table('jobs')->count())->toBe(0);
     expect(DB::table('failed_jobs')->count())->toBe(0);
     expect(Message::query()->where('direction', 'outbound')->where('delivery_status', '!=', DeliveryStatus::Sent)->count())->toBe(0);
-    Http::assertSentCount(9);
+    Http::assertSentCount(11);
 });

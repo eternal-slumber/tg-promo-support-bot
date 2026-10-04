@@ -51,7 +51,7 @@ class SupportDecisionService
             ]);
 
             $ticket = match ($decision->type) {
-                SupportDecisionType::Escalate, SupportDecisionType::Mixed => $this->tickets->create($participant, $decision->reason),
+                SupportDecisionType::Escalate, SupportDecisionType::Mixed => $this->tickets->create($participant, $decision->reason, $lockedMessage),
                 SupportDecisionType::Answer, SupportDecisionType::Refuse => null,
             };
 
@@ -89,6 +89,7 @@ class SupportDecisionService
         $outbound = Message::query()->create([
             'participant_id' => $message->participant_id,
             'ticket_id' => $ticket?->id,
+            'source_message_id' => $message->id,
             'direction' => MessageDirection::Outbound,
             'author' => MessageAuthor::Bot,
             'body' => $body,

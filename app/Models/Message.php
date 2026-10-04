@@ -12,11 +12,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[Fillable(['participant_id', 'ticket_id', 'telegram_update_id', 'operator_id', 'direction', 'author', 'body', 'delivery_status', 'telegram_message_id', 'delivered_at', 'delivery_attempts', 'last_delivery_error', 'sensitive_data_redacted', 'redaction_types'])]
+#[Fillable(['participant_id', 'ticket_id', 'telegram_update_id', 'operator_id', 'source_message_id', 'ticket_event', 'direction', 'author', 'body', 'delivery_status', 'telegram_message_id', 'delivered_at', 'delivery_attempts', 'last_delivery_error', 'sensitive_data_redacted', 'redaction_types'])]
 class Message extends Model
 {
     /** @use HasFactory<MessageFactory> */
     use HasFactory;
+
+    public const TicketClosedEvent = 'ticket_closed';
 
     public function participant(): BelongsTo
     {
@@ -41,6 +43,19 @@ class Message extends Model
     public function decision(): HasOne
     {
         return $this->hasOne(SupportDecision::class);
+    }
+
+    public function sourceMessage(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'source_message_id');
+    }
+
+    public function isTicketClosureNotice(): bool
+    {
+        return $this->ticket_id !== null
+            && $this->direction === MessageDirection::Outbound
+            && $this->author === MessageAuthor::System
+            && $this->ticket_event === self::TicketClosedEvent;
     }
 
     public function isInboundParticipantMessage(): bool

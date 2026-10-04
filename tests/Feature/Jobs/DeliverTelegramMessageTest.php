@@ -140,7 +140,7 @@ test('closing during HTTP delivery keeps the ticket terminal after the operator 
     expect($reply->refresh()->delivery_status)->toBe(DeliveryStatus::Sent);
     expect($ticket->refresh()->status)->toBe(TicketStatus::Closed)
         ->and($ticket->close_reason)->toBe(TicketCloseReason::OperatorClosed);
-    Queue::assertPushed(DeliverTelegramMessage::class, 1);
+    Queue::assertPushed(DeliverTelegramMessage::class, 2);
     Queue::assertNotPushed(AutoCloseTicket::class);
 });
 
@@ -244,7 +244,7 @@ test('cancels queued bot messages for a closed ticket even when the participant 
     }
     expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
     expect($newTicket->refresh()->status)->toBe(TicketStatus::Open);
-    Queue::assertPushed(DeliverTelegramMessage::class, $type === SupportDecisionType::Mixed ? 2 : 1);
+    Queue::assertPushed(DeliverTelegramMessage::class, $type === SupportDecisionType::Mixed ? 3 : 2);
 })->with([
     'escalation' => [SupportDecisionType::Escalate, null],
     'mixed answer and escalation' => [SupportDecisionType::Mixed, 'Йогурты участвуют в акции.'],
@@ -271,7 +271,7 @@ test('cancels an escalation retry after the ticket closes without losing the pre
         ->and($notice->telegram_message_id)->toBeNull()
         ->and($notice->delivered_at)->toBeNull();
     expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
-    Queue::assertPushed(DeliverTelegramMessage::class, 1);
+    Queue::assertPushed(DeliverTelegramMessage::class, 2);
 });
 
 test('cancels a stale escalation during flood control without releasing another retry', function () {
@@ -300,7 +300,7 @@ test('cancels a stale escalation during flood control without releasing another 
         ->and($notice->delivered_at)->toBeNull();
     expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
     Http::assertSentCount(1);
-    Queue::assertPushed(DeliverTelegramMessage::class, 1);
+    Queue::assertPushed(DeliverTelegramMessage::class, 2);
 });
 
 test('still delivers an escalation notice while the ticket remains active', function (TicketStatus $status) {
