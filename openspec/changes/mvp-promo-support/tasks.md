@@ -11,7 +11,7 @@
 
 - [x] 2.1 Создать enums для ticket status, close reason, message author/direction, delivery status и decision type; проверить Pest unit tests на допустимые значения и переходы lifecycle.
 - [x] 2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с безопасной `redaction_types` metadata, внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests и отсутствие поля для raw message body.
-- [x] 2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `waiting_for_user` и `closed`.
+- [x] 2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `resolved` и `closed`.
 - [x] 2.4 Реализовать sanitizer до persistence для card-like sequences, контекстных SMS/OTP-кодов и явно обозначенных паролей; проверить unit dataset для evaluation case №22, OTP/password context, обычных дат/сумм/количеств без ложного маскирования и сохранения телефонного номера.
 
 ## 3. Telegram ingestion
@@ -21,7 +21,7 @@
 - [x] 3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, атомарно записывать database jobs через `beforeCommit()` в той же PostgreSQL transaction, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.
 - [x] 3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.
 - [x] 3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.
-- [x] 3.6 Для participant с `open` или `waiting_for_user` прикреплять redacted сообщение к тому же ticket без AI-routing; в `waiting_for_user` подтверждение закрывает ticket, любой другой текст открывает его без LLM и новых кнопок; после `closed` новый вопрос классифицируется заново. Проверить transitions, сохранение истории, duplicate update и stale auto-close.
+- [x] 3.6 Для participant с open/resolved прикреплять redacted сообщение к тому же ticket без AI-routing; любое сообщение в resolved возвращает open; после closed новый вопрос классифицируется заново.
 
 ## 4. LLM boundary и grounded support
 
@@ -34,27 +34,27 @@
 
 ## 5. Telegram delivery
 
-- [x] 5.1 Создать Telegram adapter для text messages и ReplyKeyboardMarkup без inline callbacks и callback acknowledgement с explicit timeout/error mapping; проверить HTTP fakes и отсутствие секретов, raw body, телефонов и sensitive values в логируемом контексте.
-- [x] 5.2 Реализовать presentation builders для номера ticket, короткой redacted quote, redaction notification и actions `Проблема решена` / `Не решило`; разрешить optional краткий safety reminder при эскалации и проверить, что он не обязателен, длинный текст обрезается, а hidden values не повторяются.
+- [x] 5.1 Создать Telegram adapter для text messages с explicit timeout/error mapping без feedback keyboard и inline callbacks; проверить HTTP fakes и безопасное логирование.
+- [x] 5.2 Реализовать presentation номера ticket и короткой redacted quote без feedback actions; соблюдать ограничение длины.
 - [x] 5.3 Реализовать `DeliverTelegramMessage` для переходов `pending -> sent|failed`, сохранения Telegram message ID и повторной отправки того же record; проверить success, permanent failure и retry уже `sent` сообщения как no-op.
 
 ## 6. Operator authentication и UI
 
 - [x] 6.1 Реализовать session login для заранее созданного operator account без self-registration и ролей; проверить guest redirect, успешный login и отсутствие публичного registration endpoint.
 - [x] 6.2 Реализовать Livewire queue и conversation history с escaped redacted participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets, отсутствие raw HTML и отсутствие исходных card/OTP/password values.
-- [x] 6.3 Реализовать ответ оператора: сохранить `pending` message и первый response timestamp, атомарно записать delivery job в той же transaction, а после successful delivery при неизменной input revision перевести `open -> waiting_for_user`; проверить DB, queue и Telegram side effects вместе.
-- [x] 6.4 Показывать failed delivery оператору и разрешать повторную отправку того же message record; проверить, что ошибка Telegram не удаляет ответ и не переводит ticket в `waiting_for_user`.
+- [x] 6.3 Сохранять pending operator message и database delivery job атомарно; successful delivery фиксирует sent и первый response timestamp, не решает ticket.
+- [x] 6.4 Показывать failed delivery с явными retry/cancel; unfinished operator reply блокирует следующий, retry использует прежний record.
 
-## 7. Text feedback и ticket lifecycle
+## 7. Ticket lifecycle
 
-- [x] 7.1 Удалить inline callback parser/DTO/handler/acknowledgement и pending callback state; текстовый feedback применим только к собственному active ticket отправителя. Проверить owner isolation, duplicate text update и успешное игнорирование старых inline updates без side effects.
-- [x] 7.2 Реализовать `waiting_for_user -> closed / user_confirmed` для текста `Проблема решена` и `waiting_for_user -> open` для `Не решило` или любого другого текста без LLM и новых кнопок. Сохранять feedback в том же ticket; проверить, что любой input после сохранения operator reply оставляет open, включая раннее подтверждение и input между отказом Telegram и retry, а раннее подтверждение остаётся в истории для ручного закрытия и stale auto-close даже при совпадающих timestamps.
-- [x] 7.3 Реализовать delayed `AutoCloseTicket` с configurable 24-hour delay и generation/status recheck под row lock; проверить auto-close через frozen time и stale job после reopening как no-op.
-- [x] 7.4 Реализовать ручное закрытие `open`/`waiting_for_user` оператором с `operator_closed`; проверить auth, допустимые статусы и idempotent повторное действие.
+- [x] 7.1 Игнорировать legacy inline callbacks без side effects; ordinary participant messages применимы только к собственному active ticket.
+- [x] 7.2 Любое новое participant message возвращает resolved в open без LLM; отдельные feedback тексты и keyboard отсутствуют.
+- [x] 7.3 Реализовать delayed AutoCloseTicket только для resolved с configurable 24-hour delay и status/resolved_since/deadline recheck; stale jobs — no-op.
+- [x] 7.4 Ручное закрытие open/resolved с operator_closed не отменяет operator replies; отмена сообщения отдельная, closed terminal.
 
 ## 8. Statistics
 
-- [x] 8.1 Реализовать изолированный statistics query/service по provisional definitions для `bot resolved`, `escalated` и average first operator response time; проверить фиксированным dataset, что mixed исключён, follow-ups не увеличивают escalated, а unanswered tickets не входят в average.
+- [x] 8.1 Реализовать изолированный statistics query/service: bot resolved учитывает только standalone bot answers с sent/delivered_at, refuse и mixed исключены, follow-ups не увеличивают escalated, average использует первую успешную operator delivery, unanswered tickets исключены; проверить фиксированным dataset.
 - [x] 8.2 Добавить статистику в Livewire operator panel и проверить component test, что повторный просмотр возвращает те же значения без LLM/Telegram вызовов и изменения persisted state.
 
 ## 9. Evaluation и документация поведения
@@ -68,37 +68,56 @@
 
 - [x] 10.1 Запустить узкие Pest feature/unit suites каждого capability, затем полный `php artisan test --compact`, и устранить только дефекты поведения этого change.
 - [x] 10.2 Запустить `vendor/bin/pint --dirty --format agent`, `npm run build` и `openspec validate mvp-promo-support --strict`; проверить успешное завершение всех команд.
-- [x] 10.3 Выполнить Docker smoke flow: принять grounded question, создать escalation, ответить оператором, обработать resolved/unresolved и auto-close, затем сверить три метрики и delivery states.
+- [x] 10.3 Выполнить Docker smoke flow: принять grounded question, создать escalation, ответить оператором, отдельно отметить решённым, продолжить переписку, выполнить manual/auto close и доставить уведомления, затем сверить три метрики и delivery states.
 - [x] 10.4 Проверить repository secrets scan и итоговый diff: отсутствуют реальные Telegram/LLM keys, raw card/OTP/password values, sensitive message bodies в logging paths, незаявленная инфраструктура и функциональность вне specs.
 
 ## 11. Четыре обязательных пункта review
 
-- [x] 11.1 Заменить Message.id ticket input_revision и snapshot operator reply; проверить late AI attach во время delivery и changed/unchanged revision.
+- [x] 11.1 Проверить late AI attachment через общий attach/reopen и delivery без lifecycle transitions.
 - [x] 11.2 Убрать password word whitelist, проверить указанные leak/false-positive cases по syntax/value-like признакам.
-- [x] 11.3 Зафиксировать явно согласованный revision lifecycle в OpenSpec без утверждения о прежнем согласовании удаления marker задним числом.
+- [x] 11.3 Зафиксировать фактический lifecycle без revision/generation/marker механизмов.
 - [x] 11.4 Применить штатную ProcessIncomingMessage retry-policy в evaluation, разделить model result/infrastructure reason, повторить 25 cases; полный PostgreSQL suite, smoke, Pint, build и OpenSpec validation.
 
-Правило раннего feedback подтверждено пользователем 03.10.2026: до фиксации успешной доставки подтверждение сохраняется в истории, но не закрывает ticket автоматически.
+Participant text является обычным сообщением и никогда не закрывает ticket автоматически.
 
-03.10.2026 все 25 cases прогнаны на локальной google/gemma-4-e4b со штатными retries и ручной оценкой: 17 верно, 6 неверно, 2 спорно. Задача 9.2 завершена как фиксация результатов, а не как подтверждение достаточного качества. №9 и №12 содержат ложные утверждения, пропущенные второй LLM-проверкой; пять cases дали llm_failure. Промпты по итогам этого прогона не менялись; для совместимости LM Studio добавлен LLM_RESPONSE_FORMAT=json_schema. Рабочая БД и доставка Telegram не затрагивались.
+Исторический two-call evaluation предыдущей реализации: 03.10.2026 все 25 cases прогнаны на локальной google/gemma-4-e4b со штатными retries и ручной оценкой: 17 верно, 6 неверно, 2 спорно. Задача 9.2 завершена как фиксация результатов, а не как подтверждение достаточного качества той версии. №9 и №12 содержали ложные утверждения, пропущенные второй LLM-проверкой; пять cases дали llm_failure. Промпты по итогам этого прогона не менялись; для совместимости LM Studio добавлен LLM_RESPONSE_FORMAT=json_schema. Рабочая БД и доставка Telegram не затрагивались. Таблицы сохранены в docs/evaluation.md.
+
+Evaluation сдаваемой single-call версии от 04.10.2026: **24 PASS / 0 PARTIAL / 1 FAIL**, все 25 исходных обращений. FAIL №18 — неверный вывод о переносе непроверенных чеков; текущий отчёт и исторические результаты разделены в docs/evaluation.md.
 
 
 ## 12. Один основной LLM-запрос
 
-- [x] 12.1 Заменить analysis parts и второй LLM verifier одним structured decision с answer/evidence; deterministic PHP validation, trusted московская дата, сохранение пользовательского answer; удалить verifier prompt и ненужные production dependencies.
+- [x] 12.1 Реализовать один structured decision с answer/evidence, deterministic PHP validation и trusted московской датой; сохранять пользовательский answer без отдельного LLM verifier.
 - [x] 12.2 Ограничить provider attempts тремя на сообщение: один HTTP request на queue attempt, retries только transient errors; invalid result сразу использует существующую safe escalation; ticket lifecycle, operator dashboard и delivery semantics не менять.
 - [x] 12.3 Обновить OpenSpec, README и regression tests для single-call contract, evidence validation, safe fallback и HTTP request counts; выполнить узкие Pest tests, Pint и OpenSpec validation без реальных LLM-запросов.
 
 
 ## 13. Явное решение и минимальный lifecycle
 
-- [x] 13.1 Заменить waiting_for_user на open/resolved/closed, обновить schema/factories/indexes, удалить input revisions; старые waiting tickets открыть консервативно, историю сохранить.
-- [x] 13.2 Разрешить неограниченные operator replies в open/resolved; добавить «Отправить и решить» с resolve только после successful delivery, отменять pending intent и старый auto-close при продолжении переписки; feedback оставить сигналом, closed terminal. AI pipeline не менять.
+- [x] 13.1 Использовать open/resolved/closed, сохранить историю и индексы активных tickets.
+- [x] 13.2 Обычные последовательные operator replies не решают ticket; отдельное «Отметить решённым» запускает таймер; продолжение переписки возвращает open; closed terminal. AI pipeline не менять.
 - [x] 13.3 Актуализировать regression tests и README; проверить delivery failures/retries, pending/new messages, stale timers, concurrent workers, migration, UI validation/auth и существующий AI contract; выполнить узкие PostgreSQL tests, Pint, build и OpenSpec validation.
 
-Раздел 13 по явному запросу пользователя заменяет прежние lifecycle требования разделов 2/3/6/7 и revision mechanism раздела 11. Исторические завершённые задачи остаются записью предыдущих изменений.
+Lifecycle задачи приведены к текущей модели open/resolved/closed.
 
 ## 14. Изоляция истории обращений
 
-- [x] 14.1 Ограничить ленту operator dashboard выбранным ticket_id; исключить другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, pagination и delivery action isolation. Lifecycle не менять.
+- [x] 14.1 Ограничить основную ленту operator dashboard выбранным ticket_id; исключить из неё другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, pagination и delivery action isolation. Lifecycle не менять.
 - [x] 14.2 Отдельно проверить timestamps: выводить created_at/closed_at/messages.created_at в Europe/Moscow с пометкой «МСК», сохранить UTC в данных и таймерах; проверить переход суток и отсутствие мутаций при refresh.
+
+## 15. Независимое решение и последовательные operator replies
+
+- [x] 15.1 Отделить «Отметить решённым» от отправки и delivery; атомарно создавать таймер только для resolved; feedback keyboard отсутствует.
+- [x] 15.2 Блокировать следующий operator reply при pending/failed; explicit retry/cancel, доставка после close и подавление stale escalation, closed terminal.
+- [x] 15.3 Проверить lifecycle, rollback, stale timers, queue concurrency и AI contract; Pint, frontend build и strict OpenSpec validation.
+
+## 16. Milestone 2: Контекст и границы обращения
+
+- [x] 16.1 Зафиксировать Message IDs контекста при создании ticket, с нижней границей после предыдущего закрытия и source linkage ответов бота; отдельный read-only блок и независимая pagination, основная лента остаётся ticket-scoped.
+- [x] 16.2 Показать границу создания; атомарно создать System notice ручного/автоматического закрытия с номером обращения и существующей delivery job, сохранить guards stale notices и operator replies.
+- [x] 16.3 Проверить PostgreSQL regressions контекста A/B, immutability, sanitizer/escaping, pagination, уведомлений и delivery guards; Pint, frontend build и strict OpenSpec validation.
+
+## 17. Удаление сохранённой Telegram-клавиатуры
+
+- [x] 17.1 Добавить ReplyKeyboardRemove в общий sendMessage без создания feedback-кнопок или специальных lifecycle-команд; проверить HTTP payload и доставку `/start`, сохранить обработку прежних текстов как обычных сообщений.
+- [x] 17.2 Актуализировать README/OpenSpec; выполнить targeted PostgreSQL delivery/lifecycle tests, Pint, strict OpenSpec validation и git diff --check.

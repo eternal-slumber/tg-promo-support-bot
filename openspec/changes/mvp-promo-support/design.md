@@ -2,7 +2,7 @@
 
 ## Context
 
-Мотивация и границы описаны в `proposal.md`, наблюдаемое поведение — в трёх capability specs. Проект является минимальным Laravel 13 skeleton: PostgreSQL, Livewire и Docker Compose ещё предстоит настроить. Внешними интеграциями MVP являются только Telegram Bot API и выбранный LLM provider.
+Мотивация и границы описаны в `proposal.md`, наблюдаемое поведение — в трёх capability specs. Приложение использует Laravel 13, PostgreSQL, Livewire и Docker Compose с app и тремя queue workers: AI/default, Telegram delivery и maintenance. Внешними интеграциями MVP являются только Telegram Bot API и выбранный LLM provider.
 
 Критические ограничения: входящее сообщение нельзя потерять при сбое LLM; недетерминированный LLM-ответ нельзя применять без валидации; повторные Telegram updates и queue retries не должны создавать повторные side effects; персональные данные акции недоступны.
 
@@ -58,7 +58,7 @@
 
 Laravel controllers принимают и валидируют transport input, но не содержат routing или lifecycle logic. Application services выполняют use cases; Eloquent models хранят состояние; adapters инкапсулируют Telegram и LLM HTTP contracts.
 
-Альтернатива с микросервисами или отдельными event consumers отклонена: один Laravel process и queue worker покрывают MVP и проще запускаются через Docker Compose.
+Laravel app и database queue workers запускаются через Docker Compose; отдельные микросервисы или event consumers не используются.
 
 ### 2. Inbound request flow и transaction boundary
 
@@ -71,7 +71,7 @@ Telegram update
   -> discard raw body and INSERT only redacted inbound message + safe metadata
   -> if redaction occurred: create pending safety notification
   -> if active ticket exists: attach message to ticket
-  -> continue conversation: reopen resolved and cancel pending resolve intent
+  -> continue conversation: reopen resolved
   -> if no active ticket exists: insert AI job into the same PostgreSQL transaction
   -> COMMIT; workers can now see the queued work
 ```
@@ -103,6 +103,7 @@ tickets
   participant_id FK -> telegram_participants.id
   status: open | resolved | closed
   escalation_reason
+  context_message_ids JSONB NULL (fixed membership, references sanitized messages)
   first_operator_replied_at NULL
   resolved_since NULL
   closed_at NULL
@@ -115,15 +116,16 @@ messages
   ticket_id FK -> tickets.id NULL
   telegram_update_id FK -> telegram_updates.id NULL
   operator_id FK -> users.id NULL
+  source_message_id FK -> messages.id NULL (bot response origin)
+  ticket_event NULL (ticket_closed for closure notices)
   direction: inbound | outbound
   author: participant | bot | operator | system
   body (redacted application text)
   redaction_types JSONB NULL
-  delivery_status: pending | sent | failed | NULL
+  delivery_status: pending | sent | failed | cancelled | NULL
   telegram_message_id NULL
   delivered_at NULL
   delivery_attempts
-  resolves_ticket (explicit operator intent, default false)
   last_delivery_error NULL
   created_at
 
@@ -172,7 +174,7 @@ Application contract принимает redacted participant text и актуа�
 
 Provider payload содержит два сообщения: `system` включает application prompt, contract, promotion rules и текущее время в `Europe/Moscow`; `user` содержит sanitized participant text. Runtime participant text никогда не интерполируется в system prompt. Для относительных дат и расчётов модель должна возвращать конкретный результат с учётом trusted времени и приведённых правил.
 
-`PromotionRules` строит каталог numbered clauses, сохраняя multiline списки. Validator проверяет точный numeric ID и принадлежность непустой цитаты именно этому пункту, нормализуя только whitespace. В provider JSON Schema режиме задаётся одна схема `support_decision` с четырьмя полями и строгой структурой evidence. `LLM_RESPONSE_FORMAT` сохранён для совместимости JSON mode/text/LM Studio; verifier-specific schema, prompt selector и общий двухфазный deadline удалены.
+`PromotionRules` строит каталог numbered clauses, сохраняя multiline списки. Validator проверяет точный numeric ID и принадлежность непустой цитаты именно этому пункту, нормализуя только whitespace. В provider JSON Schema режиме задаётся одна схема `support_decision` с четырьмя полями и строгой структурой evidence. `LLM_RESPONSE_FORMAT` поддерживает JSON mode/text/LM Studio; на попытку используется один LLM request с общим для него timeout.
 
 После ответа модели выполняются только deterministic checks JSON/schema, decision/reason, rule IDs и quote membership. Отдельного semantic verifier нет. Наличие настоящей цитаты подтверждает источник, но само по себе не доказывает семантическое соответствие каждого утверждения свободного answer; качество модели оценивается отдельно. Невалидный result не сохраняется и не отправляется как factual answer: используется существующая safe escalation с `llm_failure`.
 
@@ -184,38 +186,31 @@ Inbound webhook проверяет `X-Telegram-Bot-Api-Secret-Token` через 
 
 Parser отличает распознаваемые non-text сообщения участника в private chat от служебных событий и group updates. Для non-text DTO содержит только транспортные IDs, без caption и file metadata. Ingestion сохраняет update metadata и создаёт text-only fallback через существующий `createPendingMessage`: вопрос и текст подписи нужно отправить отдельным текстовым сообщением. Уведомление и delivery job сохраняются в той же transaction; duplicate update не создаёт повтор, существующий notice limiter допускает одно уведомление в минуту. LLM не вызывается, его quota не расходуется; ticket не создаётся и при active ticket продолжает переписку и возвращает resolved в open. При наличии active ticket уведомление относится к его истории. Файлы и подписи не принимаются как вопросы в этом MVP.
 
-Telegram adapter отправляет текст с optional `ReplyKeyboardMarkup`. Inline buttons и callback acknowledgement удалены. Он задаёт explicit timeout и переводит API/network errors в типизированные ошибки.
+Telegram adapter отправляет `chat_id`, `text` и `reply_markup={"remove_keyboard": true}` (ReplyKeyboardRemove) для каждого исходящего сообщения, включая `/start`, bot/system сообщения и operator replies. Это удаляет сохранённую Telegram-клиентом старую feedback-клавиатуру при ближайшей успешной доставке, без новых сообщений, полей или lifecycle-команд. ReplyKeyboardMarkup, inline buttons и callback acknowledgement не создаются. Adapter задаёт explicit timeout и переводит API/network errors в типизированные ошибки.
 
-Лимит текста централизован в `TelegramOutboundMessage::MaxTextLength` (4096 Unicode символов); длина и обрезка используют `mb_*`. Operator reply до persistence проверяется под ticket lock с учётом реального заголовка и короткой redacted quote из того же presentation builder. Превышение бюджета даёт validation error без создания Message/job. Operator reply не обрезается и не разбивается: reply keyboard отправляется с единственным ответом. Для bot/system сообщений, включая grounded LLM ответы, presentation обрезает слишком длинный текст с пометкой `… [сообщение сокращено]`; полный sanitized body сохраняется в истории. Delivery job и Telegram adapter дополнительно отклоняют oversized payload до API-вызова с безопасной non-retryable ошибкой `telegram_message_too_long`. Такая ошибка сохраняет сообщение как `failed` и не переводит ticket в `resolved`.
+Лимит текста централизован в `TelegramOutboundMessage::MaxTextLength` (4096 Unicode символов); длина и обрезка используют `mb_*`. Operator reply до persistence проверяется под ticket lock с учётом реального заголовка и короткой redacted quote из того же presentation builder. Превышение бюджета даёт validation error без создания Message/job. Operator reply не обрезается и не разбивается: ответ отправляется одним сообщением без feedback keyboard. Для bot/system сообщений, включая grounded LLM ответы, presentation обрезает слишком длинный текст с пометкой `… [сообщение сокращено]`; полный sanitized body сохраняется в истории. Delivery job и Telegram adapter дополнительно отклоняют oversized payload до API-вызова с безопасной non-retryable ошибкой `telegram_message_too_long`. Такая ошибка сохраняет сообщение как `failed` и не переводит ticket в `resolved`.
 
 Каждый исходящий ответ сначала сохраняется как `pending`; затем `DeliverTelegramMessage` отправляет его после commit. При успехе message становится `sent`, сохраняются Telegram message ID и `delivered_at`. После окончательного сбоя message становится `failed`, сохраняется безопасный error code, но body не удаляется.
 
-Создание operator reply выполняется под ticket row lock. Обычный ответ остаётся в open, «Отправить и решить» сохраняет resolves_ticket=true в pending message. Неограниченное число pending/failed replies допустимо; retry/cancellation относятся к конкретному message. Новый ответ оператора или participant input вызывает общий reopen: resolved возвращается в open, resolved_since очищается, resolves_ticket у ещё не доставленных operator messages сбрасывается. Неудачная validation или rollback не отменяет предыдущее намерение.
+Создание operator reply выполняется под ticket row lock. Пока есть pending или failed operator reply, следующий создать нельзя. После sent или явной cancellation переписка продолжается. Новый ответ в resolved возвращает ticket в open и очищает resolved_since до постановки delivery job. Retry использует тот же message и под ticket/message locks переводит failed в pending. Delivery lock не допускает отмену или retry во время HTTP. Уже существующие несколько unfinished replies доставляются по ID; поздний reply ждёт завершения предыдущего.
 
-После successful delivery финализация под ticket/message locks читает актуальный resolves_ticket из DB. Только true и open разрешают resolve и атомарную постановку прежнего delayed auto-close. Во время HTTP ticket остаётся open; participant input, late AI attach или следующий operator reply отменяют intent, поэтому запоздалая доставка не решает продолженную переписку. Revision counters, snapshots и delivery markers не используются. First response timestamp фиксируется один раз по delivered_at независимо от действия «решить».
+Successful delivery только отмечает message sent и однократно фиксирует first_operator_replied_at. Она никогда не решает ticket и не создаёт auto-close. Manual/auto close сохраняют unfinished operator replies; delivery после закрытия также фиксирует sent и first response, не изменяя closed. Недоставленные bot/system сообщения закрытого обращения отменяются; preflight delivery повторяет проверку статуса. Единственное новое исключение — созданное при закрытии System outbound Message с ticket_event=ticket_closed: оно доставляется только для closed ticket. Cancellation — отдельное явное действие для pending/failed operator message, включая closed ticket.
 
-Ручное закрытие разрешено при pending/failed replies и отменяет все недоставленные outbound messages. Delivery job перед HTTP не отправляет сообщения closed ticket; already-sent jobs идемпотентны. Если Telegram-запрос уже начался перед закрытием, его результат сохраняется как sent, но ticket остаётся closed и новый таймер не создаётся.
-
-Telegram `sendMessage` не предоставляет application idempotency key. При timeout после фактического принятия Telegram API остаётся небольшой риск повторной доставки при retry; он документируется, поскольку устранение потребовало бы внешнего reconciliation, отсутствующего в MVP.
-
-### 7. Ticket state machine
+### 7. Ticket lifecycle
 
 ```text
-open -- successful delivery of explicit Send and resolve --> resolved
-resolved -- participant message or new operator reply -----> open
-resolved -- matching delayed auto-close -------------------> closed
-open/resolved -- operator close ---------------------------> closed
+open -- explicit Mark resolved ----------------------------> resolved
+resolved -- participant message or new operator reply ------> open
+resolved -- matching expired auto-close --------------------> closed
+open/resolved -- operator close ----------------------------> closed
+closed -- terminal
 ```
 
-Обычный operator reply статус не меняет. Только явное действие «Отправить и решить» разрешает переход open -> resolved после successful delivery. `closed` terminal: новый вопрос обрабатывается прежним routing flow, тексты старой клавиатуры вне active ticket игнорируются. Новые close reasons — auto_closed и operator_closed; исторический user_confirmed остаётся доступен для чтения.
+«Отметить решённым» отдельно от отправки ответа выполняет переход и запись delayed job в одной PostgreSQL transaction. Повторное решение resolved отклоняется и не сдвигает таймер. TICKET_AUTO_CLOSE_HOURS остаётся configurable, default 24. AutoCloseTicket под row lock проверяет resolved, точное resolved_since и истечение периода. Timestamp хранится с микросекундами. Payload без resolvedSince игнорируется; stale jobs после reopen/manual close/new resolution — no-op.
 
-AutoCloseTicket сохраняет прежние проверки: ticket ID, resolved_since и ID delivered resolving message. Под row lock он закрывает только соответствующий resolved цикл; старые jobs после reopen/manual close/new resolution являются no-op, включая совпадающие timestamps. Legacy payload без resolvedSince не применяется. TICKET_AUTO_CLOSE_HOURS остаётся configurable, default 24.
+### 8. Participant messages
 
-### 8. Reply keyboard и текстовый feedback
-
-ReplyKeyboardMarkup с «Проблема решена» и «Не решило» сохраняется. Feedback поступает обычным private message, доступен оператору в истории и не закрывает обращение. Любой participant text, включая feedback и /start, прикрепляется к собственному active ticket и возвращает resolved в open; ещё не выполненное resolve intent отменяется. /start сохраняет обычное safety warning. Распознаваемый non-text private message также отменяет решение и возвращает ticket в open, создавая прежний text-only fallback; caption/file metadata не сохраняются.
-
-Unique update ID предотвращает повторные side effects. Legacy inline callbacks по-прежнему игнорируются без persistence или Telegram acknowledgement.
+Feedback/reply keyboard удалены. Любой participant text, включая прежние тексты кнопок и /start, является обычным сообщением. При active ticket он сохраняется в его истории без LLM и возвращает resolved в open; /start сохраняет safety warning. Non-text private message также возвращает resolved в open и получает существующий text-only fallback. После closed новый текст проходит прежнюю обычную маршрутизацию, включая прежние тексты кнопок; старый ticket остаётся terminal. Legacy inline callbacks остаются ignored.
 
 ### 9. Operator UI и authentication
 
@@ -223,17 +218,22 @@ Unique update ID предотвращает повторные side effects. Leg
 
 На clean start Compose требует `OPERATOR_EMAIL` и `OPERATOR_PASSWORD`, ожидает PostgreSQL healthcheck, затем app последовательно выполняет migrations и `db:seed --force --no-interaction` до запуска HTTP server. Queue worker ждёт app healthcheck. Credentials читаются seeder через environment-backed config; непустой пароль и valid email обязательны, development fallback отсутствует. `firstOrCreate` по unique email обеспечивает идемпотентность для того же email; пароль хранится через `User` hashed cast. Повторный startup не обновляет существующий пароль. `.env.example` содержит только development email и пустой пароль; реальные credentials задаются локально.
 
-Livewire отображает очередь, историю, форму ответа, delivery state, ручное закрытие и три метрики. Очередь по умолчанию показывает `open` и `resolved`; фильтры также позволяют просмотреть `closed` или все обращения, сортируя их от новых к старым. Закрытые обращения read-only. Достаточно server-driven navigation и refresh/polling; WebSockets и SPA отклонены. User-provided text выводится только через escaped Blade syntax, без raw HTML.
+Livewire отображает очередь, историю, форму ответа, delivery state, ручное закрытие и три метрики. Очередь по умолчанию показывает `open` и `resolved`; фильтры также позволяют просмотреть `closed` или все обращения, сортируя их от новых к старым. В closed нельзя отправлять новый ответ или менять lifecycle; retry/cancel существующего reply остаются доступны. Достаточно server-driven navigation и refresh/polling; WebSockets и SPA отклонены. User-provided text выводится только через escaped Blade syntax, без raw HTML.
 
-История выбирается через `selectedTicket.messages()` и содержит только записи с `ticket_id` выбранного обращения. Предыдущие и последующие tickets одного participant, включая closed, имеют независимые истории. Unticketed pre-escalation context временно не показывается: безопасная граница контекста отдельно не определяется. Cursor pagination сохраняет страницы по 50 записей и порядок `(created_at, id)`; запрос использует существующий индекс `(ticket_id, created_at, id)` без новой migration. Retry/cancellation controls показываются только для сообщений выбранного ticket; server actions также проверяют ticket_id. Доступ к истории не перепривязывает сообщения к ticket, не меняет lifecycle и не создаёт decisions или jobs.
+История выбирается через `selectedTicket.messages()` и содержит только записи с `ticket_id` выбранного обращения. Предыдущие и последующие tickets одного participant, включая closed, имеют независимые истории. Cursor pagination сохраняет страницы по 50 записей и порядок `(created_at, id)`; запрос использует существующий индекс `(ticket_id, created_at, id)`. Retry/cancellation controls показываются только для сообщений выбранного ticket; server actions также проверяют ticket_id. Доступ к истории не перепривязывает сообщения к ticket, не меняет lifecycle и не создаёт decisions или jobs.
+
+Отдельный read-only блок «Контекст до обращения» читает только сохранённые `tickets.context_message_ids`, с проверкой participant_id и собственной cursor pagination по 50 записей в порядке ID. Состав фиксируется внутри transaction создания ticket до привязки исходного сообщения эскалации. Нижняя граница — ID System Message `ticket_closed` предыдущего closed ticket; для первого ticket — 0. Верхняя граница — ID исходного сообщения эскалации. Включаются unticketed participant inbound и sent/delivered unticketed bot outbound, чей `source_message_id` входит в выбранные вопросы. System/operator, другие tickets/participants, поздние ответы на старые вопросы и недоставленные ответы исключаются. Новые сообщения и late delivery не меняют список. Санитизированный текст не копируется и не перепривязывается; source_message_id — metadata сохранения ответа, без изменений AI requests, decision validation, retries или routing.
+
+Для исторического closed ticket без события закрытия используется консервативная нижняя граница: максимальный ID сообщений participant с created_at <= closed_at (при отсутствующем closed_at — created_at ticket). Из-за старой секундной точности это может исключить первые сообщения нового диалога в ту же секунду. Исторические tickets имеют null context_message_ids и не получают ретроспективный snapshot; старые ответы без source_message_id не включаются, поскольку их происхождение невозможно подтвердить.
+
+Граница «Обращение №N создано» отображается по самому ticket, без дополнительной outbound Message. При manual/auto close после отмены stale bot/system messages в той же transaction создаётся System Message с ticket_id закрытого обращения, ticket_event=ticket_closed, номером, способом закрытия и пояснением о новом диалоге, затем существующая database delivery job. Повторные/stale close не создают Message/job. Событие закрытия одновременно служит точной нижней границей следующего контекста; новые таблицы, revision/generation counters и повторные текстовые snapshots не нужны.
 
 Отдельно от выборки истории, даты создания и закрытия ticket и timestamps сообщений форматируются в `Europe/Moscow` с пометкой «МСК». Преобразование применяется к копии Carbon date только при отображении; приложение, timestamps в PostgreSQL и queue timers сохраняют UTC.
 
 Точная верстка и формулировки Telegram-сообщений не являются domain contract. Presentation concepts:
 
 - `/start` кратко сообщает не отправлять банковские карты, пароли и SMS-коды и объясняет, что поддержка акции их не запрашивает;
-- уведомление об эскалации показывает `Номер обращения: #...` и может повторить сокращённое safety warning, если это не перегружает сообщение;
-- повтор safety warning при эскалации рекомендован, но не является обязательным для каждого сообщения;
+- уведомление об эскалации сообщает о передаче вопроса оператору и показывает `Номер обращения: #...`;
 - ответ оператора начинается с привязки к ticket, а optional цитата короткая и redacted;
 - уведомление о сработавшем redaction не повторяет скрытое значение и говорит только, что чувствительные данные удалены и не нужны для поддержки.
 
@@ -249,7 +249,7 @@ Sanitizer вызывается в webhook use case до открытия persist
 - **Ordinary numeric text:** даты, суммы, количество товаров, номера обращений и другие числа без card-like формы или sensitive context оставлять без изменений.
 - **Phone:** автоматически не маскировать, поскольку участник может использовать номер как идентификатор аккаунта; при этом application logs содержат только технические IDs/status/error codes и никогда не содержат message body.
 
-Один и тот же redacted body используется для persistence, LLM input, operator UI и Telegram quote. Логи получают только update/message/ticket IDs, redaction types и безопасные error codes. При наличии `redaction_types` после commit создаётся отдельное pending Telegram notification без исходного значения.
+Один и тот же redacted body используется для persistence, LLM input, operator UI и Telegram quote. Логи получают только update/message/ticket IDs, redaction types и безопасные error codes. При срабатывании redaction отдельное pending Telegram notification без исходного значения и его job сохраняются в transaction ingestion; worker видит их после commit.
 
 Стратегия намеренно не является универсальной DLP: она покрывает три явно заданных класса, сохраняет обычный числовой текст и допускает дальнейшее расширение только по подтверждённым evaluation/production случаям.
 
@@ -257,19 +257,21 @@ Sanitizer вызывается в webhook use case до открытия persist
 
 Provisional определения из specs реализуются обычными PostgreSQL aggregates:
 
-- `bot resolved`: число исходящих сообщений бота без ticket со статусом `sent`; самостоятельные ответы и отказы учитываются, mixed и уведомления об эскалации исключаются. Число подготовленных ответов и состояния `pending`, `failed`, `cancelled` показаны отдельно.
+- `bot resolved`: число самостоятельных исходящих bot answers по правилам без ticket со статусом `sent` и ненулевым `delivered_at`. Фиксированный безопасный refuse, mixed и уведомления об эскалации/системные предупреждения исключаются. Число подготовленных ответов и состояния `pending`, `failed`, `cancelled` показаны отдельно и также исключают refuse.
 - `escalated`: число tickets, а не число их сообщений.
 - average operator response time: `AVG(first_operator_replied_at - tickets.created_at)` только для ненулевого `first_operator_replied_at`.
 
-`first_operator_replied_at` устанавливается один раз в transaction успешной доставки первого operator message по его `delivered_at`, независимо от resolves_ticket и перехода в resolved. Pending, failed и cancelled ответы не участвуют в average; отменённые operator replies имеют отдельный счётчик. Forward data migration исправляет исторические timestamps по первой успешной доставке и очищает значение у tickets без отправленных ответов. Расчёт не вызывает LLM и не мутирует данные. Определения изолируются в одном query boundary.
+`first_operator_replied_at` устанавливается один раз в transaction успешной доставки первого operator message по его `delivered_at`, независимо от статуса ticket. Pending, failed и cancelled ответы не участвуют в average; отменённые operator replies имеют отдельный счётчик. Forward data migration исправляет исторические timestamps по первой успешной доставке и очищает значение у tickets без отправленных ответов. Расчёт не вызывает LLM и не мутирует данные. Определения изолируются в одном query boundary.
 
 ### 12. Transaction boundaries summary
 
-1. **Ingestion:** unique update + participant + locked active ticket + redacted inbound + reopen/cancel pending intent + optional notification/jobs; commit.
+1. **Ingestion:** unique update + participant + locked active ticket + redacted inbound + reopen + optional notification/jobs; commit.
 2. **Decision application:** прежние participant -> ticket -> message locks и recheck; общий attach/reopen либо прежние decision/ticket/outbound side effects; commit.
-3. **Operator reply:** validate locked ticket + reopen/cancel previous intent + pending message с resolves_ticket + delivery job; commit.
-4. **Delivery success:** lock ticket/message + mark sent + first response timestamp; при актуальном resolves_ticket перейти open -> resolved и записать delayed auto-close; commit.
-5. **Manual/auto close:** lock ticket, проверить status/таймер, closed и cancellation недоставленных messages; commit.
+3. **Operator reply:** validate locked ticket + no unfinished operator replies + reopen + pending message + delivery job; commit.
+4. **Mark resolved:** lock ticket + open -> resolved + delayed auto-close; commit.
+5. **Delivery success:** lock ticket/message + mark sent + first response timestamp; commit без lifecycle transitions.
+6. **Manual/auto close:** lock ticket + status/timer checks + closed + cancellation только unfinished bot/system messages + explicit System closure notice and database delivery job; commit. Queue insert failure откатывает закрытие и cancellation.
+7. **Cancel/retry reply:** delivery lock + ticket/message locks + explicit message state/job; commit.
 
 В production flow внешние HTTP calls выполняются вне DB-транзакции. Offline evaluation использует отдельную тестовую БД и rollback транзакцию на каждый случай, чтобы не сохранять fixtures; Telegram не отправляется; ProcessIncomingMessage выполняется штатным database Worker в изолированной временной queue.
 
@@ -293,14 +295,14 @@ Provisional определения из specs реализуются обычн�
 4. Start app and queue worker through Docker Compose; run migrations before accepting updates.
 5. Validate with faked integration tests, then run the 25-message evaluation dataset.
 
-Перед обновлением schema/application остановить webhook и workers. Forward migration переводит старые waiting_for_user в open, переименовывает waiting_since в resolved_since, удаляет revision columns и добавляет resolves_ticket=false. Active-ticket unique и queue indexes включают open/resolved. История и first-response timestamps сохраняются; legacy timer jobs не применяются. Rollback восстанавливает прежнюю schema, но старое ожидание у reopened historical tickets не восстанавливается.
+Перед обновлением schema/application остановить webhook и workers, выполнить migrations новым кодом и перезапустить обновлённые процессы. Текущая схема содержит open/resolved/closed, resolved_since с микросекундами, context_message_ids, source_message_id и ticket_event. Active-ticket indexes включают open/resolved. Сохраняются история, delivery states, pending/failed operator replies и first-response timestamps; stale timers не закрывают reopened ticket.
 
 ## Provisional Decisions Pending Manager Confirmation
 
 - Mixed request: grounded answer plus simultaneous escalation of the unresolved part.
-- `bot resolved`: one fully automated inbound message without ticket.
+- `bot resolved`: one delivered standalone bot answer without ticket, excluding refuse.
 - `escalated`: one created ticket.
-- Average operator response: ticket creation to first saved operator reply; unanswered tickets excluded.
+- Average operator response: ticket creation to first delivered operator reply; unanswered tickets excluded.
 
 Changing these definitions may require spec and query/test updates, but the persisted message, decision and timestamp model supports either likely interpretation.
 
@@ -314,4 +316,8 @@ Password detection не содержит word whitelist: явный раздел
 
 EvaluateSupport использует штатный database Worker: job tries/backoff и terminal failed(), без принудительного fallback после первой временной ошибки. Отчёт показывает decision и validation failures (включая немедленный JobFailed после invalid result) в model result, safe HTTP/connection failures отдельно в infrastructure reason, attempts и конечный ответ; raw provider/error body не сохраняется.
 
-Revision lifecycle из review заменён явно запрошенным open/resolved/closed; новые counters или generation columns не добавляются.
+## Evaluation сдаваемой single-call версии
+
+Финальный evaluation 04.10.2026 обработал все 25 исходных обращений: **24 PASS / 0 PARTIAL / 1 FAIL**. Единственный FAIL — №18, где ответ не учёл перенос незавершённой проверки чеков по п. 8.1. Полный HTTP webhook → ingestion → database AI/Telegram workers → реальный LLM → deterministic validation → сохранение и delivery-client выполнен в отдельной PostgreSQL-БД; подменён только внешний Telegram sendMessage для синтетических чатов. Этот прогон не проверяет настоящий Telegram ingress/доставку или статистическую повторяемость.
+
+Исторический two-call evaluation предыдущей реализации (17 верно / 6 неверно / 2 спорно) и диагностические повторы сохранены в `docs/evaluation.md`, отдельно от результата сдаваемой single-call версии.

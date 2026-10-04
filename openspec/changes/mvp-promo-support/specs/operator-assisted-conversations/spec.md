@@ -39,24 +39,24 @@ Webhook MUST проверять непустой configured secret token в за
 - **AND** новый ticket не создаётся
 - **AND** обычный AI-routing не вызывается
 
-#### Scenario: Сообщение при ожидании пользователя
+#### Scenario: Сообщение в решённом обращении
 - **GIVEN** у участника есть обращение `resolved`
-- **WHEN** приходит любой новый текст, включая `Проблема решена`, `Не решило` или `/start`
+- **WHEN** приходит любой новый текст, включая `/start`
 - **THEN** сообщение добавляется к существующему обращению и становится доступно оператору
 - **AND** ticket переходит в `open`, `resolved_since` очищается, новый ticket не создаётся
 - **AND** обычный AI-routing не вызывается
-- **AND** новые кнопки не отправляются, прежний auto-close становится stale no-op
+- **AND** прежний auto-close становится stale no-op
 
 #### Scenario: Сообщение после закрытия
 - **GIVEN** предыдущее обращение участника имеет статус `closed`
-- **WHEN** приходит новое сообщение, отличное от текстов кнопок `Проблема решена` и `Не решило`
+- **WHEN** приходит любое новое текстовое сообщение
 - **THEN** сообщение проходит обычную классификацию заново
 - **AND** при необходимости может быть создано новое обращение
 
 ### Requirement: Очередь и история обращений
-Аутентифицированный оператор MUST видеть очередь незакрытых обращений и хронологическую переписку выбранного обращения. Основная лента MUST содержать только Messages с ticket_id выбранного ticket и иметь cursor pagination по 50 сообщений. Сообщения предыдущих и последующих обращений того же participant MUST NOT попадать в неё; closed tickets MUST иметь независимые истории. Unticketed pre-escalation context временно MUST NOT отображаться. Чтение истории MUST NOT менять ticket_id сообщений, lifecycle или метрики. Действия ответа, retry и cancellation MUST оставаться привязаны к выбранному ticket. Self-registration, роли и управление операторами не требуются.
+Аутентифицированный оператор MUST видеть очередь незакрытых обращений и хронологическую переписку выбранного обращения. Основная лента MUST содержать только Messages с ticket_id выбранного ticket и иметь cursor pagination по 50 сообщений. Сообщения предыдущих и последующих обращений того же participant MUST NOT попадать в неё; closed tickets MUST иметь независимые истории. Контекст до эскалации MUST отображаться в отдельном read-only блоке. Чтение истории MUST NOT менять ticket_id сообщений, lifecycle или метрики. Действия ответа, retry и cancellation MUST оставаться привязаны к выбранному ticket. Self-registration, роли и управление операторами не требуются.
 
-Операторская панель MUST предоставлять фильтры `active`, `closed` и `all`. По умолчанию active-очередь содержит только обращения в статусах `open` и `resolved`; закрытые обращения доступны для просмотра с участником, временем создания и закрытия, причиной закрытия и историей сообщений. Закрытое обращение является read-only: оператор не может отправить в него ответ или закрыть его повторно.
+Операторская панель MUST предоставлять фильтры `active`, `closed` и `all`. По умолчанию active-очередь содержит только обращения в статусах `open` и `resolved`; закрытые обращения доступны для просмотра с участником, временем создания и закрытия, причиной закрытия и историей сообщений. В закрытом обращении нельзя создать новый ответ, решить его или закрыть повторно; retry/cancel ранее созданного operator reply остаются доступны.
 
 #### Scenario: Просмотр закрытого обращения
 - **GIVEN** оператор открыл фильтр закрытых обращений
@@ -80,9 +80,55 @@ Webhook MUST проверять непустой configured secret token в за
 - **GIVEN** участник получил ответ бота без ticket, затем попросил оператора
 - **WHEN** оператор выбирает созданное обращение
 - **THEN** история показывает просьбу позвать оператора и уведомление об эскалации, привязанные к этому ticket
-- **AND** исходный вопрос и ответ бота с ticket_id = null не отображаются и сохраняют прежние привязки
+- **AND** исходный вопрос и доставленный ответ бота с ticket_id = null показаны отдельно в «Контекст до обращения» и сохраняют прежние привязки
 - **AND** сообщения других участников и других tickets не отображаются, включая старые страницы истории
 - **AND** delivery actions для Messages другого ticket недоступны из выбранного ticket
+
+### Requirement: Фиксированный контекст до обращения
+В момент создания ticket система MUST сохранить конкретные Message IDs для отдельного read-only блока «Контекст до обращения». Контекст MUST включать весь sanitized текстовый диалог participant/bot после закрытия предыдущего ticket до исходного сообщения эскалации включительно; для первого ticket нижняя граница — начало истории participant. Сообщения другого participant, предыдущих tickets, system/operator сообщения и недоставленные ответы бота MUST NOT включаться. Бот-ответ MUST относиться к вопросу внутри этой границы. Последние N сообщений без нижней границы MUST NOT использоваться. Старые Message MUST NOT перепривязываться к новому ticket; исходное сообщение эскалации сохраняет существующую привязку к созданному ticket. Поздняя доставка или новые сообщения MUST NOT менять сохранённый состав контекста. Основная лента MUST оставаться ticket-scoped.
+
+#### Scenario: Вопрос и ответ до просьбы оператора
+- **GIVEN** participant задал вопрос, получил доставленный ответ бота и попросил оператора
+- **WHEN** создан ticket и оператор открывает его
+- **THEN** отдельный контекст показывает вопрос, ответ бота и просьбу оператора в порядке сообщений
+- **AND** вопрос и ответ остаются unticketed, основная лента содержит только сообщения созданного ticket
+
+#### Scenario: Новый диалог после закрытия
+- **GIVEN** ticket A закрыт, participant начал новый диалог и создал ticket B
+- **WHEN** оператор открывает B
+- **THEN** контекст начинается строго после события закрытия A
+- **AND** сообщения A, его pre-ticket контекст и поздние ответы бота на старые вопросы отсутствуют
+
+#### Scenario: Доставка после фиксации контекста
+- **GIVEN** ответ бота ещё pending в момент создания ticket
+- **WHEN** он позднее доставлен или participant продолжил переписку
+- **THEN** сохранённые context_message_ids не меняются
+- **AND** весь зафиксированный контекст доступен через отдельную pagination без ограничения последними N
+
+#### Scenario: Исторические данные без точного события закрытия
+- **GIVEN** предыдущий ticket создан до хранения событий закрытия
+- **WHEN** создаётся новый ticket
+- **THEN** сообщения не позже сохранённого closed_at исключаются консервативно
+- **AND** существующие tickets без snapshot не получают выдуманный ретроспективный контекст
+
+### Requirement: Явные границы и уведомление о закрытии
+Панель MUST показывать системную границу «Обращение №N создано». Ручное и автоматическое закрытие MUST атомарно сохранять один системный Message и delivery job с текстом «Обращение №N закрыто оператором» либо «Обращение №N закрыто автоматически» и пояснением о новом диалоге для нового вопроса. Уведомление MUST относиться к закрытому ticket и доставляться через существующий worker. Только явно обозначенное системное событие закрытия MAY доставляться после closed; существующие guards для устаревших эскалаций, cancelled и уже sent сообщений MUST сохраняться. Lifecycle, AI pipeline, sanitizer, operator delivery и статистика MUST NOT меняться.
+
+#### Scenario: Оператор закрывает обращение
+- **WHEN** оператор явно закрывает open/resolved ticket
+- **THEN** участник получает уведомление с номером обращения и способом «оператором»
+- **AND** системное сообщение показано в истории этого ticket
+
+#### Scenario: Закрытие по таймеру
+- **WHEN** действующий таймер закрывает resolved ticket
+- **THEN** участник получает уведомление с номером обращения и способом «автоматически»
+- **AND** повторный или stale таймер не создаёт дополнительное уведомление
+
+#### Scenario: Устаревшая эскалация после закрытия
+- **GIVEN** обращение закрыто, его escalation notice остался в очереди
+- **WHEN** worker выполняет старую delivery job и job уведомления о закрытии
+- **THEN** эскалация не отправляется, уведомление о закрытии доставляется один раз
+- **AND** ранее созданный operator reply остаётся deliverable, closed остаётся terminal
 
 ### Requirement: Часовой пояс дат операторской панели
 Даты создания и закрытия ticket и timestamps сообщений MUST отображаться в Europe/Moscow с пометкой «МСК». Преобразование при отображении MUST NOT менять сохранённые UTC timestamps, глобальный timezone приложения или queue timers.
@@ -96,39 +142,54 @@ Webhook MUST проверять непустой configured secret token в за
 ### Requirement: Сохранение и доставка ответа оператора
 Ответ оператора MUST быть сохранён до отправки в Telegram. Успешная запись в PostgreSQL MUST NOT считаться успешной доставкой; исходящее сообщение MUST иметь состояние `pending`, `sent` или `failed`.
 
-Оператор MUST иметь возможность отправлять неограниченное число сообщений в open или resolved, включая наличие pending/failed replies. Обычная отправка MUST NOT решать обращение или создавать auto-close. Новый operator reply в resolved MUST вернуть его в open и отменить предыдущий таймер. Retry MUST использовать прежний message record. Manual close MUST отменять недоставленные outbound messages; delivery job MUST NOT вызывать Telegram API для closed ticket.
+Оператор MUST иметь возможность вести многошаговую последовательную переписку в open/resolved. Pending или failed operator reply MUST блокировать создание следующего до sent либо явной cancellation. Обычная отправка и successful delivery MUST NOT решать обращение или создавать auto-close. Новый operator reply в resolved MUST вернуть его в open. Retry MUST использовать прежний record. Manual/auto close MUST NOT отменять operator replies; недоставленные bot/system сообщения закрытого обращения, кроме нового явного уведомления о закрытии, MUST отменяться.
 
-#### Scenario: Следующий ответ при незавершённой доставке
-- **GIVEN** ticket содержит pending или failed operator reply
+#### Scenario: Промежуточный ответ
+- **GIVEN** ticket имеет статус open
+- **WHEN** оператор сохраняет и доставляет ответ
+- **THEN** ticket остаётся open без resolved_since или auto-close
+- **AND** ответ содержит номер обращения и безопасную цитату без feedback keyboard
+
+#### Scenario: Последовательные ответы
+- **GIVEN** предыдущий operator reply имеет статус sent или cancelled
 - **WHEN** оператор отправляет следующий ответ
-- **THEN** новая Message и delivery job сохраняются независимо от старой доставки
+- **THEN** новая pending Message и delivery job сохраняются
 - **AND** ticket остаётся open
 
-#### Scenario: Оператор продолжает решённое обращение
-- **GIVEN** ticket имеет статус resolved
+#### Scenario: Незавершённый ответ блокирует следующий
+- **GIVEN** есть pending или failed operator reply
+- **WHEN** оператор пытается создать следующий
+- **THEN** панель показывает ошибку, новая Message/job не создаются
+- **AND** для failed доступны явные «Повторить» и «Отменить»
+
+#### Scenario: Продолжение решённого обращения оператором
+- **GIVEN** ticket имеет статус resolved без unfinished operator reply
 - **WHEN** оператор сохраняет новый ответ
-- **THEN** ticket становится open без ожидания успешной доставки
-- **AND** предыдущий auto-close становится stale no-op
-
-#### Scenario: Устаревшая доставка ответа закрытого ticket
-- **GIVEN** operator message ссылается на ticket, который уже `closed`
-- **WHEN** delivery job повторно проверяет состояние перед отправкой
-- **THEN** Telegram API не вызывается и reply keyboard не отправляется
-
-#### Scenario: Ответ оператора успешно доставлен
-- **GIVEN** оператор отправляет ответ по открытому обращению
-- **WHEN** Telegram API подтверждает отправку
-- **THEN** исходящее сообщение сохранено и имеет состояние `sent`
-- **AND** участник получает ответ с номером обращения и `ReplyKeyboardMarkup` с текстовыми кнопками `Проблема решена` и `Не решило`
-- **AND** markup задаёт `resize_keyboard: true` и `one_time_keyboard: true`, inline-кнопок под сообщением нет
-- **AND** обычная отправка оставляет ticket в open без auto-close
+- **THEN** ticket становится open до доставки и очищает resolved_since
+- **AND** прежний auto-close становится stale no-op
 
 #### Scenario: Telegram delivery failure
-- **GIVEN** ответ оператора сохранён со статусом `pending`
-- **WHEN** Telegram API окончательно не принимает сообщение
-- **THEN** запись ответа не удаляется
-- **AND** delivery state становится `failed`
-- **AND** ticket не переходит в `resolved` на основании недоставленного ответа
+- **GIVEN** ответ сохранён как pending
+- **WHEN** Telegram окончательно не принимает его
+- **THEN** ответ остаётся в истории как failed
+- **AND** delivery не меняет lifecycle ticket
+
+#### Scenario: Send затем close до worker
+- **GIVEN** operator reply сохранён как pending
+- **WHEN** оператор закрывает ticket до начала worker
+- **THEN** reply остаётся pending и доставляется как sent
+- **AND** ticket остаётся closed, first response timestamp фиксируется по delivered_at
+
+#### Scenario: Устаревшее уведомление об эскалации
+- **GIVEN** уведомление осталось pending или failed после закрытия ticket
+- **WHEN** delivery job проверяет его перед отправкой
+- **THEN** уведомление становится cancelled без Telegram API call
+
+#### Scenario: Отдельная отмена ответа
+- **GIVEN** operator reply имеет pending или failed, ticket может быть closed
+- **WHEN** оператор явно отменяет сообщение до начала delivery
+- **THEN** оно становится cancelled, старые delivery jobs не отправляют его
+- **AND** уже начавшаяся delivery не может быть отменена
 
 ### Requirement: Презентация сообщений обращения
 Уведомление об эскалации и ответ оператора MUST явно содержать номер обращения. Короткая безопасная цитата исходной проблемы MAY быть показана, но длинный или чувствительный текст MUST NOT воспроизводиться полностью. Уведомление об эскалации MAY повторять краткий совет не отправлять карты, пароли и SMS-коды; это рекомендуемая presentation detail, а не обязательная часть каждого сообщения.
@@ -139,37 +200,28 @@ Webhook MUST проверять непустой configured secret token в за
 - **THEN** сообщение содержит номер обращения
 - **AND** не раскрывает полную длинную историю или чувствительные данные
 
-### Requirement: Единственный текстовый механизм подтверждения
-Система MUST обрабатывать feedback как обычные private text messages отправителя и выбирать только его собственный активный ticket. Inline callbacks MUST NOT менять состояние, сохранять сообщения или вызывать Telegram API; корректные legacy callback updates MUST подтверждаться HTTP 2xx как unsupported. Повторный text update MUST NOT повторять переход или сохранение сообщения.
+### Requirement: Отсутствие feedback механики
+Feedback/reply keyboard MUST NOT отправляться или иметь отдельную lifecycle семантику. Прежние тексты кнопок MUST обрабатываться как обычный participant text. Legacy inline callbacks MUST оставаться ignored без изменения данных или Telegram API call.
 
-#### Scenario: Feedback другого Telegram user
-- **GIVEN** у владельца есть обращение `resolved`
-- **WHEN** другой Telegram user отправляет `Проблема решена`
-- **THEN** состояние обращения владельца не изменяется
-- **AND** данные чужого обращения не раскрываются
+Каждое исходящее Telegram message, включая ответ на `/start`, MUST содержать ReplyKeyboardRemove (`reply_markup={"remove_keyboard": true}`), чтобы убрать сохранённую старую клавиатуру при ближайшей успешной доставке. Удаление клавиатуры MUST NOT создавать отдельные сообщения, изменять delivery guards или lifecycle обращения.
 
-#### Scenario: Legacy inline callback
-- **GIVEN** участник нажимает inline-кнопку под старым ответом
-- **WHEN** Telegram доставляет callback update
-- **THEN** webhook возвращает HTTP 200 со статусом `ignored`
-- **AND** ticket, адрес доставки, сообщения и jobs не меняются, callback acknowledgement не отправляется
+#### Scenario: Старую клавиатуру удаляет ближайший ответ
+- **GIVEN** Telegram-клиент участника сохранил кнопки «Проблема решена» и «Не решило»
+- **WHEN** бот доставляет обычный ответ, системное уведомление или ответ оператора
+- **THEN** sendMessage содержит только ReplyKeyboardRemove в reply_markup, без кнопок
+- **AND** удаление клавиатуры не меняет status или resolved_since ticket
 
-#### Scenario: Повторный text feedback
-- **GIVEN** текстовый feedback уже успешно сохранён и применён
-- **WHEN** Telegram доставляет тот же update повторно
-- **THEN** система подтверждает обработку без нового сообщения или перехода
+#### Scenario: Start удаляет старую клавиатуру
+- **GIVEN** у участника сохранена старая feedback-клавиатура
+- **WHEN** доставляется существующее предупреждение на `/start`
+- **THEN** sendMessage содержит ReplyKeyboardRemove
+- **AND** обычные guards и обработка `/start` сохраняются
 
-#### Scenario: Feedback до фиксации successful delivery
-- **GIVEN** operator reply сохранён, но successful delivery ещё не зафиксирована
-- **WHEN** приходит любое новое входящее сообщение, в том числе между отказом Telegram и retry
-- **THEN** оно сохраняется в том же ticket и отменяет pending resolve intent без AI и новых кнопок
-- **AND** успешная финализация доставки оставляет ticket open без auto-close
-- **AND** раннее «Проблема решена» остаётся в истории для ручного закрытия; подтверждение задним числом не применяется
-
-#### Scenario: Ответ на клавиатуру вне активного обращения
-- **GIVEN** у участника нет активного ticket
-- **WHEN** приходит `Проблема решена` или `Не решило`
-- **THEN** новое обращение и AI job не создаются
+#### Scenario: Прежний текст кнопки после закрытия
+- **GIVEN** у participant нет active ticket
+- **WHEN** приходит «Проблема решена» или «Не решило»
+- **THEN** текст сохраняется и проходит обычную AI-маршрутизацию
+- **AND** прежний closed ticket остаётся terminal
 
 ### Requirement: Ограничение длины Telegram presentation
 Система MUST NOT передавать в Telegram `sendMessage` текст длиннее централизованного лимита 4096 Unicode символов. Operator reply MUST валидироваться до persistence с учётом итогового presentation overhead. Автоматические сообщения MAY обрезаться с явной пометкой, сохраняя полный sanitized текст в истории.
@@ -192,71 +244,50 @@ Webhook MUST проверять непустой configured secret token в за
 - **THEN** Telegram API не вызывается и message получает delivery state `failed`
 - **AND** ticket не переходит в `resolved`
 
-### Requirement: Feedback как сигнал оператору
-Тексты «Проблема решена» и «Не решило» MUST сохраняться в истории собственного active ticket как обратная связь. Они MUST NOT закрывать обращение. Любое новое participant message в resolved MUST вернуть его в open, очистить resolved_since и сделать старый auto-close stale no-op.
+### Requirement: Явное действие Отметить решённым
+Только отдельное действие аутентифицированного оператора «Отметить решённым» MUST переводить open в resolved и атомарно создавать delayed auto-close. Действие MUST NOT создавать или отправлять сообщение; сохранённый reply не содержит resolve intent. Повторное решение resolved MUST NOT сдвигать таймер.
 
-#### Scenario: User confirms solved
-- **GIVEN** собственное обращение участника имеет статус resolved
-- **WHEN** он отправляет «Проблема решена»
-- **THEN** feedback виден оператору в том же ticket
-- **AND** ticket возвращается в open без закрытия или LLM
-
-#### Scenario: Clarification after unresolved
-- **GIVEN** участник вернул обращение в open текстом «Не решило»
-- **WHEN** приходит уточнение
-- **THEN** оно добавляется в тот же ticket без нового AI-routing
-
-### Requirement: Явное действие Отправить и решить
-Оператор MUST явно выбирать действие «Отправить и решить». Оно MUST сохранять resolves_ticket в pending message; только successful delivery при актуальном intent MUST переводить open в resolved и создавать auto-close. Обычная отправка MUST NOT устанавливать intent. Любое продолжение переписки участником или оператором до доставки MUST отменять intent без revision counters/snapshots.
-
-#### Scenario: Явное решение успешно доставлено
-- **GIVEN** оператор выбрал «Отправить и решить»
-- **WHEN** Telegram подтверждает successful delivery без продолжения переписки
-- **THEN** message становится sent, ticket становится resolved и получает прежний auto-close
-
-#### Scenario: Следующий ответ отменяет ещё не доставленное решение
-- **GIVEN** pending или failed resolving reply ещё не доставлен
-- **WHEN** оператор отправляет следующий обычный ответ
-- **THEN** прежний intent отменяется
-- **AND** последующая доставка обоих сообщений оставляет ticket open без auto-close
+#### Scenario: Явное решение
+- **GIVEN** ticket имеет статус open
+- **WHEN** оператор нажимает «Отметить решённым»
+- **THEN** ticket становится resolved и получает resolved_since и один delayed auto-close
+- **AND** Messages и Telegram delivery не меняются
 
 ### Requirement: Автоматическое закрытие
-После успешной доставки явно resolving operator reply при актуальном intent система MUST запланировать закрытие через конфигурируемый `TICKET_AUTO_CLOSE_HOURS`, равный 24 для MVP. Перед закрытием система MUST повторно проверить актуальное состояние обращения.
+Auto-close MUST запускаться только для resolved через configurable TICKET_AUTO_CLOSE_HOURS, default 24. Под ticket lock job MUST проверить status, точное resolved_since и истечение периода. Существующий timestamp MUST различать отдельные решения внутри одной секунды; новые revision/generation/marker механизмы MUST NOT добавляться.
 
-Auto-close MUST проверять ID ответа оператора и `resolved_since`, чтобы таймер предыдущего ответа не закрывал новый цикл, даже когда timestamps совпадают. После отмены resolve intent delayed close MUST NOT создаваться.
+#### Scenario: Resolved timeout
+- **GIVEN** ticket остаётся resolved весь настроенный период
+- **WHEN** его delayed job запускается
+- **THEN** ticket становится closed с auto_closed
 
-#### Scenario: Automatic close
-- **GIVEN** обращение остаётся `resolved` в течение настроенного периода
-- **WHEN** delayed close запускается
-- **THEN** обращение переходит в `closed`
-- **AND** close reason равен `auto_closed`
+#### Scenario: Stale auto-close после reopen
+- **GIVEN** resolved вернулся в open после participant message или operator reply
+- **WHEN** старый таймер запускается
+- **THEN** он не меняет status, closed_at или close_reason
 
-#### Scenario: Stale auto-close job after reopening
-- **GIVEN** delayed close был создан для `resolved`
-- **AND** участник позднее вернул обращение в `open`
-- **WHEN** старый delayed job запускается
-- **THEN** статус и close reason обращения не изменяются
+#### Scenario: Stale auto-close после нового решения
+- **GIVEN** ticket reopened и снова явно resolved с новым resolved_since
+- **WHEN** запускается таймер предыдущего решения
+- **THEN** он не закрывает новый цикл
 
-### Requirement: Ручное закрытие оператором
-Аутентифицированный оператор MUST иметь возможность закрыть незакрытое обращение вручную с close reason `operator_closed`.
+### Requirement: Ручное закрытие и terminal state
+Аутентифицированный оператор MUST закрывать open/resolved вручную с operator_closed. Closed MUST оставаться terminal: resolve/reopen/new reply/repeated close недоступны. Ранее созданный reply MUST сохранять возможность delivery/retry/cancel независимо от terminal ticket state.
 
 #### Scenario: Manual close
-- **GIVEN** обращение имеет статус `open` или `resolved`
-- **WHEN** оператор подтверждает закрытие в панели
-- **THEN** обращение переходит в `closed`
-- **AND** close reason равен `operator_closed`
-
-### Requirement: Отмена устаревшего resolve intent
-Participant attachment, включая поздний AI-result ранее созданного вопроса, MUST отменить ещё не доставленное намерение решить обращение. Closed ticket MUST оставаться terminal при запоздалой финализации HTTP; first-response timestamp MUST отражать фактическую успешную доставку независимо от статуса ticket.
-
-#### Scenario: Late AI attach во время доставки
-- **GIVEN** вопрос создан раньше resolving reply, но ещё не прикреплён
-- **WHEN** поздний AI-result прикрепляет его во время Telegram delivery
-- **THEN** прежние AI side effects подавляются, resolve intent отменяется
-- **AND** message становится sent, ticket остаётся open без auto-close
+- **GIVEN** ticket имеет open или resolved и pending operator reply
+- **WHEN** оператор закрывает его
+- **THEN** status становится closed и close_reason operator_closed
+- **AND** reply сохраняет прежний delivery state
 
 #### Scenario: Закрытие во время HTTP
-- **GIVEN** HTTP resolving reply уже начался
-- **WHEN** оператор закрывает обращение до фиксации успешной доставки
-- **THEN** successful result сохраняется в message
-- **AND** ticket остаётся closed без нового auto-close
+- **GIVEN** HTTP operator reply уже начался
+- **WHEN** ticket закрывается до фиксации delivery
+- **THEN** successful result сохраняется как sent и first response timestamp фиксируется
+- **AND** ticket остаётся closed без auto-close
+
+#### Scenario: Late AI attach
+- **GIVEN** во время прежнего AI-вызова появился active ticket
+- **WHEN** поздний AI-result прикрепляет исходный вопрос
+- **THEN** прежние stale AI side effects подавляются и resolved возвращается в open
+- **AND** subsequent operator delivery не решает ticket
