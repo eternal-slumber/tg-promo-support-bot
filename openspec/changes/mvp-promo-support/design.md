@@ -239,11 +239,12 @@ Livewire отображает очередь, историю, форму отв�
 
 ### 10. Sanitization и privacy
 
-Sanitizer вызывается в webhook use case до открытия persistence path для message body. Raw body существует только в памяти текущего запроса, после sanitization не передаётся дальше и не включается в сохранённый raw Telegram payload или queue payload. В PostgreSQL сохраняются только redacted body и optional `redaction_types` со значениями из закрытого списка `payment_card`, `otp`, `password`; исходные значения в metadata отсутствуют.
+Sanitizer вызывается в webhook use case до открытия persistence path для message body. Raw body существует только в памяти текущего запроса, после sanitization не передаётся дальше и не включается в сохранённый raw Telegram payload или queue payload. В PostgreSQL сохраняются только redacted body и optional `redaction_types` со значениями из закрытого списка `payment_card`, `cvv`, `otp`, `password`; исходные значения в metadata отсутствуют.
 
 Минимальные detection rules MVP:
 
-- **Payment card:** маскировать группы вида `4x4`, включая evaluation case `2200 1234 5678 9012`; для непрерывных или иначе сгруппированных последовательностей 13–19 цифр использовать форму и Luhn как сигналы, не маскируя любое длинное число безусловно.
+- **Payment card:** номер из 13–19 цифр после явного маркера карты (`карта`, `card`, `card number`) скрывается независимо от Luhn и группировки. Для чисел без маркера сохраняются проверки формы и Luhn: группы вида `4x4`, включая evaluation case `2200 1234 5678 9012`, маскируются по форме; непрерывные или иначе сгруппированные последовательности 13–19 цифр проверяются по Luhn. Любое длинное число без card-like формы или sensitive context безусловно не маскируется.
+- **CVV/CVC:** маскировать 3–4 цифры после маркера `CVV`, `CVC` или фразы «код на обратной стороне карты»; сохранять только тип `cvv`, без исходного значения.
 - **OTP/SMS code:** маскировать короткое числовое или буквенно-числовое значение только рядом с явными маркерами `SMS`, `OTP`, `код из SMS`, `одноразовый код` и близкими вариантами.
 - **Password:** после `пароль`, `password`, `pwd` разделитель или кавычки обозначают значение; без них первый token должен содержать цифру или password punctuation. Дополнительно одно значение после `мой пароль` / `my password` перед концом строки, запятой или точкой с запятой маскируется независимо от наличия цифр. Шаблон явного/quoted значения применяется первым, чтобы не оставить часть секрета после разделителя внутри кавычек. Word whitelist не используется; обычные многословные фразы о входе сохраняются. Однословные owned-фразы неоднозначны и консервативно считаются раскрытием секрета.
 - **Ordinary numeric text:** даты, суммы, количество товаров, номера обращений и другие числа без card-like формы или sensitive context оставлять без изменений.
@@ -283,7 +284,7 @@ Provisional определения из specs реализуются обычн�
 - **Telegram ambiguous timeout** -> persisted delivery state and retry; residual duplicate-delivery risk documented.
 - **Sensitive data leakage** -> redact before persistence, discard raw body, reuse only redacted text downstream, avoid body logging, escape operator UI and keep secrets in environment-backed config.
 - **Over-redaction** -> contextual OTP/password rules and card-shape checks preserve ordinary numeric text; grouped `4x4` sequences intentionally prefer safety.
-- **Under-redaction outside known patterns** -> MVP covers only cards, explicit OTP/SMS codes and explicit passwords; universal DLP is deliberately rejected until real cases justify it.
+- **Under-redaction outside known patterns** -> MVP covers card-like numbers, labelled cards regardless of Luhn, labelled CVV/CVC, explicit OTP/SMS codes and explicit passwords; universal DLP is deliberately rejected until real cases justify it.
 - **Database queue contention** -> acceptable for pilot volume; move to Redis only after measured throughput or latency problems.
 - **Provisional metric semantics change** -> metrics isolated behind deterministic queries over existing timestamps and relations.
 
