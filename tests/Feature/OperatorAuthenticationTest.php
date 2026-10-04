@@ -16,6 +16,9 @@ test('an operator can sign in and there is no registration route', function () {
         'password' => 'password',
     ]);
 
+    $this->get(route('login'))->assertSee('Вход оператора')->assertDontSeeText('M-Social');
+    $this->get('/')->assertSee('Поддержка промо-акции')->assertDontSeeText('M-Social');
+
     $this->post(route('operator.login.store'), [
         'email' => $operator->email,
         'password' => 'password',
@@ -25,7 +28,8 @@ test('an operator can sign in and there is no registration route', function () {
 
     $this->get(route('operator.dashboard'))
         ->assertOk()
-        ->assertSee('Обращения поддержки');
+        ->assertSee('Обращения поддержки')
+        ->assertDontSeeText('M-Social');
 
     $this->get('/register')
         ->assertNotFound();

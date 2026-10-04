@@ -1,7 +1,6 @@
 <x-layouts.operator>
     <main class="mx-auto flex min-h-screen max-w-md items-center px-6 py-12">
         <section class="w-full rounded-xl border border-slate-700 bg-slate-900 p-6 shadow-xl">
-            <p class="text-sm font-semibold uppercase tracking-widest text-emerald-400">M-Social</p>
             <h1 class="mt-2 text-2xl font-semibold">Вход оператора</h1>
 
             <form method="POST" action="{{ route('operator.login.store') }}" class="mt-6 space-y-4">
