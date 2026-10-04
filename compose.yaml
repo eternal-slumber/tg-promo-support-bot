@@ -19,7 +19,6 @@ x-app-environment: &app-environment
   TELEGRAM_CONNECT_TIMEOUT: ${TELEGRAM_CONNECT_TIMEOUT:-5}
   TELEGRAM_TIMEOUT: ${TELEGRAM_TIMEOUT:-30}
 
-  LLM_PROVIDER: ${LLM_PROVIDER:-openai}
   LLM_ENDPOINT: ${LLM_ENDPOINT:-https://api.openai.com/v1/chat/completions}
   LLM_MODEL: ${LLM_MODEL:-}
   LLM_API_KEY: ${LLM_API_KEY:-}

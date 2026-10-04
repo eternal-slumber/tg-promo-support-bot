@@ -1,7 +1,6 @@
 <?php
 
 return [
-    'provider' => env('LLM_PROVIDER', 'openai'),
     'endpoint' => env('LLM_ENDPOINT', 'https://api.openai.com/v1/chat/completions'),
     'model' => env('LLM_MODEL'),
     'api_key' => env('LLM_API_KEY'),

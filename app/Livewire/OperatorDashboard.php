@@ -235,10 +235,10 @@ class OperatorDashboard extends Component
         };
     }
 
-    private function activeTicket(?int $ticketId = null): ?Ticket
+    private function activeTicket(): ?Ticket
     {
         return Ticket::query()
-            ->whereKey($ticketId ?? $this->selectedTicketId)
+            ->whereKey($this->selectedTicketId)
             ->whereIn('status', [TicketStatus::Open->value, TicketStatus::Resolved->value])
             ->first();
     }
