@@ -50,6 +50,42 @@ test('redacts explicitly labelled plain card secrets without requiring luhn', fu
     'Unicode separator' => ["Карта:\u{00A0}2200123456789012", "Карта:\u{00A0}[REDACTED_PAYMENT_CARD]"],
 ]);
 
+test('redacts labelled card-like values regardless of grouping and luhn', function (string $label, string $card) {
+    $result = (new SensitiveDataSanitizer)->sanitize("{$label}: {$card}. Почему отклонили чек?");
+
+    expect($result->text)->toBe("{$label}: [REDACTED_PAYMENT_CARD]. Почему отклонили чек?");
+    expect($result->wasRedacted)->toBeTrue();
+    expect($result->redactionTypes)->toBe(['payment_card']);
+})->with([
+    'Russian card' => 'Карта',
+    'Russian card number' => 'Номер карты',
+    'English card' => 'card',
+    'English card number' => 'card number',
+])->with([
+    'plain invalid Luhn' => '378282246310006',
+    'space-separated invalid Luhn' => '3782 822463 10006',
+    'hyphen-separated invalid Luhn' => '3782-822463-10006',
+    'long first group' => '3782822463100 06',
+    '13 digits' => '1234 56789 0123',
+    '19 digits' => '1234 5678 9012 3456 789',
+]);
+
+test('preserves the existing card rules without a secret label', function (string $input, string $expected, array $types) {
+    $result = (new SensitiveDataSanitizer)->sanitize($input);
+
+    expect($result->text)->toBe($expected);
+    expect($result->wasRedacted)->toBe($types !== []);
+    expect($result->redactionTypes)->toBe($types);
+})->with([
+    'plain valid Luhn' => ['Оплата 378282246310005', 'Оплата [REDACTED_PAYMENT_CARD]', ['payment_card']],
+    'space-separated valid Luhn' => ['Оплата 3782 822463 10005', 'Оплата [REDACTED_PAYMENT_CARD]', ['payment_card']],
+    'hyphen-separated valid Luhn' => ['Оплата 3782-822463-10005', 'Оплата [REDACTED_PAYMENT_CARD]', ['payment_card']],
+    'existing four-by-four exception' => ['Оплата 2200 1234 5678 9012', 'Оплата [REDACTED_PAYMENT_CARD]', ['payment_card']],
+    'plain invalid Luhn' => ['Номер операции 378282246310006', 'Номер операции 378282246310006', []],
+    'space-separated invalid Luhn' => ['Номер операции 3782 822463 10006', 'Номер операции 3782 822463 10006', []],
+    'hyphen-separated invalid Luhn' => ['Номер операции 3782-822463-10006', 'Номер операции 3782-822463-10006', []],
+]);
+
 test('redacts cards without absorbing adjacent amounts', function (string $input, string $expected) {
     $result = (new SensitiveDataSanitizer)->sanitize($input);
 
@@ -67,6 +103,11 @@ test('redacts cards without absorbing adjacent amounts', function (string $input
     'two cards then amount' => ['Карты 4111 1111 1111 1111 2200 1234 5678 9012 100 рублей', 'Карты [REDACTED_PAYMENT_CARD] [REDACTED_PAYMENT_CARD] 100 рублей'],
     'other grouping then amount' => ['Карта 3782 822463 10005 100 рублей', 'Карта [REDACTED_PAYMENT_CARD] 100 рублей'],
     'amount then other grouping' => ['Оплата 10000 3782 822463 10005', 'Оплата 10000 [REDACTED_PAYMENT_CARD]'],
+    'invalid Luhn other grouping then amount' => ['Карта 3782 822463 10006 100 рублей', 'Карта [REDACTED_PAYMENT_CARD] 100 рублей'],
+    'invalid Luhn other grouping then large amount' => ['Карта 3782 822463 10006 10000 рублей', 'Карта [REDACTED_PAYMENT_CARD] 10000 рублей'],
+    'invalid Luhn other grouping then English amount' => ['Card number: 3782-822463-10006 100 USD', 'Card number: [REDACTED_PAYMENT_CARD] 100 USD'],
+    'invalid Luhn other grouping then ruble symbol' => ['Карта: 3782 822463 10006 100 ₽', 'Карта: [REDACTED_PAYMENT_CARD] 100 ₽'],
+    'multiple spaces before amount' => ['Карта: 3782 822463 10006  100 рублей', 'Карта: [REDACTED_PAYMENT_CARD]  100 рублей'],
 ]);
 
 test('redacts contextual otp values', function (string $input, string $secret) {
@@ -76,6 +117,7 @@ test('redacts contextual otp values', function (string $input, string $secret) {
         ->and($result->redactionTypes)->toBe(['otp']);
 })->with([
     'code from sms' => ['код из смс 123456', '123456'],
+    'confirmation code' => ['код подтверждения: 123456', '123456'],
     'sms code' => ['sms код: 1234', '1234'],
     'otp' => ['otp 839201', '839201'],
     'letters and digits' => ['код из смс: A1B2C3', 'A1B2C3'],
@@ -130,6 +172,9 @@ test('redacts complete spaced otp values while preserving surrounding text', fun
     'spaced alphanumeric code' => ['SMS code: A1 B2 C3, check login', 'SMS code: [REDACTED_OTP], check login'],
     'alphanumeric code with separate letter groups' => ['OTP: AB CD 12, check login', 'OTP: [REDACTED_OTP], check login'],
     'alphanumeric code starting with digits' => ['OTP: 1234-AB; check login', 'OTP: [REDACTED_OTP]; check login'],
+    'confirmation code with hyphens' => ['Код подтверждения: 123-456. Почему отклонили чек?', 'Код подтверждения: [REDACTED_OTP]. Почему отклонили чек?'],
+    'confirmation code with spaces' => ['Код подтверждения 123 456; проверьте вход', 'Код подтверждения [REDACTED_OTP]; проверьте вход'],
+    'bare OTP with spaces' => ['OTP 123 456', 'OTP [REDACTED_OTP]'],
 ]);
 
 test('handles password values without changing explicit surrounding context', function (string $input, string $expected, array $types = ['password']) {
@@ -180,6 +225,8 @@ test('handles password values without changing explicit surrounding context', fu
     'internal password punctuation' => ['Пароль secret.word123. Почему отклонили чек?', 'Пароль [REDACTED_PASSWORD]. Почему отклонили чек?'],
     'quoted sentence punctuation' => ['Пароль: "secret. word123". Почему отклонили чек?', 'Пароль: [REDACTED_PASSWORD]. Почему отклонили чек?'],
     'quoted value before an instruction' => ['Пароль: "qwerty123" проверьте вход', 'Пароль: [REDACTED_PASSWORD] проверьте вход'],
+    'owned digit value' => ['мой пароль qwerty123. Почему отклонили чек?', 'мой пароль [REDACTED_PASSWORD]. Почему отклонили чек?'],
+    'assigned dotted value before receipt context' => ['password=secret.word; receipt rejected', 'password=[REDACTED_PASSWORD]; receipt rejected'],
 ]);
 
 test('preserves ordinary questions and instructions about passwords and sms codes', function (string $input) {
@@ -209,6 +256,9 @@ test('preserves ordinary questions and instructions about passwords and sms code
     'English expired SMS code' => 'SMS code expired yesterday',
     'English delayed SMS code with later digits' => 'SMS code arrives after 10 minutes',
     'missing SMS with later digits' => 'Код из SMS не приходит уже 10 минут',
+    'confirmation code question' => 'Код подтверждения не приходит',
+    'confirmation code with a later date' => 'Код подтверждения не пришел 06.10.2026',
+    'short OTP' => 'OTP 123',
 ]);
 
 test('preserves a password question while redacting a later disclosed secret', function () {
@@ -238,16 +288,79 @@ test('preserves ordinary numeric text and phone numbers', function (string $inpu
     'invalid card-like receipt number' => 'Номер чека: 2200123456789012',
     'short card reference' => 'Карта заканчивается на 9012',
     'overlong labelled identifier' => 'Карта: 123456789012345678901',
+    'amount with thousands separator' => 'Сумма 12 345 рублей',
+    'six digit receipt' => 'Чек №123456',
+    'raffle date' => 'Розыгрыш 06.10.2026',
+    'email' => 'Мой email participant123@example.test',
+    'tax identifier' => 'ИНН 7707083893',
+    'passport' => 'Паспорт 4510 123456',
+    'unlabelled security code' => 'Номер обращения 123',
+    'short grouped card reference' => 'Карта: 12 345',
+    'overlong grouped card reference' => 'Карта: 1234567890 1234567890',
+]);
+
+test('redacts only explicitly labelled card security codes', function (string $input, string $expected) {
+    $result = (new SensitiveDataSanitizer)->sanitize($input);
+
+    expect($result->text)->toBe($expected);
+    expect($result->wasRedacted)->toBeTrue();
+    expect($result->redactionTypes)->toBe(['cvv']);
+})->with([
+    'CVV reproduction' => ['CVV: 123', 'CVV: [REDACTED_CVV]'],
+    'four digit CVV' => ['CVV 1234. Почему отклонили чек?', 'CVV [REDACTED_CVV]. Почему отклонили чек?'],
+    'CVC with assignment' => ['CVC=123; receipt rejected', 'CVC=[REDACTED_CVV]; receipt rejected'],
+    'lowercase CVC' => ['cvc: 1234, проверьте оплату', 'cvc: [REDACTED_CVV], проверьте оплату'],
+    'Russian security code' => ['Код на обратной стороне карты: 123. Почему отклонили чек?', 'Код на обратной стороне карты: [REDACTED_CVV]. Почему отклонили чек?'],
+    'security code on next line' => ["CVC:\n1234\nПочему отклонили чек?", "CVC:\n[REDACTED_CVV]\nПочему отклонили чек?"],
+]);
+
+test('preserves questions about security codes and values outside their declared length', function (string $input) {
+    $result = (new SensitiveDataSanitizer)->sanitize($input);
+
+    expect($result->text)->toBe($input);
+    expect($result->wasRedacted)->toBeFalse();
+    expect($result->redactionTypes)->toBe([]);
+})->with([
+    'CVV question' => 'Где найти CVV?',
+    'CVC question' => 'CVC does not work',
+    'Russian security code question' => 'Код на обратной стороне карты не нужен для поддержки',
+    'short security code' => 'CVV: 12',
+    'long security code' => 'CVC: 12345',
+    'alphanumeric identifier' => 'CVV: 123ABC',
+    'later ordinary number' => 'CVV не нужен, чек №123',
+]);
+
+test('reports redaction only for actual changes and remains unchanged on a second pass', function (string $input, string $expected, array $types) {
+    $sanitizer = new SensitiveDataSanitizer;
+
+    $result = $sanitizer->sanitize($input);
+    $secondResult = $sanitizer->sanitize($result->text);
+
+    expect($result->text)->toBe($expected);
+    expect($result->wasRedacted)->toBe($expected !== $input);
+    expect($result->redactionTypes)->toBe($types);
+    expect($secondResult->text)->toBe($expected);
+    expect($secondResult->wasRedacted)->toBeFalse();
+    expect($secondResult->redactionTypes)->toBe([]);
+})->with([
+    'grouped card' => ['Карта: 3782 822463 10006', 'Карта: [REDACTED_PAYMENT_CARD]', ['payment_card']],
+    'hyphen-separated card' => ['Карта: 3782-822463-10006', 'Карта: [REDACTED_PAYMENT_CARD]', ['payment_card']],
+    'plain card' => ['Карта: 378282246310006', 'Карта: [REDACTED_PAYMENT_CARD]', ['payment_card']],
+    'OTP' => ['код из SMS: 123-456', 'код из SMS: [REDACTED_OTP]', ['otp']],
+    'password' => ['Пароль qwerty123. Почему отклонили чек?', 'Пароль [REDACTED_PASSWORD]. Почему отклонили чек?', ['password']],
+    'CVV' => ['CVV: 123', 'CVV: [REDACTED_CVV]', ['cvv']],
+    'already masked values' => ['Карта: [REDACTED_PAYMENT_CARD]; OTP: [REDACTED_OTP]; пароль: [REDACTED_PASSWORD]; CVV: [REDACTED_CVV]', 'Карта: [REDACTED_PAYMENT_CARD]; OTP: [REDACTED_OTP]; пароль: [REDACTED_PASSWORD]; CVV: [REDACTED_CVV]', []],
+    'no secret' => ['Сумма 12 345 рублей; Чек №123456', 'Сумма 12 345 рублей; Чек №123456', []],
 ]);
 
 test('metadata never contains detected secret values', function () {
-    $secrets = ['2200 1234 5678 9012', '123456', 'qwerty123'];
+    $secrets = ['2200 1234 5678 9012', '123456', 'qwerty123', '987'];
     $result = (new SensitiveDataSanitizer)->sanitize(
-        'Карта 2200 1234 5678 9012, код из смс 123456, пароль: qwerty123',
+        'Карта 2200 1234 5678 9012, код из смс 123456, пароль: qwerty123; CVV: 987',
     );
     $metadata = json_encode($result->redactionTypes, JSON_THROW_ON_ERROR);
 
-    expect($result->redactionTypes)->toBe(['payment_card', 'otp', 'password'])
+    expect($result->redactionTypes)->toBe(['payment_card', 'otp', 'cvv', 'password'])
         ->and($result->text)->not->toContain(...$secrets)
         ->and($metadata)->not->toContain(...$secrets);
 });

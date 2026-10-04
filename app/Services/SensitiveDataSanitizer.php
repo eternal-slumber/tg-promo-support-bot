@@ -10,6 +10,8 @@ use App\Data\SanitizedText;
  * Without a separator, values need quotes, a digit/password punctuation, or a single token after мой/my.
  * Plain alphabetic phrases need a separator or quotes; OTP values must contain digits.
  * Explicit/quoted values are processed before owned tokens, so quoted separators cannot split a secret.
+ * Labelled cards accept 13–19 digits in any grouping without Luhn; unlabelled detection keeps its existing rules.
+ * Card security codes require a CVV/CVC label and 3–4 digits.
  */
 final class SensitiveDataSanitizer
 {
@@ -19,11 +21,15 @@ final class SensitiveDataSanitizer
 
     public const string Password = 'password';
 
+    public const string Cvv = 'cvv';
+
     private const string PaymentCardMask = '[REDACTED_PAYMENT_CARD]';
 
     private const string OtpMask = '[REDACTED_OTP]';
 
     private const string PasswordMask = '[REDACTED_PASSWORD]';
+
+    private const string CvvMask = '[REDACTED_CVV]';
 
     public function sanitize(string $text): SanitizedText
     {
@@ -31,15 +37,13 @@ final class SensitiveDataSanitizer
 
         $text = preg_replace_callback(
             [
-                '~\b(?<label>карт(?:а|у|ы)|card(?:\h+number)?)\b(?<separator>\s*[:=№#—-]?\s*)(?<secret>[0-9]{13,19})(?!\d)~iu',
+                '~\b(?<label>карт(?:а|у|ы)|card(?:\h+number)?)\b(?<separator>\s*[:=№#—-]?\s*)(?<secret>[0-9]+(?:[\h\p{Pd}\x{2212}]+[0-9]+)*)(?<amount_unit>\h+(?:(?:руб(?:лей|ля|ль)|rub(?:les)?|usd|eur|dollars?|euros?)\b|₽))?~iu',
                 '~(?<!\d)(?:[0-9]{4}(?:[\h\p{Pd}\x{2212}]+[0-9]{4}){3}|[0-9]{13,19})(?!\d)~u',
                 '~(?<!\d)[0-9]+(?:[\h\p{Pd}\x{2212}]+[0-9]+)*(?!\d)~u',
             ],
             function (array $matches) use (&$redactionTypes): string {
                 if (isset($matches['secret'])) {
-                    $redactionTypes[] = self::PaymentCard;
-
-                    return $matches['label'].$matches['separator'].self::PaymentCardMask;
+                    return $this->redactExplicitCard($matches, $redactionTypes);
                 }
 
                 return $this->redactCardRun($matches[0], $redactionTypes);
@@ -48,7 +52,7 @@ final class SensitiveDataSanitizer
         ) ?? $text;
 
         $text = preg_replace_callback(
-            '~\b(?<label>(?:код\s+из\s+(?:смс|sms)|code\s+from\s+sms|(?:смс|sms)\h*[\p{Pd}\x{2212}]?\h*(?:код|code)|otp(?:\h+code)?|одноразовый\s+код))(?<separator>\s*[:=№#-]?\s*)(?<secret>[0-9](?:[\h\p{Pd}\x{2212}]*[0-9]){3,}(?![a-zа-я0-9\p{Pd}\x{2212}])|[a-zа-я0-9](?:[\h\p{Pd}\x{2212}]*[a-zа-я0-9]){3,7}(?![a-zа-я0-9\p{Pd}\x{2212}]))\b~iu',
+            '~\b(?<label>(?:код\s+из\s+(?:смс|sms)|код\s+подтверждения|code\s+from\s+sms|(?:смс|sms)\h*[\p{Pd}\x{2212}]?\h*(?:код|code)|otp(?:\h+code)?|одноразовый\s+код))(?<separator>\s*[:=№#-]?\s*)(?<secret>[0-9](?:[\h\p{Pd}\x{2212}]*[0-9]){3,}(?![a-zа-я0-9\p{Pd}\x{2212}])|[a-zа-я0-9](?:[\h\p{Pd}\x{2212}]*[a-zа-я0-9]){3,7}(?![a-zа-я0-9\p{Pd}\x{2212}]))\b~iu',
             function (array $matches) use (&$redactionTypes): string {
                 if (preg_match('/[0-9]/', $matches['secret']) !== 1) {
                     return $matches[0];
@@ -57,6 +61,16 @@ final class SensitiveDataSanitizer
                 $redactionTypes[] = self::Otp;
 
                 return $matches['label'].$matches['separator'].self::OtpMask;
+            },
+            $text,
+        ) ?? $text;
+
+        $text = preg_replace_callback(
+            '~\b(?<label>cvv|cvc|код\h+на\h+обратной\h+стороне\h+карты)\b(?<separator>\s*[:=№#—-]?\s*)(?<secret>[0-9]{3,4})(?![\p{L}\p{N}])~iu',
+            function (array $matches) use (&$redactionTypes): string {
+                $redactionTypes[] = self::Cvv;
+
+                return $matches['label'].$matches['separator'].self::CvvMask;
             },
             $text,
         ) ?? $text;
@@ -82,6 +96,35 @@ final class SensitiveDataSanitizer
         $redactionTypes = array_values(array_unique($redactionTypes));
 
         return new SanitizedText($text, $redactionTypes !== [], $redactionTypes);
+    }
+
+    /**
+     * @param  array{0: string, label: string, separator: string, secret: string, amount_unit?: string}  $matches
+     * @param  list<string>  $redactionTypes
+     */
+    private function redactExplicitCard(array $matches, array &$redactionTypes): string
+    {
+        $secret = $matches['secret'];
+        $suffix = $matches['amount_unit'] ?? '';
+
+        if ($suffix !== '' && preg_match('~^(?<card>.+[0-9])(?<amount>\h+[0-9]+)$~u', $secret, $amountMatches) === 1) {
+            $cardLength = strlen(preg_replace('/[^0-9]/', '', $amountMatches['card']));
+
+            if ($cardLength >= 13 && $cardLength <= 19) {
+                $secret = $amountMatches['card'];
+                $suffix = $amountMatches['amount'].$suffix;
+            }
+        }
+
+        $cardLength = strlen(preg_replace('/[^0-9]/', '', $secret));
+
+        if ($cardLength < 13 || $cardLength > 19) {
+            return $matches[0];
+        }
+
+        $redactionTypes[] = self::PaymentCard;
+
+        return $matches['label'].$matches['separator'].self::PaymentCardMask.$suffix;
     }
 
     /** @param list<string> $redactionTypes */
