@@ -9,7 +9,7 @@
             <button wire:click="setPage('{{ $cursor->encode() }}', '{{ $name }}')" wire:key="{{ $name }}-next-{{ $cursor->encode() }}" type="button" class="rounded-lg border border-slate-200 px-2.5 py-2 hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:hover:bg-slate-800" wire:loading.attr="disabled">{{ $nextLabel }}</button>
         @endif
         @if ($latestLabel !== null && ! $paginator->onFirstPage())
-            <button wire:click="resetPage('{{ $name }}')" type="button" class="rounded-lg px-2.5 py-2 text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950" wire:loading.attr="disabled">{{ $latestLabel }}</button>
+            <button wire:click="resetPage('{{ $name }}')" type="button" class="rounded-lg px-2.5 py-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800" wire:loading.attr="disabled">{{ $latestLabel }}</button>
         @endif
     </nav>
 @endif

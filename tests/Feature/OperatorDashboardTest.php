@@ -110,10 +110,10 @@ test('shows readable ticket status and escalation reason labels without changing
     Livewire::test(OperatorDashboard::class)->call('selectFilter', 'all')
         ->assertSeeText([$statusLabel, $reasonLabel])
         ->call('selectTicket', $ticket->id)
-        ->assertSeeText(['Статус: '.$statusLabel, 'Причина передачи оператору: '.$reasonLabel])
+        ->assertSeeText(['Статус: '.$statusLabel, 'Причина: '.$reasonLabel])
         ->assertDontSeeText(['Причина эскалации', 'open', 'resolved', 'closed', 'llm_failure', 'participant_specific', 'not_in_rules', 'mixed_request', 'unknown', 'legacy_reason'])
         ->call('$refresh')
-        ->assertSeeText(['Статус: '.$statusLabel, 'Причина передачи оператору: '.$reasonLabel]);
+        ->assertSeeText(['Статус: '.$statusLabel, 'Причина: '.$reasonLabel]);
 
     expect($ticket->refresh()->getRawOriginal())->toBe($storedAttributes);
 })->with([
@@ -190,7 +190,7 @@ test('isolates histories of sequential closed tickets for the same participant',
 });
 
 test('displays ticket and message timestamps in Moscow time without changing stored UTC dates', function () {
-    $this->freezeTime();
+    $this->travelTo(now()->setDate(2026, 10, 4)->setTime(12, 0));
     $participant = TelegramParticipant::factory()->create();
     $ticket = Ticket::factory()->for($participant, 'participant')->closed()->create([
         'created_at' => '2026-10-02 22:15:00',
@@ -205,9 +205,10 @@ test('displays ticket and message timestamps in Moscow time without changing sto
     $this->actingAs(User::factory()->create());
 
     $component = Livewire::test(OperatorDashboard::class)->call('selectFilter', 'closed')->call('selectTicket', $ticket->id)
-        ->assertSee(['Создано: 03.10.2026 01:15 МСК', 'Закрыто: 03.10.2026 01:45 МСК', '03.10.2026 01:30 МСК'])
+        ->assertSeeText(['Создано: 03.10.2026 01:15 МСК', 'Закрыто: 03.10.2026 01:45 МСК', '01:30', 'Вчера'])
+        ->assertSeeHtml('title="03.10.2026 01:30 МСК"')
         ->call('$refresh')
-        ->assertSee(['Создано: 03.10.2026 01:15 МСК', 'Закрыто: 03.10.2026 01:45 МСК', '03.10.2026 01:30 МСК']);
+        ->assertSeeText(['Создано: 03.10.2026 01:15 МСК', 'Закрыто: 03.10.2026 01:45 МСК', '01:30', 'Вчера']);
 
     expect($component->viewData('selectedTicket')->created_at->toIso8601String())->toBe('2026-10-02T22:15:00+00:00');
     expect($component->viewData('selectedTicket')->closed_at->toIso8601String())->toBe('2026-10-02T22:45:00+00:00');
@@ -406,7 +407,7 @@ test('allows an operator to view closed ticket history with a readable closure r
     Livewire::test(OperatorDashboard::class)
         ->call('selectFilter', 'closed')
         ->call('selectTicket', $ticket->id)
-        ->assertSee([
+        ->assertSeeText([
             "#{$ticket->id}",
             (string) $participant->telegram_user_id,
             'История закрытого обращения.',
@@ -694,7 +695,9 @@ test('statistics exclude refusals and distinguish prepared grounded answers from
 
     Livewire::test(OperatorDashboard::class)->assertViewHas('statistics', $expected)
         ->call('$refresh')->assertViewHas('statistics', $expected)
-        ->assertSee(['4,0 мин', 'Доставлено ответов по правилам без оператора', 'Подготовлено: 4', 'Отменено ответов оператора: 1']);
+        ->assertSee(['4,0 мин', 'Ответов ботом', 'Передано оператору', 'Средний ответ'])
+        ->call('selectSection', 'statistics')
+        ->assertSee(['Доставлено ответов по правилам без оператора', 'Подготовлено ответов по правилам', 'Отменено ответов оператора']);
 
     expect([Message::query()->count(), Ticket::query()->count(), SupportDecision::query()->count()])->toBe($counts);
     Http::assertNothingSent();
@@ -736,10 +739,52 @@ test('renders messenger alignment for participants support replies and system ev
         ->assertSeeHtml('aria-label="Переписка обращения"')
         ->assertSeeHtml('max-w-[88%]');
 
-    foreach (['justify-end', 'justify-start', 'justify-start', 'justify-center'] as $index => $alignment) {
+    foreach (['justify-start', 'justify-end', 'justify-end', 'justify-center'] as $index => $alignment) {
         preg_match('/<article[^>]*wire:key="message-'.$messages[$index]->id.'"[^>]*>/', $component->html(), $article);
         expect($article[0])->toContain($alignment);
     }
+});
+
+test('groups adjacent messages by author and Moscow day while keeping events and delivery secondary', function () {
+    $this->travelTo(now()->setDate(2026, 10, 5)->setTime(12, 0));
+    $ticket = Ticket::factory()->create();
+    $messages = Message::factory()->count(11)->for($ticket->participant, 'participant')->for($ticket)
+        ->state(['body' => 'Текст сообщения.', 'direction' => MessageDirection::Outbound, 'delivery_status' => DeliveryStatus::Sent])->sequence(
+            ['author' => MessageAuthor::Participant, 'direction' => MessageDirection::Inbound, 'delivery_status' => null, 'created_at' => '2025-10-03 13:59:00'],
+            ['author' => MessageAuthor::Participant, 'direction' => MessageDirection::Inbound, 'delivery_status' => null, 'created_at' => '2026-10-03 13:59:00'],
+            ['author' => MessageAuthor::Participant, 'direction' => MessageDirection::Inbound, 'delivery_status' => null, 'created_at' => '2026-10-03 14:00:00'],
+            ['author' => MessageAuthor::Bot, 'created_at' => '2026-10-03 14:01:00'],
+            ['author' => MessageAuthor::Bot, 'created_at' => '2026-10-03 14:02:00'],
+            ['author' => MessageAuthor::Operator, 'created_at' => '2026-10-03 14:03:00'],
+            ['author' => MessageAuthor::System, 'ticket_event' => Message::TicketClosedEvent, 'created_at' => '2026-10-03 14:04:00'],
+            ['author' => MessageAuthor::Operator, 'created_at' => '2026-10-03 14:05:00'],
+            ['author' => MessageAuthor::Operator, 'created_at' => '2026-10-03 21:01:00'],
+            ['author' => MessageAuthor::Operator, 'created_at' => '2026-10-04 21:01:00'],
+            ['author' => MessageAuthor::Operator, 'created_at' => '2026-10-04 21:02:00'],
+        )->create();
+    $storedMessages = $messages->map(fn (Message $message): array => $message->refresh()->getRawOriginal())->all();
+    $this->actingAs(User::factory()->create());
+
+    $component = Livewire::test(OperatorDashboard::class)->call('selectTicket', $ticket->id)->call('$refresh');
+    preg_match_all('/data-chat-date[^>]*>.*?<time[^>]*>(.*?)<\/time>/s', $component->html(), $dates);
+    expect($dates[1])->toBe(['3 октября 2025', '3 октября', 'Вчера', 'Сегодня']);
+
+    foreach ($messages as $index => $message) {
+        preg_match('/<article[^>]*wire:key="message-'.$message->id.'"[^>]*>(.*?)<\/article>/s', $component->html(), $article);
+        expect($article)->toHaveCount(2);
+        expect(str_contains($article[1], 'data-message-author'))->toBe(in_array($index, [0, 1, 3, 5, 7, 8, 9], true));
+        expect($article[1])->not->toContain('bg-emerald', 'rounded-full', 'rounded-2xl');
+        if ($message->author === MessageAuthor::System) {
+            expect($article[0])->toContain('justify-center');
+            expect($article[1])->not->toContain('rounded-xl', 'bg-slate');
+        } elseif ($message->direction === MessageDirection::Outbound) {
+            expect($article[1])->toContain('data-delivery-status="sent"', '✓', 'Доставка: Отправлено');
+        } else {
+            expect($article[1])->not->toContain('data-delivery-status');
+        }
+    }
+
+    expect($messages->map(fn (Message $message): array => $message->refresh()->getRawOriginal())->all())->toBe($storedMessages);
 });
 
 test('shows standalone bot replies with their actual user-facing body evidence and delivery state without writes', function (DeliveryStatus $status) {
