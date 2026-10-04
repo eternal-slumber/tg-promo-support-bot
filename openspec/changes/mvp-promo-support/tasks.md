@@ -102,7 +102,7 @@ Lifecycle задачи приведены к текущей модели open/re
 
 ## 14. Изоляция истории обращений
 
-- [x] 14.1 Ограничить основную ленту operator dashboard выбранным ticket_id; исключить из неё другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, pagination и delivery action isolation. Lifecycle не менять.
+- [x] 14.1 Ограничить основную ленту operator dashboard выбранным ticket_id; исключить из неё другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, прокрутку полной ticket-scoped переписки и delivery action isolation. Lifecycle не менять.
 - [x] 14.2 Отдельно проверить timestamps: выводить created_at/closed_at/messages.created_at в Europe/Moscow с пометкой «МСК», сохранить UTC в данных и таймерах; проверить переход суток и отсутствие мутаций при refresh.
 
 ## 15. Независимое решение и последовательные operator replies
@@ -113,9 +113,9 @@ Lifecycle задачи приведены к текущей модели open/re
 
 ## 16. Milestone 2: Контекст и границы обращения
 
-- [x] 16.1 Зафиксировать Message IDs контекста при создании ticket, с нижней границей после предыдущего закрытия и source linkage ответов бота; отдельный read-only блок и независимая pagination, основная лента остаётся ticket-scoped.
+- [x] 16.1 Зафиксировать Message IDs контекста при создании ticket, с нижней границей после предыдущего закрытия и source linkage ответов бота; отдельный read-only блок и независимая pagination контекста; основная лента загружает полную ticket-scoped историю в области чата с прокруткой без page/cursor pagination.
 - [x] 16.2 Показать границу создания; атомарно создать System notice ручного/автоматического закрытия с номером обращения и существующей delivery job, сохранить guards stale notices и operator replies.
-- [x] 16.3 Проверить PostgreSQL regressions контекста A/B, immutability, sanitizer/escaping, pagination, уведомлений и delivery guards; Pint, frontend build и strict OpenSpec validation.
+- [x] 16.3 Проверить PostgreSQL regressions контекста A/B, immutability, sanitizer/escaping, pagination блока контекста, уведомлений и delivery guards; Pint, frontend build и strict OpenSpec validation.
 
 ## 17. Удаление сохранённой Telegram-клавиатуры
 
