@@ -475,7 +475,7 @@ test('rejects malformed non-text updates without side effects', function () {
     Http::assertNothingSent();
 });
 
-test('delivers the start warning and removes a saved keyboard without normal processing or counting it as a bot answer', function () {
+test('delivers start onboarding and removes a saved keyboard without creating a ticket or processing AI', function () {
     Queue::fake();
     Http::preventStrayRequests();
     config()->set('telegram.bot_token', 'test-bot-token');
@@ -485,22 +485,36 @@ test('delivers the start warning and removes a saved keyboard without normal pro
     $this->postJson(route('telegram.webhook'), telegramTextUpdate(1009, 2009, 3009, 4009, '/start'))
         ->assertOk();
 
-    $warning = Message::query()->where('direction', 'outbound')->sole();
-    app()->call([new DeliverTelegramMessage($warning->id), 'handle']);
+    $onboarding = Message::query()->where('direction', 'outbound')->sole();
+    app()->call([new DeliverTelegramMessage($onboarding->id), 'handle']);
 
     $this->actingAs(User::factory()->create());
     Livewire::test(OperatorDashboard::class)->assertViewHas('statistics', fn (array $statistics): bool => $statistics['bot_resolved'] === 0 && $statistics['bot_prepared'] === 0
     );
 
-    expect($warning->body)->toContain('банковских карт', 'пароли', 'коды из SMS', 'не нужны')
+    expect($onboarding->body)->toContain(
+        'Поддержка акции «Вкусная осень»',
+        'напишите свой вопрос обычным сообщением',
+        'искать кнопку «Создать обращение» не нужно',
+        'постараюсь ответить по правилам акции',
+        'проверка конкретного чека, приза или вашей ситуации',
+        'автоматически будет передан оператору',
+        'Не отправляйте номера банковских карт, CVV/CVC, пароли и SMS/OTP-коды',
+        'Фото и документы пока не обрабатываются',
+        'опишите вопрос текстом',
+        '«Какие продукты участвуют?»',
+        '«Когда следующий розыгрыш?»',
+        '«Почему отклонили мой чек?»',
+    )
         ->and(Message::query()->count())->toBe(2)
-        ->and($warning->refresh()->author)->toBe(MessageAuthor::System)
-        ->and($warning->delivery_status)->toBe(DeliveryStatus::Sent);
+        ->and($onboarding->refresh()->author)->toBe(MessageAuthor::System)
+        ->and($onboarding->delivery_status)->toBe(DeliveryStatus::Sent);
 
+    $this->assertDatabaseCount('tickets', 0);
     Queue::assertNotPushed(ProcessIncomingMessage::class);
     Queue::assertPushed(DeliverTelegramMessage::class, 1);
     Http::assertSent(fn (Request $request): bool => $request['chat_id'] === 3009
-        && $request['text'] === $warning->body
+        && $request['text'] === $onboarding->body
         && $request['reply_markup'] === ['remove_keyboard' => true]);
     Http::assertSentCount(1);
 });

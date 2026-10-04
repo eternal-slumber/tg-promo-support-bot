@@ -17,7 +17,7 @@
 ## 3. Telegram ingestion
 
 - [x] 3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых private text message полей с успешным игнорированием legacy callback updates; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.
-- [x] 3.2 Обработать `/start` отдельным safety message о картах, паролях и SMS-кодах без жёсткой фиксации точной формулировки; проверить acceptance test всех четырёх смысловых пунктов предупреждения.
+- [x] 3.2 Обработать `/start` отдельным системным onboarding с предупреждением о секретах без жёсткой фиксации точной формулировки; проверить содержание и отсутствие AI-обработки acceptance test.
 - [x] 3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, атомарно записывать database jobs через `beforeCommit()` в той же PostgreSQL transaction, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.
 - [x] 3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.
 - [x] 3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.
@@ -121,3 +121,8 @@ Lifecycle задачи приведены к текущей модели open/re
 
 - [x] 17.1 Добавить ReplyKeyboardRemove в общий sendMessage без создания feedback-кнопок или специальных lifecycle-команд; проверить HTTP payload и доставку `/start`, сохранить обработку прежних текстов как обычных сообщений.
 - [x] 17.2 Актуализировать README/OpenSpec; выполнить targeted PostgreSQL delivery/lifecycle tests, Pint, strict OpenSpec validation и git diff --check.
+
+## 18. Пользовательский onboarding /start
+
+- [x] 18.1 Обновить системный текст `/start`: поддержка «Вкусной осени», обычный вопрос без поиска кнопки создания обращения, ответ по правилам и автоматическая передача персональных вопросов оператору, предупреждение о секретах, ограничение фото/документов и три примера; проверить содержание и ReplyKeyboardRemove существующим regression test без изменения AI, lifecycle и delivery.
+- [x] 18.2 Актуализировать README/OpenSpec; выполнить targeted PostgreSQL webhook/rate-limit/lifecycle tests, Pint, strict OpenSpec validation и git diff --check.

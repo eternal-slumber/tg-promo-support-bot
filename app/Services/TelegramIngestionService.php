@@ -19,7 +19,17 @@ use Illuminate\Support\Facades\DB;
 
 class TelegramIngestionService
 {
-    private const string StartWarning = 'Не отправляйте данные банковских карт, пароли или коды из SMS: они не нужны для поддержки акции.';
+    private const string StartOnboarding = <<<'TEXT'
+        Поддержка акции «Вкусная осень»
+
+        Просто напишите свой вопрос обычным сообщением — искать кнопку «Создать обращение» не нужно.
+        Я постараюсь ответить по правилам акции. Если потребуется проверка конкретного чека, приза или вашей ситуации, вопрос автоматически будет передан оператору.
+
+        Не отправляйте номера банковских карт, CVV/CVC, пароли и SMS/OTP-коды.
+        Фото и документы пока не обрабатываются — опишите вопрос текстом.
+
+        Например: «Какие продукты участвуют?», «Когда следующий розыгрыш?», «Почему отклонили мой чек?»
+        TEXT;
 
     private const string RedactionWarning = 'Чувствительные данные скрыты и не нужны для поддержки акции.';
 
@@ -111,7 +121,7 @@ class TelegramIngestionService
         }
 
         if ($this->isStartCommand($update->text)) {
-            $this->createPendingMessage($participant, $activeTicket?->id, MessageAuthor::System, self::StartWarning);
+            $this->createPendingMessage($participant, $activeTicket?->id, MessageAuthor::System, self::StartOnboarding);
 
             return new TelegramIngestionResult(false, false);
         }

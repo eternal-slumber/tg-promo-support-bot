@@ -213,7 +213,7 @@ Feedback/reply keyboard MUST NOT отправляться или иметь от
 
 #### Scenario: Start удаляет старую клавиатуру
 - **GIVEN** у участника сохранена старая feedback-клавиатура
-- **WHEN** доставляется существующее предупреждение на `/start`
+- **WHEN** доставляется системный onboarding на `/start`
 - **THEN** sendMessage содержит ReplyKeyboardRemove
 - **AND** обычные guards и обработка `/start` сохраняются
 
