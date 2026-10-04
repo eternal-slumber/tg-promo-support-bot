@@ -37,7 +37,7 @@ final class SensitiveDataSanitizer
 
         $text = preg_replace_callback(
             [
-                '~\b(?<label>карт(?:а|у|ы)|card(?:\h+number)?)\b(?<separator>\s*[:=№#—-]?\s*)(?<secret>[0-9]+(?:[\h\p{Pd}\x{2212}]+[0-9]+)*)(?<amount_unit>\h+(?:(?:руб(?:лей|ля|ль)|rub(?:les)?|usd|eur|dollars?|euros?)\b|₽))?~iu',
+                '~\b(?<label>карт(?:а|у|ы)|card(?:\h+number)?)\b(?<separator>\s*[:=№#—-]?\s*)(?<secret>[0-9]+(?:[\h\p{Pd}\x{2212}]+[0-9]+)*)(?<amount_unit>\h+(?:(?:руб(?:лей|ля|ль)?|балл(?:а|ов)?|rub(?:les)?|usd|eur|dollars?|euros?)\b|₽))?~iu',
                 '~(?<!\d)(?:[0-9]{4}(?:[\h\p{Pd}\x{2212}]+[0-9]{4}){3}|[0-9]{13,19})(?!\d)~u',
                 '~(?<!\d)[0-9]+(?:[\h\p{Pd}\x{2212}]+[0-9]+)*(?!\d)~u',
             ],
