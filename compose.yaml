@@ -1,7 +1,9 @@
 x-app-environment: &app-environment
-  APP_ENV: local
-  APP_DEBUG: "true"
-  APP_URL: http://localhost:8000
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_KEY: ${APP_KEY:?Generate a stable APP_KEY in .env before starting}
+  APP_URL: ${APP_URL:-http://localhost:8000}
+  SESSION_SECURE_COOKIE: ${SESSION_SECURE_COOKIE:-false}
   DB_CONNECTION: pgsql
   DB_HOST: postgres
   DB_PORT: 5432
@@ -52,7 +54,7 @@ services:
   app:
     build:
       context: .
-    command: ["sh", "-c", "php artisan migrate --force --no-interaction && php artisan db:seed --force --no-interaction && php artisan serve --host=0.0.0.0 --port=8000"]
+    command: ["sh", "-c", "php artisan migrate --force --no-interaction && php artisan db:seed --force --no-interaction && php-fpm -D && exec nginx -g 'daemon off;'"]
     depends_on:
       postgres:
         condition: service_healthy
@@ -64,7 +66,8 @@ services:
       retries: 12
       start_period: 10s
     ports:
-      - "8000:8000"
+      - "127.0.0.1:${APP_PORT:-8000}:8000"
+    restart: unless-stopped
 
   queue: &queue-worker
     build:

@@ -23,11 +23,11 @@ COPY resources ./resources
 
 RUN npm ci && npm run build
 
-FROM php:8.4-cli-alpine AS application
+FROM php:8.4-fpm-alpine AS application
 
 WORKDIR /app
 
-RUN apk add --no-cache libpq \
+RUN apk add --no-cache libpq nginx \
     && apk add --no-cache --virtual .build-dependencies $PHPIZE_DEPS libpq-dev \
     && docker-php-ext-install pcntl pdo_pgsql \
     && apk del .build-dependencies
@@ -35,15 +35,16 @@ RUN apk add --no-cache libpq \
 COPY --from=vendor /app/vendor ./vendor
 COPY . .
 COPY --from=frontend /app/public/build ./public/build
+COPY nginx.conf /etc/nginx/nginx.conf
 
 RUN cp .env.example .env \
     && rm -f bootstrap/cache/*.php \
-    && php artisan key:generate --force \
     && php artisan package:discover --ansi \
-    && chown -R www-data:www-data storage bootstrap/cache
+    && chown -R www-data:www-data storage bootstrap/cache /var/lib/nginx /var/log/nginx \
+    && printf '[www]\nlisten = 127.0.0.1:9000\nclear_env = no\n' > /usr/local/etc/php-fpm.d/zz-app.conf
 
 USER www-data
 
 EXPOSE 8000
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+CMD ["sh", "-c", "php-fpm -D && exec nginx -g 'daemon off;'"]
