@@ -19,6 +19,7 @@ class TelegramBotApiClient implements TelegramBotClient
         $response = $this->request('sendMessage', [
             'chat_id' => $message->chatId,
             'text' => $message->text,
+            'reply_markup' => ['remove_keyboard' => true],
         ]);
         $messageId = data_get($response, 'result.message_id');
 

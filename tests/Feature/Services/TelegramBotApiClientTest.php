@@ -43,13 +43,14 @@ test('sends a text message with the configured endpoint chat and text', function
         && $request['text'] === 'Текст');
 });
 
-test('sends ordinary text without adding a keyboard', function () {
+test('removes a saved feedback keyboard when sending ordinary text', function () {
     Http::preventStrayRequests();
     Http::fake(['https://telegram.example/bottest-token/sendMessage' => Http::response(['ok' => true, 'result' => ['message_id' => 124]])]);
 
     app(TelegramBotApiClient::class)->sendMessage(new TelegramOutboundMessage(100, 'Текст'));
 
-    Http::assertSent(fn (Request $request): bool => ! isset($request['reply_markup']));
+    Http::assertSent(fn (Request $request): bool => $request['reply_markup'] === ['remove_keyboard' => true]);
+    Http::assertSentCount(1);
 });
 
 test('maps a connection failure to a safe typed error', function () {

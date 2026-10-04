@@ -475,7 +475,7 @@ test('rejects malformed non-text updates without side effects', function () {
     Http::assertNothingSent();
 });
 
-test('delivers the start warning without normal processing or counting it as a bot answer', function () {
+test('delivers the start warning and removes a saved keyboard without normal processing or counting it as a bot answer', function () {
     Queue::fake();
     Http::preventStrayRequests();
     config()->set('telegram.bot_token', 'test-bot-token');
@@ -499,6 +499,9 @@ test('delivers the start warning without normal processing or counting it as a b
 
     Queue::assertNotPushed(ProcessIncomingMessage::class);
     Queue::assertPushed(DeliverTelegramMessage::class, 1);
+    Http::assertSent(fn (Request $request): bool => $request['chat_id'] === 3009
+        && $request['text'] === $warning->body
+        && $request['reply_markup'] === ['remove_keyboard' => true]);
     Http::assertSentCount(1);
 });
 
