@@ -2,16 +2,18 @@
 
 use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\TelegramWebhookController;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', fn (Request $request): RedirectResponse => redirect()
+    ->route($request->user() === null ? 'login' : 'operator.dashboard'));
 
 Route::post('/telegram/webhook', TelegramWebhookController::class)->name('telegram.webhook');
 
 Route::middleware('guest')->group(function (): void {
-    Route::get('/operator/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::get('/operator/login', fn (): RedirectResponse => redirect()->route('login'));
     Route::post('/operator/login', [AuthenticatedSessionController::class, 'store'])
         ->middleware('throttle:6,1')
         ->name('operator.login.store');

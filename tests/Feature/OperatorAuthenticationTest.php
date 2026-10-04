@@ -10,6 +10,20 @@ test('guests are redirected from the operator panel to login', function () {
     $this->get(route('operator.dashboard'))->assertRedirect(route('login'));
 });
 
+test('the guest home page redirects to the canonical login page', function () {
+    $this->get('/')->assertRedirect('/login');
+});
+
+test('authenticated operators are redirected to the dashboard instead of home or login', function (string $path) {
+    $this->actingAs(User::factory()->create());
+
+    $this->get($path)->assertRedirect(route('operator.dashboard'));
+})->with(['/', '/login', '/operator/login']);
+
+test('the legacy guest login URL redirects to the canonical login page', function () {
+    $this->get('/operator/login')->assertRedirect('/login');
+});
+
 test('an operator can sign in and there is no registration route', function () {
     $operator = User::factory()->create([
         'email' => 'operator@example.test',
@@ -17,7 +31,7 @@ test('an operator can sign in and there is no registration route', function () {
     ]);
 
     $this->get(route('login'))->assertSee('Вход оператора')->assertDontSeeText('M-Social');
-    $this->get('/')->assertSee('Поддержка промо-акции')->assertDontSeeText('M-Social');
+    $this->get('/')->assertRedirect(route('login'));
 
     $this->post(route('operator.login.store'), [
         'email' => $operator->email,

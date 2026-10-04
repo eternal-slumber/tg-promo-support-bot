@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->validateCsrfTokens(except: ['telegram/webhook']);
         $middleware->redirectGuestsTo(fn (): string => route('login'));
+        $middleware->redirectUsersTo(fn (): string => route('operator.dashboard'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->map(fn (Throwable $exception): Throwable => SafeDatabaseException::from($exception) ?? $exception);
