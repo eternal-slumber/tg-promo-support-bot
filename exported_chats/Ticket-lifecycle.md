@@ -51,7 +51,7 @@ Acceptance: после этого нам больше не должны встр
 
 ## Activity
 
-    $ cat /Users/artem/.codex/plugins/cache/ponytail/ponytail/1.0.0/skills/ponytail/SKILL.md
+    $ cat /path/to/home/.codex/plugins/cache/ponytail/ponytail/1.0.0/skills/ponytail/SKILL.md
     ---
     name: ponytail
     description: >
@@ -613,7 +613,7 @@ Acceptance: после этого нам больше не должны встр
 ## Activity
 
     $ pwd && rg --files -g 'AGENTS.md' -g '.ai/rules/**' -g 'openspec/**' -g 'composer.json' -g 'package.json' -g '*Ticket*' -g '*Support*' -g '*Message*' -g '*Close*' -g '*Feedback*' -g '*Escalat*'
-    /Users/artem/Desktop/tg-promo/tg-promo
+    /path/to/project
     openspec/config.yaml
     openspec/changes/mvp-promo-support/proposal.md
     openspec/changes/mvp-promo-support/design.md
@@ -1066,7 +1066,7 @@ Acceptance: после этого нам больше не должны встр
         }
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -1075,40 +1075,40 @@ Acceptance: после этого нам больше не должны встр
       "schemaName": "spec-driven",
       "planningHome": {
         "kind": "repo",
-        "root": "/Users/artem/Desktop/tg-promo/tg-promo",
-        "changesDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes",
+        "root": "/path/to/project",
+        "changesDir": "/path/to/project/openspec/changes",
         "defaultSchema": "spec-driven"
       },
-      "changeRoot": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeRoot": "/path/to/project/openspec/changes/mvp-promo-support",
       "artifactPaths": {
         "proposal": {
           "outputPath": "proposal.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/proposal.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
           ]
         },
         "specs": {
           "outputPath": "specs/**/*.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/**/*.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/specs/**/*.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
           ]
         },
         "design": {
           "outputPath": "design.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/design.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/design.md"
           ]
         },
         "tasks": {
           "outputPath": "tasks.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
           ]
         }
       },
@@ -1131,7 +1131,7 @@ Acceptance: после этого нам больше не должны встр
         ],
         "linkedContext": [],
         "allowedEditRoots": [
-          "/Users/artem/Desktop/tg-promo/tg-promo"
+          "/path/to/project"
         ],
         "requiresAffectedAreaSelection": false,
         "constraints": [
@@ -1172,28 +1172,28 @@ Acceptance: после этого нам больше не должны встр
         }
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
     {
       "changeName": "mvp-promo-support",
-      "changeDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeDir": "/path/to/project/openspec/changes/mvp-promo-support",
       "schemaName": "spec-driven",
       "contextFiles": {
         "proposal": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
         ],
         "specs": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
         ],
         "design": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/design.md"
         ],
         "tasks": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
         ]
       },
       "progress": {
@@ -1206,371 +1206,371 @@ Acceptance: после этого нам больше не должны встр
           "id": "1",
           "description": "1.1 Добавить Docker Compose services для Laravel app, PostgreSQL и database queue worker, настроить health/dependency order и проверить, что `docker compose config` проходит, а `docker compose up` запускает весь MVP одной командой.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 5
         },
         {
           "id": "2",
           "description": "1.2 Перевести application и queue connections на PostgreSQL/database driver, добавить jobs/failed-jobs storage и проверить миграции внутри Docker без Redis или другого broker.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 6
         },
         {
           "id": "3",
           "description": "1.3 Добавить Livewire в рамках заданного frontend stack и проверить, что базовая Blade/Livewire/Tailwind 4/Vite страница собирается командой `npm run build`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 7
         },
         {
           "id": "4",
           "description": "1.4 Добавить environment-backed настройки Telegram, LLM, retry/timeout и `TICKET_AUTO_CLOSE_HOURS=24`, обновить безопасный `.env.example` и проверить, что populated secrets отсутствуют в tracked files.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 8
         },
         {
           "id": "5",
           "description": "2.1 Создать enums для ticket status, close reason, message author/direction, delivery status и decision type; проверить Pest unit tests на допустимые значения и переходы lifecycle.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 12
         },
         {
           "id": "6",
           "description": "2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с безопасной `redaction_types` metadata, внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests и отсутствие поля для raw message body.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 13
         },
         {
           "id": "7",
           "description": "2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `waiting_for_user` и `closed`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 14
         },
         {
           "id": "8",
           "description": "2.4 Реализовать sanitizer до persistence для card-like sequences, контекстных SMS/OTP-кодов и явно обозначенных паролей; проверить unit dataset для evaluation case №22, OTP/password context, обычных дат/сумм/количеств без ложного маскирования и сохранения телефонного номера.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 15
         },
         {
           "id": "9",
           "description": "3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых private text message полей с успешным игнорированием legacy callback updates; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 19
         },
         {
           "id": "10",
           "description": "3.2 Обработать `/start` отдельным safety message о картах, паролях и SMS-кодах без жёсткой фиксации точной формулировки; проверить acceptance test всех четырёх смысловых пунктов предупреждения.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 20
         },
         {
           "id": "11",
           "description": "3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, атомарно записывать database jobs через `beforeCommit()` в той же PostgreSQL transaction, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 21
         },
         {
           "id": "12",
           "description": "3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 22
         },
         {
           "id": "13",
           "description": "3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 23
         },
         {
           "id": "14",
           "description": "3.6 Для participant с `open` или `waiting_for_user` прикреплять redacted сообщение к тому же ticket без AI-routing; в `waiting_for_user` подтверждение закрывает ticket, любой другой текст открывает его без LLM и новых кнопок; после `closed` новый вопрос классифицируется заново. Проверить transitions, сохранение истории, duplicate update и stale auto-close.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 24
         },
         {
           "id": "15",
           "description": "4.1 Создать LLM contract, typed decision DTO и validator для `answer`, `escalate`, `mixed`, `refuse`; проверить unit tests для валидных, неполных, неизвестных и противоречивых structured outputs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 28
         },
         {
           "id": "16",
           "description": "4.2 Добавить отдельные versioned prompt files и loader единственного factual source `docs/assignment/promo-rules.md`; проверить, что decision сохраняет source hash, но не полный runtime system prompt.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 29
         },
         {
           "id": "17",
           "description": "4.3 Реализовать один provider adapter через Laravel HTTP client с explicit connect/response timeout и безопасным error mapping; проверить exact endpoint fakes, `Http::preventStrayRequests()`, timeout, 429, 5xx и получение только redacted participant text без реальной сети.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 30
         },
         {
           "id": "18",
           "description": "4.4 Реализовать `ProcessIncomingMessage` с queue attempts/backoff и early exit при существующем decision; проверить временный сбой с успешным retry и повтор job после сохранённого decision без второго LLM-вызова.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 31
         },
         {
           "id": "19",
           "description": "4.5 Применять валидный decision в короткой транзакции: grounded answer без ticket, unknown/participant-specific/off-topic escalation, mixed answer плюс один ticket и adversarial safe refusal; проверить acceptance cases для каждого варианта, включая requests №7, №12, №16, №23, №24 и №25.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 32
         },
         {
           "id": "20",
           "description": "4.6 Реализовать идемпотентный fallback после исчерпания retry с decision/ticket reason `llm_failure`; проверить timeout, invalid output и exhausted retries без потери message, второго ticket, второго ответа или двойного учёта.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 33
         },
         {
           "id": "21",
           "description": "5.1 Создать Telegram adapter для text messages и ReplyKeyboardMarkup без inline callbacks и callback acknowledgement с explicit timeout/error mapping; проверить HTTP fakes и отсутствие секретов, raw body, телефонов и sensitive values в логируемом контексте.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 37
         },
         {
           "id": "22",
           "description": "5.2 Реализовать presentation builders для номера ticket, короткой redacted quote, redaction notification и actions `Проблема решена` / `Не решило`; разрешить optional краткий safety reminder при эскалации и проверить, что он не обязателен, длинный текст обрезается, а hidden values не повторяются.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 38
         },
         {
           "id": "23",
           "description": "5.3 Реализовать `DeliverTelegramMessage` для переходов `pending -> sent|failed`, сохранения Telegram message ID и повторной отправки того же record; проверить success, permanent failure и retry уже `sent` сообщения как no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 39
         },
         {
           "id": "24",
           "description": "6.1 Реализовать session login для заранее созданного operator account без self-registration и ролей; проверить guest redirect, успешный login и отсутствие публичного registration endpoint.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 43
         },
         {
           "id": "25",
           "description": "6.2 Реализовать Livewire queue и conversation history с escaped redacted participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets, отсутствие raw HTML и отсутствие исходных card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 44
         },
         {
           "id": "26",
           "description": "6.3 Реализовать ответ оператора: сохранить `pending` message и первый response timestamp, атомарно записать delivery job в той же transaction, а после successful delivery при неизменной input revision перевести `open -> waiting_for_user`; проверить DB, queue и Telegram side effects вместе.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 45
         },
         {
           "id": "27",
           "description": "6.4 Показывать failed delivery оператору и разрешать повторную отправку того же message record; проверить, что ошибка Telegram не удаляет ответ и не переводит ticket в `waiting_for_user`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 46
         },
         {
           "id": "28",
           "description": "7.1 Удалить inline callback parser/DTO/handler/acknowledgement и pending callback state; текстовый feedback применим только к собственному active ticket отправителя. Проверить owner isolation, duplicate text update и успешное игнорирование старых inline updates без side effects.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 50
         },
         {
           "id": "29",
           "description": "7.2 Реализовать `waiting_for_user -> closed / user_confirmed` для текста `Проблема решена` и `waiting_for_user -> open` для `Не решило` или любого другого текста без LLM и новых кнопок. Сохранять feedback в том же ticket; проверить, что любой input после сохранения operator reply оставляет open, включая раннее подтверждение и input между отказом Telegram и retry, а раннее подтверждение остаётся в истории для ручного закрытия и stale auto-close даже при совпадающих timestamps.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 51
         },
         {
           "id": "30",
           "description": "7.3 Реализовать delayed `AutoCloseTicket` с configurable 24-hour delay и generation/status recheck под row lock; проверить auto-close через frozen time и stale job после reopening как no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 52
         },
         {
           "id": "31",
           "description": "7.4 Реализовать ручное закрытие `open`/`waiting_for_user` оператором с `operator_closed`; проверить auth, допустимые статусы и idempotent повторное действие.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 53
         },
         {
           "id": "32",
           "description": "8.1 Реализовать изолированный statistics query/service по provisional definitions для `bot resolved`, `escalated` и average first operator response time; проверить фиксированным dataset, что mixed исключён, follow-ups не увеличивают escalated, а unanswered tickets не входят в average.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 57
         },
         {
           "id": "33",
           "description": "8.2 Добавить статистику в Livewire operator panel и проверить component test, что повторный просмотр возвращает те же значения без LLM/Telegram вызовов и изменения persisted state.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 58
         },
         {
           "id": "34",
           "description": "9.1 Создать повторяемый evaluation runner для всех 25 сообщений из `docs/assignment/requests.md` через тот же application boundary и проверить, что отчёт содержит вопрос, ответ, признак эскалации, оценку и комментарий для всех 25 строк.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 62
         },
         {
           "id": "35",
           "description": "9.2 Зафиксировать результаты evaluation, спорные mixed/off-topic cases и изменения prompt в требуемой таблице; проверить наличие строк 1–25, redaction case №22 и отсутствие raw card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 63
         },
         {
           "id": "36",
           "description": "9.3 Обновить README инструкцией запуска с нуля, assumptions, provisional definitions, известными ограничениями и production follow-ups; проверить команды README в чистом Docker Compose запуске.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 64
         },
         {
           "id": "37",
           "description": "9.4 Добавить схему PostgreSQL и краткое объяснение ключей, partial unique active-ticket constraint, transactions и delivery state; сверить диаграмму с фактическими migrations.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 65
         },
         {
           "id": "38",
           "description": "10.1 Запустить узкие Pest feature/unit suites каждого capability, затем полный `php artisan test --compact`, и устранить только дефекты поведения этого change.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 69
         },
         {
           "id": "39",
           "description": "10.2 Запустить `vendor/bin/pint --dirty --format agent`, `npm run build` и `openspec validate mvp-promo-support --strict`; проверить успешное завершение всех команд.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 70
         },
         {
           "id": "40",
           "description": "10.3 Выполнить Docker smoke flow: принять grounded question, создать escalation, ответить оператором, обработать resolved/unresolved и auto-close, затем сверить три метрики и delivery states.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 71
         },
         {
           "id": "41",
           "description": "10.4 Проверить repository secrets scan и итоговый diff: отсутствуют реальные Telegram/LLM keys, raw card/OTP/password values, sensitive message bodies в logging paths, незаявленная инфраструктура и функциональность вне specs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 72
         },
         {
           "id": "42",
           "description": "11.1 Заменить Message.id ticket input_revision и snapshot operator reply; проверить late AI attach во время delivery и changed/unchanged revision.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 76
         },
         {
           "id": "43",
           "description": "11.2 Убрать password word whitelist, проверить указанные leak/false-positive cases по syntax/value-like признакам.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 77
         },
         {
           "id": "44",
           "description": "11.3 Зафиксировать явно согласованный revision lifecycle в OpenSpec без утверждения о прежнем согласовании удаления marker задним числом.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 78
         },
         {
           "id": "45",
           "description": "11.4 Применить штатную ProcessIncomingMessage retry-policy в evaluation, разделить model result/infrastructure reason, повторить 25 cases; полный PostgreSQL suite, smoke, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 79
         },
         {
           "id": "46",
           "description": "12.1 Заменить analysis parts и второй LLM verifier одним structured decision с answer/evidence; deterministic PHP validation, trusted московская дата, сохранение пользовательского answer; удалить verifier prompt и ненужные production dependencies.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 88
         },
         {
           "id": "47",
           "description": "12.2 Ограничить provider attempts тремя на сообщение: один HTTP request на queue attempt, retries только transient errors; invalid result сразу использует существующую safe escalation; ticket lifecycle, operator dashboard и delivery semantics не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 89
         },
         {
           "id": "48",
           "description": "12.3 Обновить OpenSpec, README и regression tests для single-call contract, evidence validation, safe fallback и HTTP request counts; выполнить узкие Pest tests, Pint и OpenSpec validation без реальных LLM-запросов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 90
         },
         {
           "id": "49",
           "description": "13.1 Заменить waiting_for_user на open/resolved/closed, обновить schema/factories/indexes, удалить input revisions; старые waiting tickets открыть консервативно, историю сохранить.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 95
         },
         {
           "id": "50",
           "description": "13.2 Разрешить неограниченные operator replies в open/resolved; добавить «Отправить и решить» с resolve только после successful delivery, отменять pending intent и старый auto-close при продолжении переписки; feedback оставить сигналом, closed terminal. AI pipeline не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 96
         },
         {
           "id": "51",
           "description": "13.3 Актуализировать regression tests и README; проверить delivery failures/retries, pending/new messages, stale timers, concurrent workers, migration, UI validation/auth и существующий AI contract; выполнить узкие PostgreSQL tests, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 97
         },
         {
           "id": "52",
           "description": "14.1 Ограничить ленту operator dashboard выбранным ticket_id; исключить другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, pagination и delivery action isolation. Lifecycle не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 103
         },
         {
           "id": "53",
           "description": "14.2 Отдельно проверить timestamps: выводить created_at/closed_at/messages.created_at в Europe/Moscow с пометкой «МСК», сохранить UTC в данных и таймерах; проверить переход суток и отсутствие мутаций при refresh.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 104
         }
       ],
@@ -1587,7 +1587,7 @@ Acceptance: после этого нам больше не должны встр
         "If implementation reveals a specification problem, update the OpenSpec artifacts explicitly before proceeding."
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -11677,13 +11677,13 @@ Acceptance: после этого нам больше не должны встр
 ## Activity
 
     $ php artisan test --compact tests/Feature/Services/TicketLifecycleServiceTest.php
-    {"tool":"pest","result":"failed","tests":12,"passed":0,"assertions":0,"duration_ms":236,"errors":12,"error_details":[{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_creates_one_active_ticket_and_returns_it_for_the_participant","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:13"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_rejects_a_second_active_ticket","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:24"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_marks_an_open_ticket_resolved_and_reopens_it_without_closing","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:32"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closes_an_open_or_waiting_ticket_manually with data set \"dataset \"open ticket\"\"","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:48"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closes_an_open_or_waiting_ticket_manually with data set \"dataset \"waiting ticket\"\"","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:49"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_resolving_an_open_ticket_does_not_close_it","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:63"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_rejects_automatic_closure_of_an_open_ticket","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:73"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_is_terminal_and_repeated_closing_is_rejected with data set \"dataset \"manual close\"\"","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:80"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_is_terminal_and_repeated_closing_is_rejected with data set \"dataset \"resolve\"\"","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:80"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_is_terminal_and_repeated_closing_is_rejected with data set \"dataset \"reopen\"\"","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:80"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_is_terminal_and_repeated_closing_is_rejected with data set \"dataset \"automatic close\"\"","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:80"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_tickets_are_not_returned_as_active","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:92"]}]}
+    {"tool":"pest","result":"failed","tests":12,"passed":0,"assertions":0,"duration_ms":236,"errors":12,"error_details":[{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_creates_one_active_ticket_and_returns_it_for_the_participant","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:13"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_rejects_a_second_active_ticket","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:24"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_marks_an_open_ticket_resolved_and_reopens_it_without_closing","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:32"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closes_an_open_or_waiting_ticket_manually with data set \"dataset \"open ticket\"\"","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:48"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closes_an_open_or_waiting_ticket_manually with data set \"dataset \"waiting ticket\"\"","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:49"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_resolving_an_open_ticket_does_not_close_it","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:63"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_rejects_automatic_closure_of_an_open_ticket","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:73"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_is_terminal_and_repeated_closing_is_rejected with data set \"dataset \"manual close\"\"","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:80"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_is_terminal_and_repeated_closing_is_rejected with data set \"dataset \"resolve\"\"","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:80"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_is_terminal_and_repeated_closing_is_rejected with data set \"dataset \"reopen\"\"","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:80"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_is_terminal_and_repeated_closing_is_rejected with data set \"dataset \"automatic close\"\"","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:80"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_tickets_are_not_returned_as_active","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Operation not permitted\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:92"]}]}
     ✗ (2) • 382ms
 
 ## Activity
 
     $ php artisan test --compact tests/Feature/Services/TicketLifecycleServiceTest.php
-    {"tool":"pest","result":"failed","tests":12,"passed":0,"assertions":0,"duration_ms":252,"errors":12,"error_details":[{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_creates_one_active_ticket_and_returns_it_for_the_participant","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:13"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_rejects_a_second_active_ticket","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:24"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_marks_an_open_ticket_resolved_and_reopens_it_without_closing","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:32"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closes_an_open_or_waiting_ticket_manually with data set \"dataset \"open ticket\"\"","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:48"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closes_an_open_or_waiting_ticket_manually with data set \"dataset \"waiting ticket\"\"","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:49"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_resolving_an_open_ticket_does_not_close_it","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:63"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_rejects_automatic_closure_of_an_open_ticket","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:73"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_is_terminal_and_repeated_closing_is_rejected with data set \"dataset \"manual close\"\"","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:80"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_is_terminal_and_repeated_closing_is_rejected with data set \"dataset \"resolve\"\"","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:80"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_is_terminal_and_repeated_closing_is_rejected with data set \"dataset \"reopen\"\"","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:80"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_is_terminal_and_repeated_closing_is_rejected with data set \"dataset \"automatic close\"\"","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:80"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_tickets_are_not_returned_as_active","file":"/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/Users/artem/Desktop/tg-promo/tg-promo/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TicketLifecycleServiceTest.php:92"]}]}
+    {"tool":"pest","result":"failed","tests":12,"passed":0,"assertions":0,"duration_ms":252,"errors":12,"error_details":[{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_creates_one_active_ticket_and_returns_it_for_the_participant","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:13"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_rejects_a_second_active_ticket","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:24"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_marks_an_open_ticket_resolved_and_reopens_it_without_closing","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:32"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closes_an_open_or_waiting_ticket_manually with data set \"dataset \"open ticket\"\"","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:48"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closes_an_open_or_waiting_ticket_manually with data set \"dataset \"waiting ticket\"\"","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:49"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_resolving_an_open_ticket_does_not_close_it","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:63"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_rejects_automatic_closure_of_an_open_ticket","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:73"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_is_terminal_and_repeated_closing_is_rejected with data set \"dataset \"manual close\"\"","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:80"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_is_terminal_and_repeated_closing_is_rejected with data set \"dataset \"resolve\"\"","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:80"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_is_terminal_and_repeated_closing_is_rejected with data set \"dataset \"reopen\"\"","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:80"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_is_terminal_and_repeated_closing_is_rejected with data set \"dataset \"automatic close\"\"","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:80"]},{"test":"P\\Tests\\Feature\\Services\\TicketLifecycleServiceTest::__pest_evaluable_closed_tickets_are_not_returned_as_active","file":"/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php","line":67,"message":"SQLSTATE[08006] [7] connection to server at \"127.0.0.1\", port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections? (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: tg_promo_test, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))","trace":["/path/to/project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:67","/path/to/project/tests/Feature/Services/TicketLifecycleServiceTest.php:92"]}]}
     ✗ (2) • 379ms
 
 ## Activity
@@ -11995,7 +11995,7 @@ Acceptance: после этого нам больше не должны встр
 ## Activity
 
     $ docker compose -f compose.testing.yaml ps && cat compose.testing.yaml
-    permission denied while trying to connect to the docker API at unix:///Users/artem/.docker/run/docker.sock
+    permission denied while trying to connect to the docker API at unix:///path/to/home/.docker/run/docker.sock
     ✗ (1) • 185ms
 
 ## Assistant
@@ -12397,7 +12397,7 @@ Acceptance: после этого нам больше не должны встр
 ## Activity
 
     file changes: Completed · 7 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Jobs/AutoCloseTicket.php
+    Update { move_path: None }: /path/to/project/app/Jobs/AutoCloseTicket.php
     @@ -4,5 +4,2 @@
      
     -use App\Enums\DeliveryStatus;
@@ -12430,7 +12430,7 @@ Acceptance: после этого нам больше не должны встр
     +                || $ticket->resolved_since?->toISOString() !== $this->resolvedSince
     +                || $ticket->resolved_since->copy()->addHours((int) config('support.ticket_auto_close_hours'))->isFuture()) {
                      return;
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Jobs/DeliverTelegramMessage.php
+    Update { move_path: None }: /path/to/project/app/Jobs/DeliverTelegramMessage.php
     @@ -13,5 +13,3 @@
      use App\Services\TelegramMessagePresentation;
     -use App\Services\TicketLifecycleService;
@@ -12492,7 +12492,7 @@ Acceptance: после этого нам больше не должны встр
     -                AutoCloseTicket::dispatch($resolvedTicket->id, $resolvedTicket->resolved_since->toISOString(), $lockedMessage->id)
     -                    ->delay($resolvedTicket->resolved_since->copy()->addHours((int) config('support.ticket_auto_close_hours')));
                  }
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Models/Message.php
+    Update { move_path: None }: /path/to/project/app/Models/Message.php
     @@ -14,3 +14,3 @@
      
     -#[Fillable(['participant_id', 'ticket_id', 'telegram_update_id', 'operator_id', 'direction', 'author', 'body', 'delivery_status', 'telegram_message_id', 'delivered_at', 'delivery_attempts', 'last_delivery_error', 'sensitive_data_redacted', 'redaction_types', 'resolves_ticket'])]
@@ -12502,13 +12502,13 @@ Acceptance: после этого нам больше не должны встр
              return [
     -            'resolves_ticket' => 'boolean',
                  'direction' => MessageDirection::class,
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Models/Ticket.php
+    Update { move_path: None }: /path/to/project/app/Models/Ticket.php
     @@ -20,2 +20,4 @@
      
     +    protected $dateFormat = 'Y-m-d H:i:s.u';
     +
          public function participant(): BelongsTo
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Services/TelegramIngestionService.php
+    Update { move_path: None }: /path/to/project/app/Services/TelegramIngestionService.php
     @@ -87,6 +87,2 @@
      
     -        if ($activeTicket === null && in_array(trim($update->text), [TicketLifecycleService::ResolvedResponse, TicketLifecycleService::UnresolvedResponse], true)) {
@@ -12516,7 +12516,7 @@ Acceptance: после этого нам больше не должны встр
     -        }
     -
              if ($activeTicket === null && ! $this->isStartCommand($update->text) && ! $this->allowAiRequest($participant)) {
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Services/TelegramMessagePresentation.php
+    Update { move_path: None }: /path/to/project/app/Services/TelegramMessagePresentation.php
     @@ -28,3 +28,2 @@
                  $text,
     -            $this->replyMarkup($message),
@@ -12541,7 +12541,7 @@ Acceptance: после этого нам больше не должны встр
     -            'one_time_keyboard' => true,
     -        ];
          }
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Services/TicketLifecycleService.php
+    Update { move_path: None }: /path/to/project/app/Services/TicketLifecycleService.php
     @@ -9,2 +9,3 @@
      use App\Enums\TicketStatus;
     +use App\Jobs\AutoCloseTicket;
@@ -12577,7 +12577,7 @@ Acceptance: после этого нам больше не должны встр
 ## Activity
 
     file changes: Completed · 4 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Livewire/OperatorDashboard.php
+    Update { move_path: None }: /path/to/project/app/Livewire/OperatorDashboard.php
     @@ -9,3 +9,2 @@
      use App\Enums\TicketStatus;
     -use App\Jobs\DeliverTelegramMessage;
@@ -12664,7 +12664,7 @@ Acceptance: после этого нам больше не должны встр
                  'messages' => $messages,
     +            'hasUnfinishedReply' => $hasUnfinishedReply,
                  'statistics' => $this->statistics(),
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Services/OperatorReplyService.php
+    Update { move_path: None }: /path/to/project/app/Services/OperatorReplyService.php
     @@ -37,8 +37,7 @@
      
     -                    if ($lockedTicket->status === TicketStatus::Closed
@@ -12732,7 +12732,7 @@ Acceptance: после этого нам больше не должны встр
                      'delivery_status' => DeliveryStatus::Pending,
     -                'resolves_ticket' => $resolveTicket,
                      'sensitive_data_redacted' => $sanitized->wasRedacted,
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/database/migrations/2026_10_03_200139_decouple_ticket_resolution_from_replies.php
+    Update { move_path: None }: /path/to/project/database/migrations/2026_10_03_200139_decouple_ticket_resolution_from_replies.php
     @@ -4,2 +4,3 @@
      use Illuminate\Database\Schema\Blueprint;
     +use Illuminate\Support\Facades\DB;
@@ -12759,7 +12759,7 @@ Acceptance: после этого нам больше не должны встр
     +        Schema::table('tickets', function (Blueprint $table) {
     +            $table->timestamp('resolved_since')->nullable()->change();
              });
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/resources/views/livewire/operator-dashboard.blade.php
+    Update { move_path: None }: /path/to/project/resources/views/livewire/operator-dashboard.blade.php
     @@ -91,2 +91,5 @@
                              @if ($selectedTicket->status !== \App\Enums\TicketStatus::Closed)
     +                            @if ($selectedTicket->status === \App\Enums\TicketStatus::Open)
@@ -13984,7 +13984,7 @@ Acceptance: после этого нам больше не должны встр
 
 ## Activity
 
-    $ docker compose -f compose.testing.yaml run --rm -v /Users/artem/Desktop/tg-promo/tg-promo:/app tests php artisan test --compact tests/Feature/Services/TicketLifecycleServiceTest.php tests/Feature/Services/TelegramMessagePresentationTest.php tests/Feature/OperatorReplyDeliveryTest.php tests/Feature/Jobs/DeliverTelegramMessageTest.php tests/Feature/AutoCloseTicketTest.php tests/Feature/TicketParticipantLifecycleTest.php tests/Feature/AtomicQueueDispatchTest.php tests/Feature/TicketLifecycleMigrationTest.php tests/Feature/SupportSmokeTest.php tests/Feature/OperatorDashboardTest.php tests/Feature/Telegram/TelegramWebhookTest.php tests/Feature/Jobs/ProcessIncomingMessageTest.php tests/Unit/Enums/SupportEnumsTest.php
+    $ docker compose -f compose.testing.yaml run --rm -v /path/to/project:/app tests php artisan test --compact tests/Feature/Services/TicketLifecycleServiceTest.php tests/Feature/Services/TelegramMessagePresentationTest.php tests/Feature/OperatorReplyDeliveryTest.php tests/Feature/Jobs/DeliverTelegramMessageTest.php tests/Feature/AutoCloseTicketTest.php tests/Feature/TicketParticipantLifecycleTest.php tests/Feature/AtomicQueueDispatchTest.php tests/Feature/TicketLifecycleMigrationTest.php tests/Feature/SupportSmokeTest.php tests/Feature/OperatorDashboardTest.php tests/Feature/Telegram/TelegramWebhookTest.php tests/Feature/Jobs/ProcessIncomingMessageTest.php tests/Unit/Enums/SupportEnumsTest.php
      Container tg-promo-tests-postgres-1 Running
      Container tg-promo-tests-postgres-1 Waiting
      Container tg-promo-tests-postgres-1 Healthy
@@ -14410,7 +14410,7 @@ Acceptance: после этого нам больше не должны встр
 ## Activity
 
     file changes: Completed · 3 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Data/TelegramOutboundMessage.php
+    Update { move_path: None }: /path/to/project/app/Data/TelegramOutboundMessage.php
     @@ -8,5 +8,2 @@
      
     -    /**
@@ -14421,7 +14421,7 @@ Acceptance: после этого нам больше не должны встр
              public string $text,
     -        public ?array $replyMarkup = null,
          ) {}
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Models/Ticket.php
+    Update { move_path: None }: /path/to/project/app/Models/Ticket.php
     @@ -9,2 +9,3 @@
      use Illuminate\Database\Eloquent\Attributes\Fillable;
     +use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -14441,7 +14441,7 @@ Acceptance: после этого нам больше не должны встр
     +    }
     +
          /**
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Services/TelegramBotApiClient.php
+    Update { move_path: None }: /path/to/project/app/Services/TelegramBotApiClient.php
     @@ -18,7 +18,6 @@
      
     -        $response = $this->request('sendMessage', array_filter([
@@ -14479,7 +14479,7 @@ Acceptance: после этого нам больше не должны встр
 
 ## Activity
 
-    $ docker compose -f compose.testing.yaml run --rm -v /Users/artem/Desktop/tg-promo/tg-promo:/app tests php artisan test --compact --no-ansi tests/Feature/Services/TicketLifecycleServiceTest.php tests/Feature/Services/TelegramMessagePresentationTest.php tests/Feature/Services/TelegramBotApiClientTest.php tests/Feature/OperatorReplyDeliveryTest.php tests/Feature/Jobs/DeliverTelegramMessageTest.php tests/Feature/AutoCloseTicketTest.php tests/Feature/TicketParticipantLifecycleTest.php tests/Feature/AtomicQueueDispatchTest.php tests/Feature/TicketLifecycleMigrationTest.php tests/Feature/SupportSmokeTest.php tests/Feature/OperatorDashboardTest.php tests/Feature/Telegram/TelegramWebhookTest.php tests/Feature/Jobs/ProcessIncomingMessageTest.php tests/Unit/Enums/SupportEnumsTest.php
+    $ docker compose -f compose.testing.yaml run --rm -v /path/to/project:/app tests php artisan test --compact --no-ansi tests/Feature/Services/TicketLifecycleServiceTest.php tests/Feature/Services/TelegramMessagePresentationTest.php tests/Feature/Services/TelegramBotApiClientTest.php tests/Feature/OperatorReplyDeliveryTest.php tests/Feature/Jobs/DeliverTelegramMessageTest.php tests/Feature/AutoCloseTicketTest.php tests/Feature/TicketParticipantLifecycleTest.php tests/Feature/AtomicQueueDispatchTest.php tests/Feature/TicketLifecycleMigrationTest.php tests/Feature/SupportSmokeTest.php tests/Feature/OperatorDashboardTest.php tests/Feature/Telegram/TelegramWebhookTest.php tests/Feature/Jobs/ProcessIncomingMessageTest.php tests/Unit/Enums/SupportEnumsTest.php
      Container tg-promo-tests-postgres-1 Running
      Container tg-promo-tests-postgres-1 Waiting
      Container tg-promo-tests-postgres-1 Healthy
@@ -14503,7 +14503,7 @@ Acceptance: после этого нам больше не должны встр
     app/Services/TicketLifecycleService.php:142:                AutoCloseTicket::dispatch($lockedTicket->id, $lockedTicket->resolved_since->toISOString())
     app/Livewire/OperatorDashboard.php:104:            $ticketLifecycle->resolve($ticket);
     {"state": "ready", "progress": {"total": 56, "complete": 53, "remaining": 3}}
-    [{"id": "54", "description": "15.1 Отделить «Отметить решённым» от отправки и delivery; атомарно создавать таймер только для resolved, удалить resolves_ticket и feedback keyboard.", "done": false, "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md", "line": 108}, {"id": "55", "description": "15.2 Блокировать следующий operator reply при pending/failed; explicit retry/cancel, доставка после close и подавление stale escalation, closed terminal.", "done": false, "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md", "line": 109}, {"id": "56", "description": "15.3 Проверить lifecycle, rollback, stale timers, queue concurrency и AI contract; Pint, frontend build и strict OpenSpec validation.", "done": false, "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md", "line": 110}]
+    [{"id": "54", "description": "15.1 Отделить «Отметить решённым» от отправки и delivery; атомарно создавать таймер только для resolved, удалить resolves_ticket и feedback keyboard.", "done": false, "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md", "line": 108}, {"id": "55", "description": "15.2 Блокировать следующий operator reply при pending/failed; explicit retry/cancel, доставка после close и подавление stale escalation, closed terminal.", "done": false, "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md", "line": 109}, {"id": "56", "description": "15.3 Проверить lifecycle, rollback, stale timers, queue concurrency и AI contract; Pint, frontend build и strict OpenSpec validation.", "done": false, "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md", "line": 110}]
     ✓ • 245ms
 
 ## Activity
@@ -14545,7 +14545,7 @@ Acceptance: после этого нам больше не должны встр
 
 ## Activity
 
-    $ docker compose -f compose.testing.yaml run --rm -v /Users/artem/Desktop/tg-promo/tg-promo:/app tests php artisan test --compact --no-ansi tests/Feature/AtomicQueueDispatchTest.php tests/Feature/ConcurrentTelegramDeliveryTest.php
+    $ docker compose -f compose.testing.yaml run --rm -v /path/to/project:/app tests php artisan test --compact --no-ansi tests/Feature/AtomicQueueDispatchTest.php tests/Feature/ConcurrentTelegramDeliveryTest.php
      Container tg-promo-tests-postgres-1 Running
      Container tg-promo-tests-postgres-1 Waiting
      Container tg-promo-tests-postgres-1 Healthy
@@ -15093,7 +15093,7 @@ Acceptance: после этого нам больше не должны встр
 
 ## Activity
 
-    $ docker compose -f compose.testing.yaml run --rm -v /Users/artem/Desktop/tg-promo/tg-promo:/app tests php artisan test --compact --no-ansi
+    $ docker compose -f compose.testing.yaml run --rm -v /path/to/project:/app tests php artisan test --compact --no-ansi
      Container tg-promo-tests-postgres-1 Running
      Container tg-promo-tests-postgres-1 Waiting
      Container tg-promo-tests-postgres-1 Healthy
@@ -15439,7 +15439,7 @@ Acceptance: после этого нам больше не должны встр
 
 ## Activity
 
-    $ docker compose -f compose.testing.yaml run --rm -v /Users/artem/Desktop/tg-promo/tg-promo:/app tests php artisan test --compact --no-ansi tests/Feature/OperatorDeliveryCancellationTest.php
+    $ docker compose -f compose.testing.yaml run --rm -v /path/to/project:/app tests php artisan test --compact --no-ansi tests/Feature/OperatorDeliveryCancellationTest.php
      Container tg-promo-tests-postgres-1 Running
      Container tg-promo-tests-postgres-1 Waiting
      Container tg-promo-tests-postgres-1 Healthy
@@ -15518,7 +15518,7 @@ Acceptance: после этого нам больше не должны встр
 
 ## Activity
 
-    $ docker compose -f compose.testing.yaml run --rm -v /Users/artem/Desktop/tg-promo/tg-promo:/app tests php artisan test --compact --no-ansi
+    $ docker compose -f compose.testing.yaml run --rm -v /path/to/project:/app tests php artisan test --compact --no-ansi
      Container tg-promo-tests-postgres-1 Running
      Container tg-promo-tests-postgres-1 Waiting
      Container tg-promo-tests-postgres-1 Healthy
@@ -17613,7 +17613,7 @@ Regression tests:
         }
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -17622,40 +17622,40 @@ Regression tests:
       "schemaName": "spec-driven",
       "planningHome": {
         "kind": "repo",
-        "root": "/Users/artem/Desktop/tg-promo/tg-promo",
-        "changesDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes",
+        "root": "/path/to/project",
+        "changesDir": "/path/to/project/openspec/changes",
         "defaultSchema": "spec-driven"
       },
-      "changeRoot": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeRoot": "/path/to/project/openspec/changes/mvp-promo-support",
       "artifactPaths": {
         "proposal": {
           "outputPath": "proposal.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/proposal.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
           ]
         },
         "specs": {
           "outputPath": "specs/**/*.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/**/*.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/specs/**/*.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
           ]
         },
         "design": {
           "outputPath": "design.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/design.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/design.md"
           ]
         },
         "tasks": {
           "outputPath": "tasks.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
           ]
         }
       },
@@ -17678,7 +17678,7 @@ Regression tests:
         ],
         "linkedContext": [],
         "allowedEditRoots": [
-          "/Users/artem/Desktop/tg-promo/tg-promo"
+          "/path/to/project"
         ],
         "requiresAffectedAreaSelection": false,
         "constraints": [
@@ -17719,7 +17719,7 @@ Regression tests:
         }
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -19484,7 +19484,7 @@ Regression tests:
 
 ## Activity
 
-    $ docker compose -f compose.testing.yaml run --rm -v /Users/artem/Desktop/tg-promo/tg-promo:/app tests php artisan boost:execute-tool 'Laravel\Boost\Mcp\Tools\DatabaseSchema' 'eyJmaWx0ZXIiOiJtZXNzYWdlcyJ9' --no-interaction
+    $ docker compose -f compose.testing.yaml run --rm -v /path/to/project:/app tests php artisan boost:execute-tool 'Laravel\Boost\Mcp\Tools\DatabaseSchema' 'eyJmaWx0ZXIiOiJtZXNzYWdlcyJ9' --no-interaction
      Container tg-promo-tests-postgres-1 Running
      Container tg-promo-tests-postgres-1 Waiting
      Container tg-promo-tests-postgres-1 Healthy
@@ -21166,7 +21166,7 @@ Regression tests:
 
 ## Activity
 
-    $ docker compose -f compose.testing.yaml run --rm -e APP_ENV=local -v /Users/artem/Desktop/tg-promo/tg-promo:/app tests php artisan boost:execute-tool 'Laravel\Boost\Mcp\Tools\DatabaseSchema' 'eyJmaWx0ZXIiOiJtZXNzYWdlcyJ9' --no-interaction
+    $ docker compose -f compose.testing.yaml run --rm -e APP_ENV=local -v /path/to/project:/app tests php artisan boost:execute-tool 'Laravel\Boost\Mcp\Tools\DatabaseSchema' 'eyJmaWx0ZXIiOiJtZXNzYWdlcyJ9' --no-interaction
      Container tg-promo-tests-postgres-1 Running
      Container tg-promo-tests-postgres-1 Waiting
      Container tg-promo-tests-postgres-1 Healthy
@@ -21347,7 +21347,7 @@ Regression tests:
 ## Activity
 
     file changes: Completed · 6 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Jobs/DeliverTelegramMessage.php
+    Update { move_path: None }: /path/to/project/app/Jobs/DeliverTelegramMessage.php
     @@ -95,3 +95,5 @@
      
     -            if ($lockedMessage->ticket?->status === TicketStatus::Closed && $lockedMessage->author !== MessageAuthor::Operator) {
@@ -21355,7 +21355,7 @@ Regression tests:
     +                || ($lockedMessage->ticket?->status === TicketStatus::Closed
     +                    && $lockedMessage->author !== MessageAuthor::Operator && ! $lockedMessage->isTicketClosureNotice())) {
                      $lockedMessage->update(['delivery_status' => DeliveryStatus::Cancelled]);
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Models/Message.php
+    Update { move_path: None }: /path/to/project/app/Models/Message.php
     @@ -14,3 +14,3 @@
      
     -#[Fillable(['participant_id', 'ticket_id', 'telegram_update_id', 'operator_id', 'direction', 'author', 'body', 'delivery_status', 'telegram_message_id', 'delivered_at', 'delivery_attempts', 'last_delivery_error', 'sensitive_data_redacted', 'redaction_types'])]
@@ -21382,7 +21382,7 @@ Regression tests:
     +    }
     +
          public function isInboundParticipantMessage(): bool
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Models/Ticket.php
+    Update { move_path: None }: /path/to/project/app/Models/Ticket.php
     @@ -9,2 +9,3 @@
      use Illuminate\Database\Eloquent\Attributes\Fillable;
     +use Illuminate\Database\Eloquent\Builder;
@@ -21407,7 +21407,7 @@ Regression tests:
                  'close_reason' => TicketCloseReason::class,
     +            'context_message_ids' => 'array',
                  'first_operator_replied_at' => 'datetime',
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Services/SupportDecisionService.php
+    Update { move_path: None }: /path/to/project/app/Services/SupportDecisionService.php
     @@ -53,3 +53,3 @@
                  $ticket = match ($decision->type) {
     -                SupportDecisionType::Escalate, SupportDecisionType::Mixed => $this->tickets->create($participant, $decision->reason),
@@ -21417,7 +21417,7 @@ Regression tests:
                  'ticket_id' => $ticket?->id,
     +            'source_message_id' => $message->id,
                  'direction' => MessageDirection::Outbound,
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Services/TicketLifecycleService.php
+    Update { move_path: None }: /path/to/project/app/Services/TicketLifecycleService.php
     @@ -10,2 +10,3 @@
      use App\Jobs\AutoCloseTicket;
     +use App\Jobs\DeliverTelegramMessage;
@@ -21498,7 +21498,7 @@ Regression tests:
     +        return $ids;
     +    }
      }
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/database/migrations/2026_10_03_202601_add_ticket_context_and_message_events.php
+    Update { move_path: None }: /path/to/project/database/migrations/2026_10_03_202601_add_ticket_context_and_message_events.php
     @@ -13,3 +13,10 @@
          {
     -        //
@@ -21527,7 +21527,7 @@ Regression tests:
 ## Activity
 
     file changes: Completed · 2 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Livewire/OperatorDashboard.php
+    Update { move_path: None }: /path/to/project/app/Livewire/OperatorDashboard.php
     @@ -42,2 +42,3 @@
              $this->resetPage('messagesCursor');
     +        $this->resetPage('contextCursor');
@@ -21547,7 +21547,7 @@ Regression tests:
                  'messages' => $messages,
     +            'contextMessages' => $contextMessages,
                  'hasUnfinishedReply' => $hasUnfinishedReply,
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/resources/views/livewire/operator-dashboard.blade.php
+    Update { move_path: None }: /path/to/project/resources/views/livewire/operator-dashboard.blade.php
     @@ -77,2 +77,25 @@
                  @if ($selectedTicket !== null)
     +                @if ($contextMessages->isNotEmpty())
@@ -22238,7 +22238,7 @@ Regression tests:
 ## Activity
 
     file changes: Completed · 1 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/TicketContextTest.php
+    Update { move_path: None }: /path/to/project/tests/Feature/TicketContextTest.php
     @@ -2,6 +2,292 @@
      
     -test('example', function () {
@@ -22538,7 +22538,7 @@ Regression tests:
 
 ## Activity
 
-    $ docker compose -f compose.testing.yaml run --rm -v /Users/artem/Desktop/tg-promo/tg-promo:/app tests php artisan test --compact --no-ansi tests/Feature/TicketContextTest.php
+    $ docker compose -f compose.testing.yaml run --rm -v /path/to/project:/app tests php artisan test --compact --no-ansi tests/Feature/TicketContextTest.php
      Container tg-promo-tests-postgres-1 Running
      Container tg-promo-tests-postgres-1 Waiting
      Container tg-promo-tests-postgres-1 Healthy
@@ -22577,22 +22577,22 @@ Regression tests:
     $ openspec instructions apply --change mvp-promo-support --json
     {
       "changeName": "mvp-promo-support",
-      "changeDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeDir": "/path/to/project/openspec/changes/mvp-promo-support",
       "schemaName": "spec-driven",
       "contextFiles": {
         "proposal": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
         ],
         "specs": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
         ],
         "design": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/design.md"
         ],
         "tasks": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
         ]
       },
       "progress": {
@@ -22605,392 +22605,392 @@ Regression tests:
           "id": "1",
           "description": "1.1 Добавить Docker Compose services для Laravel app, PostgreSQL и database queue worker, настроить health/dependency order и проверить, что `docker compose config` проходит, а `docker compose up` запускает весь MVP одной командой.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 5
         },
         {
           "id": "2",
           "description": "1.2 Перевести application и queue connections на PostgreSQL/database driver, добавить jobs/failed-jobs storage и проверить миграции внутри Docker без Redis или другого broker.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 6
         },
         {
           "id": "3",
           "description": "1.3 Добавить Livewire в рамках заданного frontend stack и проверить, что базовая Blade/Livewire/Tailwind 4/Vite страница собирается командой `npm run build`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 7
         },
         {
           "id": "4",
           "description": "1.4 Добавить environment-backed настройки Telegram, LLM, retry/timeout и `TICKET_AUTO_CLOSE_HOURS=24`, обновить безопасный `.env.example` и проверить, что populated secrets отсутствуют в tracked files.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 8
         },
         {
           "id": "5",
           "description": "2.1 Создать enums для ticket status, close reason, message author/direction, delivery status и decision type; проверить Pest unit tests на допустимые значения и переходы lifecycle.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 12
         },
         {
           "id": "6",
           "description": "2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с безопасной `redaction_types` metadata, внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests и отсутствие поля для raw message body.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 13
         },
         {
           "id": "7",
           "description": "2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `resolved` и `closed`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 14
         },
         {
           "id": "8",
           "description": "2.4 Реализовать sanitizer до persistence для card-like sequences, контекстных SMS/OTP-кодов и явно обозначенных паролей; проверить unit dataset для evaluation case №22, OTP/password context, обычных дат/сумм/количеств без ложного маскирования и сохранения телефонного номера.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 15
         },
         {
           "id": "9",
           "description": "3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых private text message полей с успешным игнорированием legacy callback updates; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 19
         },
         {
           "id": "10",
           "description": "3.2 Обработать `/start` отдельным safety message о картах, паролях и SMS-кодах без жёсткой фиксации точной формулировки; проверить acceptance test всех четырёх смысловых пунктов предупреждения.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 20
         },
         {
           "id": "11",
           "description": "3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, атомарно записывать database jobs через `beforeCommit()` в той же PostgreSQL transaction, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 21
         },
         {
           "id": "12",
           "description": "3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 22
         },
         {
           "id": "13",
           "description": "3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 23
         },
         {
           "id": "14",
           "description": "3.6 Для participant с open/resolved прикреплять redacted сообщение к тому же ticket без AI-routing; любое сообщение в resolved возвращает open; после closed новый вопрос классифицируется заново.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 24
         },
         {
           "id": "15",
           "description": "4.1 Создать LLM contract, typed decision DTO и validator для `answer`, `escalate`, `mixed`, `refuse`; проверить unit tests для валидных, неполных, неизвестных и противоречивых structured outputs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 28
         },
         {
           "id": "16",
           "description": "4.2 Добавить отдельные versioned prompt files и loader единственного factual source `docs/assignment/promo-rules.md`; проверить, что decision сохраняет source hash, но не полный runtime system prompt.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 29
         },
         {
           "id": "17",
           "description": "4.3 Реализовать один provider adapter через Laravel HTTP client с explicit connect/response timeout и безопасным error mapping; проверить exact endpoint fakes, `Http::preventStrayRequests()`, timeout, 429, 5xx и получение только redacted participant text без реальной сети.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 30
         },
         {
           "id": "18",
           "description": "4.4 Реализовать `ProcessIncomingMessage` с queue attempts/backoff и early exit при существующем decision; проверить временный сбой с успешным retry и повтор job после сохранённого decision без второго LLM-вызова.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 31
         },
         {
           "id": "19",
           "description": "4.5 Применять валидный decision в короткой транзакции: grounded answer без ticket, unknown/participant-specific/off-topic escalation, mixed answer плюс один ticket и adversarial safe refusal; проверить acceptance cases для каждого варианта, включая requests №7, №12, №16, №23, №24 и №25.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 32
         },
         {
           "id": "20",
           "description": "4.6 Реализовать идемпотентный fallback после исчерпания retry с decision/ticket reason `llm_failure`; проверить timeout, invalid output и exhausted retries без потери message, второго ticket, второго ответа или двойного учёта.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 33
         },
         {
           "id": "21",
           "description": "5.1 Создать Telegram adapter для text messages с explicit timeout/error mapping без feedback keyboard и inline callbacks; проверить HTTP fakes и безопасное логирование.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 37
         },
         {
           "id": "22",
           "description": "5.2 Реализовать presentation номера ticket и короткой redacted quote без feedback actions; сохранить optional safety reminder и ограничение длины.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 38
         },
         {
           "id": "23",
           "description": "5.3 Реализовать `DeliverTelegramMessage` для переходов `pending -> sent|failed`, сохранения Telegram message ID и повторной отправки того же record; проверить success, permanent failure и retry уже `sent` сообщения как no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 39
         },
         {
           "id": "24",
           "description": "6.1 Реализовать session login для заранее созданного operator account без self-registration и ролей; проверить guest redirect, успешный login и отсутствие публичного registration endpoint.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 43
         },
         {
           "id": "25",
           "description": "6.2 Реализовать Livewire queue и conversation history с escaped redacted participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets, отсутствие raw HTML и отсутствие исходных card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 44
         },
         {
           "id": "26",
           "description": "6.3 Сохранять pending operator message и database delivery job атомарно; successful delivery фиксирует sent и первый response timestamp, не решает ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 45
         },
         {
           "id": "27",
           "description": "6.4 Показывать failed delivery с явными retry/cancel; unfinished operator reply блокирует следующий, retry использует прежний record.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 46
         },
         {
           "id": "28",
           "description": "7.1 Игнорировать legacy inline callbacks без side effects; ordinary participant messages применимы только к собственному active ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 50
         },
         {
           "id": "29",
           "description": "7.2 Любое новое participant message возвращает resolved в open без LLM; отдельные feedback тексты и keyboard отсутствуют.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 51
         },
         {
           "id": "30",
           "description": "7.3 Реализовать delayed AutoCloseTicket только для resolved с configurable 24-hour delay и status/resolved_since/deadline recheck; stale jobs — no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 52
         },
         {
           "id": "31",
           "description": "7.4 Ручное закрытие open/resolved с operator_closed не отменяет operator replies; отмена сообщения отдельная, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 53
         },
         {
           "id": "32",
           "description": "8.1 Реализовать изолированный statistics query/service по provisional definitions для `bot resolved`, `escalated` и average first operator response time; проверить фиксированным dataset, что mixed исключён, follow-ups не увеличивают escalated, а unanswered tickets не входят в average.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 57
         },
         {
           "id": "33",
           "description": "8.2 Добавить статистику в Livewire operator panel и проверить component test, что повторный просмотр возвращает те же значения без LLM/Telegram вызовов и изменения persisted state.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 58
         },
         {
           "id": "34",
           "description": "9.1 Создать повторяемый evaluation runner для всех 25 сообщений из `docs/assignment/requests.md` через тот же application boundary и проверить, что отчёт содержит вопрос, ответ, признак эскалации, оценку и комментарий для всех 25 строк.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 62
         },
         {
           "id": "35",
           "description": "9.2 Зафиксировать результаты evaluation, спорные mixed/off-topic cases и изменения prompt в требуемой таблице; проверить наличие строк 1–25, redaction case №22 и отсутствие raw card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 63
         },
         {
           "id": "36",
           "description": "9.3 Обновить README инструкцией запуска с нуля, assumptions, provisional definitions, известными ограничениями и production follow-ups; проверить команды README в чистом Docker Compose запуске.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 64
         },
         {
           "id": "37",
           "description": "9.4 Добавить схему PostgreSQL и краткое объяснение ключей, partial unique active-ticket constraint, transactions и delivery state; сверить диаграмму с фактическими migrations.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 65
         },
         {
           "id": "38",
           "description": "10.1 Запустить узкие Pest feature/unit suites каждого capability, затем полный `php artisan test --compact`, и устранить только дефекты поведения этого change.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 69
         },
         {
           "id": "39",
           "description": "10.2 Запустить `vendor/bin/pint --dirty --format agent`, `npm run build` и `openspec validate mvp-promo-support --strict`; проверить успешное завершение всех команд.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 70
         },
         {
           "id": "40",
           "description": "10.3 Выполнить Docker smoke flow: принять grounded question, создать escalation, ответить оператором, обработать resolved/unresolved и auto-close, затем сверить три метрики и delivery states.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 71
         },
         {
           "id": "41",
           "description": "10.4 Проверить repository secrets scan и итоговый diff: отсутствуют реальные Telegram/LLM keys, raw card/OTP/password values, sensitive message bodies в logging paths, незаявленная инфраструктура и функциональность вне specs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 72
         },
         {
           "id": "42",
           "description": "11.1 Проверить late AI attachment и delivery без lifecycle transitions; revision/snapshot механизм удалён.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 76
         },
         {
           "id": "43",
           "description": "11.2 Убрать password word whitelist, проверить указанные leak/false-positive cases по syntax/value-like признакам.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 77
         },
         {
           "id": "44",
           "description": "11.3 Зафиксировать фактический lifecycle без revision/generation/marker механизмов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 78
         },
         {
           "id": "45",
           "description": "11.4 Применить штатную ProcessIncomingMessage retry-policy в evaluation, разделить model result/infrastructure reason, повторить 25 cases; полный PostgreSQL suite, smoke, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 79
         },
         {
           "id": "46",
           "description": "12.1 Заменить analysis parts и второй LLM verifier одним structured decision с answer/evidence; deterministic PHP validation, trusted московская дата, сохранение пользовательского answer; удалить verifier prompt и ненужные production dependencies.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 88
         },
         {
           "id": "47",
           "description": "12.2 Ограничить provider attempts тремя на сообщение: один HTTP request на queue attempt, retries только transient errors; invalid result сразу использует существующую safe escalation; ticket lifecycle, operator dashboard и delivery semantics не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 89
         },
         {
           "id": "48",
           "description": "12.3 Обновить OpenSpec, README и regression tests для single-call contract, evidence validation, safe fallback и HTTP request counts; выполнить узкие Pest tests, Pint и OpenSpec validation без реальных LLM-запросов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 90
         },
         {
           "id": "49",
           "description": "13.1 Использовать open/resolved/closed, убрать legacy waiting runtime semantics, сохранить историю и индексы активных tickets.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 95
         },
         {
           "id": "50",
           "description": "13.2 Обычные последовательные operator replies не решают ticket; отдельное «Отметить решённым» запускает таймер; продолжение переписки возвращает open; closed terminal. AI pipeline не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 96
         },
         {
           "id": "51",
           "description": "13.3 Актуализировать regression tests и README; проверить delivery failures/retries, pending/new messages, stale timers, concurrent workers, migration, UI validation/auth и существующий AI contract; выполнить узкие PostgreSQL tests, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 97
         },
         {
           "id": "52",
           "description": "14.1 Ограничить ленту operator dashboard выбранным ticket_id; исключить другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, pagination и delivery action isolation. Lifecycle не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 103
         },
         {
           "id": "53",
           "description": "14.2 Отдельно проверить timestamps: выводить created_at/closed_at/messages.created_at в Europe/Moscow с пометкой «МСК», сохранить UTC в данных и таймерах; проверить переход суток и отсутствие мутаций при refresh.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 104
         },
         {
           "id": "54",
           "description": "15.1 Отделить «Отметить решённым» от отправки и delivery; атомарно создавать таймер только для resolved, удалить resolves_ticket и feedback keyboard.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 108
         },
         {
           "id": "55",
           "description": "15.2 Блокировать следующий operator reply при pending/failed; explicit retry/cancel, доставка после close и подавление stale escalation, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 109
         },
         {
           "id": "56",
           "description": "15.3 Проверить lifecycle, rollback, stale timers, queue concurrency и AI contract; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 110
         }
       ],
@@ -23007,7 +23007,7 @@ Regression tests:
         "If implementation reveals a specification problem, update the OpenSpec artifacts explicitly before proceeding."
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -23291,7 +23291,7 @@ Regression tests:
 ## Activity
 
     file changes: Completed · 1 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/TicketContextTest.php
+    Update { move_path: None }: /path/to/project/tests/Feature/TicketContextTest.php
     @@ -271,3 +271,3 @@
      {
     -    $result = app(TelegramIngestionService::class)->ingest(new TelegramUpdateData(
@@ -23311,7 +23311,7 @@ OpenSpec обновляю в change `mvp-promo-support`: добавлю отде
 
 ## Activity
 
-    $ docker compose -f compose.testing.yaml run --rm -v /Users/artem/Desktop/tg-promo/tg-promo:/app tests php artisan test --compact --no-ansi tests/Feature/TicketContextTest.php tests/Feature/OperatorDashboardTest.php tests/Feature/AutoCloseTicketTest.php tests/Feature/OperatorDeliveryCancellationTest.php tests/Feature/OperatorReplyDeliveryTest.php tests/Feature/Jobs/DeliverTelegramMessageTest.php tests/Feature/AtomicQueueDispatchTest.php tests/Feature/SupportSmokeTest.php tests/Feature/ConcurrentTelegramDeliveryTest.php tests/Feature/Services/TicketLifecycleServiceTest.php tests/Feature/Jobs/ProcessIncomingMessageTest.php
+    $ docker compose -f compose.testing.yaml run --rm -v /path/to/project:/app tests php artisan test --compact --no-ansi tests/Feature/TicketContextTest.php tests/Feature/OperatorDashboardTest.php tests/Feature/AutoCloseTicketTest.php tests/Feature/OperatorDeliveryCancellationTest.php tests/Feature/OperatorReplyDeliveryTest.php tests/Feature/Jobs/DeliverTelegramMessageTest.php tests/Feature/AtomicQueueDispatchTest.php tests/Feature/SupportSmokeTest.php tests/Feature/ConcurrentTelegramDeliveryTest.php tests/Feature/Services/TicketLifecycleServiceTest.php tests/Feature/Jobs/ProcessIncomingMessageTest.php
      Container tg-promo-tests-postgres-1 Running
      Container tg-promo-tests-postgres-1 Waiting
      Container tg-promo-tests-postgres-1 Healthy
@@ -23617,7 +23617,7 @@ OpenSpec обновляю в change `mvp-promo-support`: добавлю отде
 ## Activity
 
     file changes: Completed · 4 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/design.md
     @@ -105,2 +105,3 @@
        escalation_reason
     +  context_message_ids JSONB NULL (fixed membership, references sanitized messages)
@@ -23649,7 +23649,7 @@ OpenSpec обновляю в change `mvp-promo-support`: добавлю отде
     -6. **Manual/auto close:** lock ticket + status/timer checks + closed + cancellation только unfinished bot/system messages; commit.
     +6. **Manual/auto close:** lock ticket + status/timer checks + closed + cancellation только unfinished bot/system messages + explicit System closure notice and database delivery job; commit. Queue insert failure откатывает закрытие и cancellation.
      7. **Cancel/retry reply:** delivery lock + ticket/message locks + explicit message state/job; commit.
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/proposal.md
     @@ -69,3 +69,7 @@
      
     -Обычный operator reply оставляет open и не запускает auto-close. Отдельное действие «Отметить решённым» переводит open в resolved и атомарно создаёт delayed auto-close. Новое participant message или новый operator reply возвращает resolved в open. Pending и failed operator reply блокируют создание следующего до sent либо явной отмены; failed имеет действия «Повторить» и «Отменить». Закрытие не отменяет созданные operator replies: они доставляются и после closed. Устаревшие bot/system уведомления закрытого ticket отменяются. Closed terminal. Таймер проверяет status, resolved_since и срок; новые revision/generation/marker механизмы не вводятся.
@@ -23659,7 +23659,7 @@ OpenSpec обновляю в change `mvp-promo-support`: добавлю отде
     +
     +Основная лента сохраняет строгий ticket_id scope. Отдельный read-only блок показывает конкретные sanitized Message IDs, зафиксированные при создании ticket: весь диалог после закрытия предыдущего обращения до исходной просьбы эскалации включительно, для первого — с начала истории. Включаются participant text и доставленные ответы бота на вопросы внутри этой границы; старые сообщения не перепривязываются, late delivery не расширяет контекст. Панель показывает «Обращение №N создано»; manual/auto close атомарно создаёт системное уведомление с номером и способом закрытия для истории и Telegram. AI pipeline, lifecycle, operator delivery semantics, sanitizer и статистика сохраняются. Новые поля: tickets.context_message_ids, messages.source_message_id и messages.ticket_event; новых таблиц нет.
      
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md
     @@ -56,3 +56,3 @@
      ### Requirement: Очередь и история обращений
     -Аутентифицированный оператор MUST видеть очередь незакрытых обращений и хронологическую переписку выбранного обращения. Основная лента MUST содержать только Messages с ticket_id выбранного ticket и иметь cursor pagination по 50 сообщений. Сообщения предыдущих и последующих обращений того же participant MUST NOT попадать в неё; closed tickets MUST иметь независимые истории. Unticketed pre-escalation context временно MUST NOT отображаться. Чтение истории MUST NOT менять ticket_id сообщений, lifecycle или метрики. Действия ответа, retry и cancellation MUST оставаться привязаны к выбранному ticket. Self-registration, роли и управление операторами не требуются.
@@ -23724,7 +23724,7 @@ OpenSpec обновляю в change `mvp-promo-support`: добавлю отде
     -Оператор MUST иметь возможность вести многошаговую последовательную переписку в open/resolved. Pending или failed operator reply MUST блокировать создание следующего до sent либо явной cancellation. Обычная отправка и successful delivery MUST NOT решать обращение или создавать auto-close. Новый operator reply в resolved MUST вернуть его в open. Retry MUST использовать прежний record. Manual/auto close MUST NOT отменять operator replies; недоставленные bot/system сообщения закрытого обращения MUST отменяться.
     +Оператор MUST иметь возможность вести многошаговую последовательную переписку в open/resolved. Pending или failed operator reply MUST блокировать создание следующего до sent либо явной cancellation. Обычная отправка и successful delivery MUST NOT решать обращение или создавать auto-close. Новый operator reply в resolved MUST вернуть его в open. Retry MUST использовать прежний record. Manual/auto close MUST NOT отменять operator replies; недоставленные bot/system сообщения закрытого обращения, кроме нового явного уведомления о закрытии, MUST отменяться.
      
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/tasks.md
     @@ -110 +110,7 @@
      - [x] 15.3 Проверить lifecycle, rollback, stale timers, queue concurrency и AI contract; Pint, frontend build и strict OpenSpec validation.
     +
@@ -24093,13 +24093,13 @@ OpenSpec обновляю в change `mvp-promo-support`: добавлю отде
 ## Activity
 
     file changes: Completed · 6 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Livewire/OperatorDashboard.php
+    Update { move_path: None }: /path/to/project/app/Livewire/OperatorDashboard.php
     @@ -197,3 +197,3 @@
      
     -        $contextMessages = $selectedTicket?->contextMessages()
     +        $contextMessages = ($selectedTicket?->context_message_ids ?? []) === [] ? collect() : $selectedTicket->contextMessages()
                  ->oldest('id')
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Jobs/DeliverTelegramMessageTest.php
+    Update { move_path: None }: /path/to/project/tests/Feature/Jobs/DeliverTelegramMessageTest.php
     @@ -142,3 +142,3 @@
              ->and($ticket->close_reason)->toBe(TicketCloseReason::OperatorClosed);
     -    Queue::assertPushed(DeliverTelegramMessage::class, 1);
@@ -24120,7 +24120,7 @@ OpenSpec обновляю в change `mvp-promo-support`: добавлю отде
     -    Queue::assertPushed(DeliverTelegramMessage::class, 1);
     +    Queue::assertPushed(DeliverTelegramMessage::class, 2);
      });
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/OperatorDashboardTest.php
+    Update { move_path: None }: /path/to/project/tests/Feature/OperatorDashboardTest.php
     @@ -161,2 +161,3 @@
          $lifecycle->closeManually($firstTicket);
     +    $firstClosure = $firstTicket->messages()->where('ticket_event', Message::TicketClosedEvent)->sole();
@@ -24168,7 +24168,7 @@ OpenSpec обновляю в change `mvp-promo-support`: добавлю отде
     -    Http::assertNothingSent();
     +    Http::assertSentCount(1);
      });
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/OperatorDeliveryCancellationTest.php
+    Update { move_path: None }: /path/to/project/tests/Feature/OperatorDeliveryCancellationTest.php
     @@ -40,3 +40,5 @@
          expect($ticket->refresh()->status)->toBe(TicketStatus::Closed);
     -    Queue::assertNothingPushed();
@@ -24183,13 +24183,13 @@ OpenSpec обновляю в change `mvp-promo-support`: добавлю отде
     +    Queue::assertPushed(DeliverTelegramMessage::class, fn (DeliverTelegramMessage $job): bool => $job->messageId === $closure->id);
     +    Queue::assertPushed(DeliverTelegramMessage::class, 1);
      });
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/OperatorReplyDeliveryTest.php
+    Update { move_path: None }: /path/to/project/tests/Feature/OperatorReplyDeliveryTest.php
     @@ -331,3 +331,3 @@
          expect($reply->refresh()->delivery_status)->toBe($action === 'retryDelivery' ? DeliveryStatus::Pending : DeliveryStatus::Cancelled);
     -    Queue::assertPushed(DeliverTelegramMessage::class, $action === 'retryDelivery' ? 2 : 1);
     +    Queue::assertPushed(DeliverTelegramMessage::class, $action === 'retryDelivery' ? 3 : 2);
      })->with(['retry' => 'retryDelivery', 'cancel' => 'cancelDelivery']);
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/SupportSmokeTest.php
+    Update { move_path: None }: /path/to/project/tests/Feature/SupportSmokeTest.php
     @@ -78,2 +78,3 @@
          $worker('maintenance');
     +    $worker('telegram');
@@ -24202,7 +24202,7 @@ OpenSpec обновляю в change `mvp-promo-support`: добавлю отде
 
 ## Activity
 
-    $ docker compose -f compose.testing.yaml run --rm -v /Users/artem/Desktop/tg-promo/tg-promo:/app tests php artisan test --compact --no-ansi tests/Feature/TicketContextTest.php tests/Feature/OperatorDashboardTest.php tests/Feature/OperatorDeliveryCancellationTest.php tests/Feature/OperatorReplyDeliveryTest.php tests/Feature/Jobs/DeliverTelegramMessageTest.php tests/Feature/SupportSmokeTest.php
+    $ docker compose -f compose.testing.yaml run --rm -v /path/to/project:/app tests php artisan test --compact --no-ansi tests/Feature/TicketContextTest.php tests/Feature/OperatorDashboardTest.php tests/Feature/OperatorDeliveryCancellationTest.php tests/Feature/OperatorReplyDeliveryTest.php tests/Feature/Jobs/DeliverTelegramMessageTest.php tests/Feature/SupportSmokeTest.php
      Container tg-promo-tests-postgres-1 Running
      Container tg-promo-tests-postgres-1 Waiting
      Container tg-promo-tests-postgres-1 Healthy
@@ -24758,22 +24758,22 @@ OpenSpec обновляю в change `mvp-promo-support`: добавлю отде
     $ openspec instructions apply --change mvp-promo-support --json
     {
       "changeName": "mvp-promo-support",
-      "changeDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeDir": "/path/to/project/openspec/changes/mvp-promo-support",
       "schemaName": "spec-driven",
       "contextFiles": {
         "proposal": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
         ],
         "specs": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
         ],
         "design": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/design.md"
         ],
         "tasks": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
         ]
       },
       "progress": {
@@ -24786,413 +24786,413 @@ OpenSpec обновляю в change `mvp-promo-support`: добавлю отде
           "id": "1",
           "description": "1.1 Добавить Docker Compose services для Laravel app, PostgreSQL и database queue worker, настроить health/dependency order и проверить, что `docker compose config` проходит, а `docker compose up` запускает весь MVP одной командой.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 5
         },
         {
           "id": "2",
           "description": "1.2 Перевести application и queue connections на PostgreSQL/database driver, добавить jobs/failed-jobs storage и проверить миграции внутри Docker без Redis или другого broker.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 6
         },
         {
           "id": "3",
           "description": "1.3 Добавить Livewire в рамках заданного frontend stack и проверить, что базовая Blade/Livewire/Tailwind 4/Vite страница собирается командой `npm run build`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 7
         },
         {
           "id": "4",
           "description": "1.4 Добавить environment-backed настройки Telegram, LLM, retry/timeout и `TICKET_AUTO_CLOSE_HOURS=24`, обновить безопасный `.env.example` и проверить, что populated secrets отсутствуют в tracked files.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 8
         },
         {
           "id": "5",
           "description": "2.1 Создать enums для ticket status, close reason, message author/direction, delivery status и decision type; проверить Pest unit tests на допустимые значения и переходы lifecycle.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 12
         },
         {
           "id": "6",
           "description": "2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с безопасной `redaction_types` metadata, внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests и отсутствие поля для raw message body.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 13
         },
         {
           "id": "7",
           "description": "2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `resolved` и `closed`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 14
         },
         {
           "id": "8",
           "description": "2.4 Реализовать sanitizer до persistence для card-like sequences, контекстных SMS/OTP-кодов и явно обозначенных паролей; проверить unit dataset для evaluation case №22, OTP/password context, обычных дат/сумм/количеств без ложного маскирования и сохранения телефонного номера.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 15
         },
         {
           "id": "9",
           "description": "3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых private text message полей с успешным игнорированием legacy callback updates; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 19
         },
         {
           "id": "10",
           "description": "3.2 Обработать `/start` отдельным safety message о картах, паролях и SMS-кодах без жёсткой фиксации точной формулировки; проверить acceptance test всех четырёх смысловых пунктов предупреждения.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 20
         },
         {
           "id": "11",
           "description": "3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, атомарно записывать database jobs через `beforeCommit()` в той же PostgreSQL transaction, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 21
         },
         {
           "id": "12",
           "description": "3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 22
         },
         {
           "id": "13",
           "description": "3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 23
         },
         {
           "id": "14",
           "description": "3.6 Для participant с open/resolved прикреплять redacted сообщение к тому же ticket без AI-routing; любое сообщение в resolved возвращает open; после closed новый вопрос классифицируется заново.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 24
         },
         {
           "id": "15",
           "description": "4.1 Создать LLM contract, typed decision DTO и validator для `answer`, `escalate`, `mixed`, `refuse`; проверить unit tests для валидных, неполных, неизвестных и противоречивых structured outputs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 28
         },
         {
           "id": "16",
           "description": "4.2 Добавить отдельные versioned prompt files и loader единственного factual source `docs/assignment/promo-rules.md`; проверить, что decision сохраняет source hash, но не полный runtime system prompt.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 29
         },
         {
           "id": "17",
           "description": "4.3 Реализовать один provider adapter через Laravel HTTP client с explicit connect/response timeout и безопасным error mapping; проверить exact endpoint fakes, `Http::preventStrayRequests()`, timeout, 429, 5xx и получение только redacted participant text без реальной сети.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 30
         },
         {
           "id": "18",
           "description": "4.4 Реализовать `ProcessIncomingMessage` с queue attempts/backoff и early exit при существующем decision; проверить временный сбой с успешным retry и повтор job после сохранённого decision без второго LLM-вызова.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 31
         },
         {
           "id": "19",
           "description": "4.5 Применять валидный decision в короткой транзакции: grounded answer без ticket, unknown/participant-specific/off-topic escalation, mixed answer плюс один ticket и adversarial safe refusal; проверить acceptance cases для каждого варианта, включая requests №7, №12, №16, №23, №24 и №25.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 32
         },
         {
           "id": "20",
           "description": "4.6 Реализовать идемпотентный fallback после исчерпания retry с decision/ticket reason `llm_failure`; проверить timeout, invalid output и exhausted retries без потери message, второго ticket, второго ответа или двойного учёта.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 33
         },
         {
           "id": "21",
           "description": "5.1 Создать Telegram adapter для text messages с explicit timeout/error mapping без feedback keyboard и inline callbacks; проверить HTTP fakes и безопасное логирование.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 37
         },
         {
           "id": "22",
           "description": "5.2 Реализовать presentation номера ticket и короткой redacted quote без feedback actions; сохранить optional safety reminder и ограничение длины.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 38
         },
         {
           "id": "23",
           "description": "5.3 Реализовать `DeliverTelegramMessage` для переходов `pending -> sent|failed`, сохранения Telegram message ID и повторной отправки того же record; проверить success, permanent failure и retry уже `sent` сообщения как no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 39
         },
         {
           "id": "24",
           "description": "6.1 Реализовать session login для заранее созданного operator account без self-registration и ролей; проверить guest redirect, успешный login и отсутствие публичного registration endpoint.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 43
         },
         {
           "id": "25",
           "description": "6.2 Реализовать Livewire queue и conversation history с escaped redacted participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets, отсутствие raw HTML и отсутствие исходных card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 44
         },
         {
           "id": "26",
           "description": "6.3 Сохранять pending operator message и database delivery job атомарно; successful delivery фиксирует sent и первый response timestamp, не решает ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 45
         },
         {
           "id": "27",
           "description": "6.4 Показывать failed delivery с явными retry/cancel; unfinished operator reply блокирует следующий, retry использует прежний record.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 46
         },
         {
           "id": "28",
           "description": "7.1 Игнорировать legacy inline callbacks без side effects; ordinary participant messages применимы только к собственному active ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 50
         },
         {
           "id": "29",
           "description": "7.2 Любое новое participant message возвращает resolved в open без LLM; отдельные feedback тексты и keyboard отсутствуют.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 51
         },
         {
           "id": "30",
           "description": "7.3 Реализовать delayed AutoCloseTicket только для resolved с configurable 24-hour delay и status/resolved_since/deadline recheck; stale jobs — no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 52
         },
         {
           "id": "31",
           "description": "7.4 Ручное закрытие open/resolved с operator_closed не отменяет operator replies; отмена сообщения отдельная, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 53
         },
         {
           "id": "32",
           "description": "8.1 Реализовать изолированный statistics query/service по provisional definitions для `bot resolved`, `escalated` и average first operator response time; проверить фиксированным dataset, что mixed исключён, follow-ups не увеличивают escalated, а unanswered tickets не входят в average.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 57
         },
         {
           "id": "33",
           "description": "8.2 Добавить статистику в Livewire operator panel и проверить component test, что повторный просмотр возвращает те же значения без LLM/Telegram вызовов и изменения persisted state.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 58
         },
         {
           "id": "34",
           "description": "9.1 Создать повторяемый evaluation runner для всех 25 сообщений из `docs/assignment/requests.md` через тот же application boundary и проверить, что отчёт содержит вопрос, ответ, признак эскалации, оценку и комментарий для всех 25 строк.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 62
         },
         {
           "id": "35",
           "description": "9.2 Зафиксировать результаты evaluation, спорные mixed/off-topic cases и изменения prompt в требуемой таблице; проверить наличие строк 1–25, redaction case №22 и отсутствие raw card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 63
         },
         {
           "id": "36",
           "description": "9.3 Обновить README инструкцией запуска с нуля, assumptions, provisional definitions, известными ограничениями и production follow-ups; проверить команды README в чистом Docker Compose запуске.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 64
         },
         {
           "id": "37",
           "description": "9.4 Добавить схему PostgreSQL и краткое объяснение ключей, partial unique active-ticket constraint, transactions и delivery state; сверить диаграмму с фактическими migrations.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 65
         },
         {
           "id": "38",
           "description": "10.1 Запустить узкие Pest feature/unit suites каждого capability, затем полный `php artisan test --compact`, и устранить только дефекты поведения этого change.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 69
         },
         {
           "id": "39",
           "description": "10.2 Запустить `vendor/bin/pint --dirty --format agent`, `npm run build` и `openspec validate mvp-promo-support --strict`; проверить успешное завершение всех команд.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 70
         },
         {
           "id": "40",
           "description": "10.3 Выполнить Docker smoke flow: принять grounded question, создать escalation, ответить оператором, обработать resolved/unresolved и auto-close, затем сверить три метрики и delivery states.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 71
         },
         {
           "id": "41",
           "description": "10.4 Проверить repository secrets scan и итоговый diff: отсутствуют реальные Telegram/LLM keys, raw card/OTP/password values, sensitive message bodies в logging paths, незаявленная инфраструктура и функциональность вне specs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 72
         },
         {
           "id": "42",
           "description": "11.1 Проверить late AI attachment и delivery без lifecycle transitions; revision/snapshot механизм удалён.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 76
         },
         {
           "id": "43",
           "description": "11.2 Убрать password word whitelist, проверить указанные leak/false-positive cases по syntax/value-like признакам.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 77
         },
         {
           "id": "44",
           "description": "11.3 Зафиксировать фактический lifecycle без revision/generation/marker механизмов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 78
         },
         {
           "id": "45",
           "description": "11.4 Применить штатную ProcessIncomingMessage retry-policy в evaluation, разделить model result/infrastructure reason, повторить 25 cases; полный PostgreSQL suite, smoke, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 79
         },
         {
           "id": "46",
           "description": "12.1 Заменить analysis parts и второй LLM verifier одним structured decision с answer/evidence; deterministic PHP validation, trusted московская дата, сохранение пользовательского answer; удалить verifier prompt и ненужные production dependencies.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 88
         },
         {
           "id": "47",
           "description": "12.2 Ограничить provider attempts тремя на сообщение: один HTTP request на queue attempt, retries только transient errors; invalid result сразу использует существующую safe escalation; ticket lifecycle, operator dashboard и delivery semantics не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 89
         },
         {
           "id": "48",
           "description": "12.3 Обновить OpenSpec, README и regression tests для single-call contract, evidence validation, safe fallback и HTTP request counts; выполнить узкие Pest tests, Pint и OpenSpec validation без реальных LLM-запросов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 90
         },
         {
           "id": "49",
           "description": "13.1 Использовать open/resolved/closed, убрать legacy waiting runtime semantics, сохранить историю и индексы активных tickets.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 95
         },
         {
           "id": "50",
           "description": "13.2 Обычные последовательные operator replies не решают ticket; отдельное «Отметить решённым» запускает таймер; продолжение переписки возвращает open; closed terminal. AI pipeline не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 96
         },
         {
           "id": "51",
           "description": "13.3 Актуализировать regression tests и README; проверить delivery failures/retries, pending/new messages, stale timers, concurrent workers, migration, UI validation/auth и существующий AI contract; выполнить узкие PostgreSQL tests, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 97
         },
         {
           "id": "52",
           "description": "14.1 Ограничить ленту operator dashboard выбранным ticket_id; исключить другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, pagination и delivery action isolation. Lifecycle не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 103
         },
         {
           "id": "53",
           "description": "14.2 Отдельно проверить timestamps: выводить created_at/closed_at/messages.created_at в Europe/Moscow с пометкой «МСК», сохранить UTC в данных и таймерах; проверить переход суток и отсутствие мутаций при refresh.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 104
         },
         {
           "id": "54",
           "description": "15.1 Отделить «Отметить решённым» от отправки и delivery; атомарно создавать таймер только для resolved, удалить resolves_ticket и feedback keyboard.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 108
         },
         {
           "id": "55",
           "description": "15.2 Блокировать следующий operator reply при pending/failed; explicit retry/cancel, доставка после close и подавление stale escalation, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 109
         },
         {
           "id": "56",
           "description": "15.3 Проверить lifecycle, rollback, stale timers, queue concurrency и AI contract; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 110
         },
         {
           "id": "57",
           "description": "16.1 Зафиксировать Message IDs контекста при создании ticket, с нижней границей после предыдущего закрытия и source linkage ответов бота; отдельный read-only блок и независимая pagination, основная лента остаётся ticket-scoped.",
           "done": false,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 114
         },
         {
           "id": "58",
           "description": "16.2 Показать границу создания; атомарно создать System notice ручного/автоматического закрытия с номером обращения и существующей delivery job, сохранить guards stale notices и operator replies.",
           "done": false,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 115
         },
         {
           "id": "59",
           "description": "16.3 Проверить PostgreSQL regressions контекста A/B, immutability, sanitizer/escaping, pagination, уведомлений и delivery guards; Pint, frontend build и strict OpenSpec validation.",
           "done": false,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 116
         }
       ],
@@ -25209,7 +25209,7 @@ OpenSpec обновляю в change `mvp-promo-support`: добавлю отде
         "If implementation reveals a specification problem, update the OpenSpec artifacts explicitly before proceeding."
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -25348,7 +25348,7 @@ OpenSpec обновляю в change `mvp-promo-support`: добавлю отде
 
 ## Activity
 
-    $ docker compose -f compose.testing.yaml run --rm -v /Users/artem/Desktop/tg-promo/tg-promo:/app tests php artisan test --compact --no-ansi tests/Feature/TicketContextTest.php tests/Feature/OperatorDashboardTest.php tests/Feature/AutoCloseTicketTest.php tests/Feature/OperatorDeliveryCancellationTest.php tests/Feature/OperatorReplyDeliveryTest.php tests/Feature/Jobs/DeliverTelegramMessageTest.php tests/Feature/AtomicQueueDispatchTest.php tests/Feature/SupportSmokeTest.php tests/Feature/ConcurrentTelegramDeliveryTest.php tests/Feature/Services/TicketLifecycleServiceTest.php tests/Feature/Jobs/ProcessIncomingMessageTest.php tests/Feature/TicketParticipantLifecycleTest.php tests/Feature/GroundedSupportAnswerTest.php tests/Feature/Models/SupportDataModelTest.php tests/Feature/TicketLifecycleMigrationTest.php
+    $ docker compose -f compose.testing.yaml run --rm -v /path/to/project:/app tests php artisan test --compact --no-ansi tests/Feature/TicketContextTest.php tests/Feature/OperatorDashboardTest.php tests/Feature/AutoCloseTicketTest.php tests/Feature/OperatorDeliveryCancellationTest.php tests/Feature/OperatorReplyDeliveryTest.php tests/Feature/Jobs/DeliverTelegramMessageTest.php tests/Feature/AtomicQueueDispatchTest.php tests/Feature/SupportSmokeTest.php tests/Feature/ConcurrentTelegramDeliveryTest.php tests/Feature/Services/TicketLifecycleServiceTest.php tests/Feature/Jobs/ProcessIncomingMessageTest.php tests/Feature/TicketParticipantLifecycleTest.php tests/Feature/GroundedSupportAnswerTest.php tests/Feature/Models/SupportDataModelTest.php tests/Feature/TicketLifecycleMigrationTest.php
      Container tg-promo-tests-postgres-1 Running
      Container tg-promo-tests-postgres-1 Waiting
      Container tg-promo-tests-postgres-1 Healthy
@@ -25367,7 +25367,7 @@ OpenSpec обновляю в change `mvp-promo-support`: добавлю отде
 ## Activity
 
     file changes: Completed · 1 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/tasks.md
     @@ -113,4 +113,4 @@
      
     -- [ ] 16.1 Зафиксировать Message IDs контекста при создании ticket, с нижней границей после предыдущего закрытия и source linkage ответов бота; отдельный read-only блок и независимая pagination, основная лента остаётся ticket-scoped.
@@ -25512,22 +25512,22 @@ Pint, frontend build и строгая OpenSpec validation тоже прошли
     $ openspec instructions apply --change mvp-promo-support --json
     {
       "changeName": "mvp-promo-support",
-      "changeDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeDir": "/path/to/project/openspec/changes/mvp-promo-support",
       "schemaName": "spec-driven",
       "contextFiles": {
         "proposal": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
         ],
         "specs": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
         ],
         "design": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/design.md"
         ],
         "tasks": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
         ]
       },
       "progress": {
@@ -25540,413 +25540,413 @@ Pint, frontend build и строгая OpenSpec validation тоже прошли
           "id": "1",
           "description": "1.1 Добавить Docker Compose services для Laravel app, PostgreSQL и database queue worker, настроить health/dependency order и проверить, что `docker compose config` проходит, а `docker compose up` запускает весь MVP одной командой.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 5
         },
         {
           "id": "2",
           "description": "1.2 Перевести application и queue connections на PostgreSQL/database driver, добавить jobs/failed-jobs storage и проверить миграции внутри Docker без Redis или другого broker.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 6
         },
         {
           "id": "3",
           "description": "1.3 Добавить Livewire в рамках заданного frontend stack и проверить, что базовая Blade/Livewire/Tailwind 4/Vite страница собирается командой `npm run build`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 7
         },
         {
           "id": "4",
           "description": "1.4 Добавить environment-backed настройки Telegram, LLM, retry/timeout и `TICKET_AUTO_CLOSE_HOURS=24`, обновить безопасный `.env.example` и проверить, что populated secrets отсутствуют в tracked files.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 8
         },
         {
           "id": "5",
           "description": "2.1 Создать enums для ticket status, close reason, message author/direction, delivery status и decision type; проверить Pest unit tests на допустимые значения и переходы lifecycle.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 12
         },
         {
           "id": "6",
           "description": "2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с безопасной `redaction_types` metadata, внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests и отсутствие поля для raw message body.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 13
         },
         {
           "id": "7",
           "description": "2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `resolved` и `closed`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 14
         },
         {
           "id": "8",
           "description": "2.4 Реализовать sanitizer до persistence для card-like sequences, контекстных SMS/OTP-кодов и явно обозначенных паролей; проверить unit dataset для evaluation case №22, OTP/password context, обычных дат/сумм/количеств без ложного маскирования и сохранения телефонного номера.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 15
         },
         {
           "id": "9",
           "description": "3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых private text message полей с успешным игнорированием legacy callback updates; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 19
         },
         {
           "id": "10",
           "description": "3.2 Обработать `/start` отдельным safety message о картах, паролях и SMS-кодах без жёсткой фиксации точной формулировки; проверить acceptance test всех четырёх смысловых пунктов предупреждения.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 20
         },
         {
           "id": "11",
           "description": "3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, атомарно записывать database jobs через `beforeCommit()` в той же PostgreSQL transaction, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 21
         },
         {
           "id": "12",
           "description": "3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 22
         },
         {
           "id": "13",
           "description": "3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 23
         },
         {
           "id": "14",
           "description": "3.6 Для participant с open/resolved прикреплять redacted сообщение к тому же ticket без AI-routing; любое сообщение в resolved возвращает open; после closed новый вопрос классифицируется заново.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 24
         },
         {
           "id": "15",
           "description": "4.1 Создать LLM contract, typed decision DTO и validator для `answer`, `escalate`, `mixed`, `refuse`; проверить unit tests для валидных, неполных, неизвестных и противоречивых structured outputs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 28
         },
         {
           "id": "16",
           "description": "4.2 Добавить отдельные versioned prompt files и loader единственного factual source `docs/assignment/promo-rules.md`; проверить, что decision сохраняет source hash, но не полный runtime system prompt.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 29
         },
         {
           "id": "17",
           "description": "4.3 Реализовать один provider adapter через Laravel HTTP client с explicit connect/response timeout и безопасным error mapping; проверить exact endpoint fakes, `Http::preventStrayRequests()`, timeout, 429, 5xx и получение только redacted participant text без реальной сети.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 30
         },
         {
           "id": "18",
           "description": "4.4 Реализовать `ProcessIncomingMessage` с queue attempts/backoff и early exit при существующем decision; проверить временный сбой с успешным retry и повтор job после сохранённого decision без второго LLM-вызова.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 31
         },
         {
           "id": "19",
           "description": "4.5 Применять валидный decision в короткой транзакции: grounded answer без ticket, unknown/participant-specific/off-topic escalation, mixed answer плюс один ticket и adversarial safe refusal; проверить acceptance cases для каждого варианта, включая requests №7, №12, №16, №23, №24 и №25.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 32
         },
         {
           "id": "20",
           "description": "4.6 Реализовать идемпотентный fallback после исчерпания retry с decision/ticket reason `llm_failure`; проверить timeout, invalid output и exhausted retries без потери message, второго ticket, второго ответа или двойного учёта.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 33
         },
         {
           "id": "21",
           "description": "5.1 Создать Telegram adapter для text messages с explicit timeout/error mapping без feedback keyboard и inline callbacks; проверить HTTP fakes и безопасное логирование.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 37
         },
         {
           "id": "22",
           "description": "5.2 Реализовать presentation номера ticket и короткой redacted quote без feedback actions; сохранить optional safety reminder и ограничение длины.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 38
         },
         {
           "id": "23",
           "description": "5.3 Реализовать `DeliverTelegramMessage` для переходов `pending -> sent|failed`, сохранения Telegram message ID и повторной отправки того же record; проверить success, permanent failure и retry уже `sent` сообщения как no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 39
         },
         {
           "id": "24",
           "description": "6.1 Реализовать session login для заранее созданного operator account без self-registration и ролей; проверить guest redirect, успешный login и отсутствие публичного registration endpoint.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 43
         },
         {
           "id": "25",
           "description": "6.2 Реализовать Livewire queue и conversation history с escaped redacted participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets, отсутствие raw HTML и отсутствие исходных card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 44
         },
         {
           "id": "26",
           "description": "6.3 Сохранять pending operator message и database delivery job атомарно; successful delivery фиксирует sent и первый response timestamp, не решает ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 45
         },
         {
           "id": "27",
           "description": "6.4 Показывать failed delivery с явными retry/cancel; unfinished operator reply блокирует следующий, retry использует прежний record.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 46
         },
         {
           "id": "28",
           "description": "7.1 Игнорировать legacy inline callbacks без side effects; ordinary participant messages применимы только к собственному active ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 50
         },
         {
           "id": "29",
           "description": "7.2 Любое новое participant message возвращает resolved в open без LLM; отдельные feedback тексты и keyboard отсутствуют.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 51
         },
         {
           "id": "30",
           "description": "7.3 Реализовать delayed AutoCloseTicket только для resolved с configurable 24-hour delay и status/resolved_since/deadline recheck; stale jobs — no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 52
         },
         {
           "id": "31",
           "description": "7.4 Ручное закрытие open/resolved с operator_closed не отменяет operator replies; отмена сообщения отдельная, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 53
         },
         {
           "id": "32",
           "description": "8.1 Реализовать изолированный statistics query/service по provisional definitions для `bot resolved`, `escalated` и average first operator response time; проверить фиксированным dataset, что mixed исключён, follow-ups не увеличивают escalated, а unanswered tickets не входят в average.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 57
         },
         {
           "id": "33",
           "description": "8.2 Добавить статистику в Livewire operator panel и проверить component test, что повторный просмотр возвращает те же значения без LLM/Telegram вызовов и изменения persisted state.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 58
         },
         {
           "id": "34",
           "description": "9.1 Создать повторяемый evaluation runner для всех 25 сообщений из `docs/assignment/requests.md` через тот же application boundary и проверить, что отчёт содержит вопрос, ответ, признак эскалации, оценку и комментарий для всех 25 строк.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 62
         },
         {
           "id": "35",
           "description": "9.2 Зафиксировать результаты evaluation, спорные mixed/off-topic cases и изменения prompt в требуемой таблице; проверить наличие строк 1–25, redaction case №22 и отсутствие raw card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 63
         },
         {
           "id": "36",
           "description": "9.3 Обновить README инструкцией запуска с нуля, assumptions, provisional definitions, известными ограничениями и production follow-ups; проверить команды README в чистом Docker Compose запуске.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 64
         },
         {
           "id": "37",
           "description": "9.4 Добавить схему PostgreSQL и краткое объяснение ключей, partial unique active-ticket constraint, transactions и delivery state; сверить диаграмму с фактическими migrations.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 65
         },
         {
           "id": "38",
           "description": "10.1 Запустить узкие Pest feature/unit suites каждого capability, затем полный `php artisan test --compact`, и устранить только дефекты поведения этого change.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 69
         },
         {
           "id": "39",
           "description": "10.2 Запустить `vendor/bin/pint --dirty --format agent`, `npm run build` и `openspec validate mvp-promo-support --strict`; проверить успешное завершение всех команд.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 70
         },
         {
           "id": "40",
           "description": "10.3 Выполнить Docker smoke flow: принять grounded question, создать escalation, ответить оператором, обработать resolved/unresolved и auto-close, затем сверить три метрики и delivery states.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 71
         },
         {
           "id": "41",
           "description": "10.4 Проверить repository secrets scan и итоговый diff: отсутствуют реальные Telegram/LLM keys, raw card/OTP/password values, sensitive message bodies в logging paths, незаявленная инфраструктура и функциональность вне specs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 72
         },
         {
           "id": "42",
           "description": "11.1 Проверить late AI attachment и delivery без lifecycle transitions; revision/snapshot механизм удалён.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 76
         },
         {
           "id": "43",
           "description": "11.2 Убрать password word whitelist, проверить указанные leak/false-positive cases по syntax/value-like признакам.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 77
         },
         {
           "id": "44",
           "description": "11.3 Зафиксировать фактический lifecycle без revision/generation/marker механизмов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 78
         },
         {
           "id": "45",
           "description": "11.4 Применить штатную ProcessIncomingMessage retry-policy в evaluation, разделить model result/infrastructure reason, повторить 25 cases; полный PostgreSQL suite, smoke, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 79
         },
         {
           "id": "46",
           "description": "12.1 Заменить analysis parts и второй LLM verifier одним structured decision с answer/evidence; deterministic PHP validation, trusted московская дата, сохранение пользовательского answer; удалить verifier prompt и ненужные production dependencies.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 88
         },
         {
           "id": "47",
           "description": "12.2 Ограничить provider attempts тремя на сообщение: один HTTP request на queue attempt, retries только transient errors; invalid result сразу использует существующую safe escalation; ticket lifecycle, operator dashboard и delivery semantics не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 89
         },
         {
           "id": "48",
           "description": "12.3 Обновить OpenSpec, README и regression tests для single-call contract, evidence validation, safe fallback и HTTP request counts; выполнить узкие Pest tests, Pint и OpenSpec validation без реальных LLM-запросов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 90
         },
         {
           "id": "49",
           "description": "13.1 Использовать open/resolved/closed, убрать legacy waiting runtime semantics, сохранить историю и индексы активных tickets.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 95
         },
         {
           "id": "50",
           "description": "13.2 Обычные последовательные operator replies не решают ticket; отдельное «Отметить решённым» запускает таймер; продолжение переписки возвращает open; closed terminal. AI pipeline не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 96
         },
         {
           "id": "51",
           "description": "13.3 Актуализировать regression tests и README; проверить delivery failures/retries, pending/new messages, stale timers, concurrent workers, migration, UI validation/auth и существующий AI contract; выполнить узкие PostgreSQL tests, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 97
         },
         {
           "id": "52",
           "description": "14.1 Ограничить ленту operator dashboard выбранным ticket_id; исключить другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, pagination и delivery action isolation. Lifecycle не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 103
         },
         {
           "id": "53",
           "description": "14.2 Отдельно проверить timestamps: выводить created_at/closed_at/messages.created_at в Europe/Moscow с пометкой «МСК», сохранить UTC в данных и таймерах; проверить переход суток и отсутствие мутаций при refresh.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 104
         },
         {
           "id": "54",
           "description": "15.1 Отделить «Отметить решённым» от отправки и delivery; атомарно создавать таймер только для resolved, удалить resolves_ticket и feedback keyboard.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 108
         },
         {
           "id": "55",
           "description": "15.2 Блокировать следующий operator reply при pending/failed; explicit retry/cancel, доставка после close и подавление stale escalation, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 109
         },
         {
           "id": "56",
           "description": "15.3 Проверить lifecycle, rollback, stale timers, queue concurrency и AI contract; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 110
         },
         {
           "id": "57",
           "description": "16.1 Зафиксировать Message IDs контекста при создании ticket, с нижней границей после предыдущего закрытия и source linkage ответов бота; отдельный read-only блок и независимая pagination, основная лента остаётся ticket-scoped.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 114
         },
         {
           "id": "58",
           "description": "16.2 Показать границу создания; атомарно создать System notice ручного/автоматического закрытия с номером обращения и существующей delivery job, сохранить guards stale notices и operator replies.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 115
         },
         {
           "id": "59",
           "description": "16.3 Проверить PostgreSQL regressions контекста A/B, immutability, sanitizer/escaping, pagination, уведомлений и delivery guards; Pint, frontend build и strict OpenSpec validation.",
           "done": false,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 116
         }
       ],
@@ -25963,7 +25963,7 @@ Pint, frontend build и строгая OpenSpec validation тоже прошли
         "If implementation reveals a specification problem, update the OpenSpec artifacts explicitly before proceeding."
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -25972,7 +25972,7 @@ Pint, frontend build и строгая OpenSpec validation тоже прошли
 ## Activity
 
     file changes: Completed · 1 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/tasks.md
     @@ -115,2 +115,2 @@
      - [x] 16.2 Показать границу создания; атомарно создать System notice ручного/автоматического закрытия с номером обращения и существующей delivery job, сохранить guards stale notices и operator replies.
     -- [ ] 16.3 Проверить PostgreSQL regressions контекста A/B, immutability, sanitizer/escaping, pagination, уведомлений и delivery guards; Pint, frontend build и strict OpenSpec validation.
@@ -25983,22 +25983,22 @@ Pint, frontend build и строгая OpenSpec validation тоже прошли
     $ openspec instructions apply --change mvp-promo-support --json
     {
       "changeName": "mvp-promo-support",
-      "changeDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeDir": "/path/to/project/openspec/changes/mvp-promo-support",
       "schemaName": "spec-driven",
       "contextFiles": {
         "proposal": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
         ],
         "specs": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
         ],
         "design": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/design.md"
         ],
         "tasks": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
         ]
       },
       "progress": {
@@ -26011,413 +26011,413 @@ Pint, frontend build и строгая OpenSpec validation тоже прошли
           "id": "1",
           "description": "1.1 Добавить Docker Compose services для Laravel app, PostgreSQL и database queue worker, настроить health/dependency order и проверить, что `docker compose config` проходит, а `docker compose up` запускает весь MVP одной командой.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 5
         },
         {
           "id": "2",
           "description": "1.2 Перевести application и queue connections на PostgreSQL/database driver, добавить jobs/failed-jobs storage и проверить миграции внутри Docker без Redis или другого broker.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 6
         },
         {
           "id": "3",
           "description": "1.3 Добавить Livewire в рамках заданного frontend stack и проверить, что базовая Blade/Livewire/Tailwind 4/Vite страница собирается командой `npm run build`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 7
         },
         {
           "id": "4",
           "description": "1.4 Добавить environment-backed настройки Telegram, LLM, retry/timeout и `TICKET_AUTO_CLOSE_HOURS=24`, обновить безопасный `.env.example` и проверить, что populated secrets отсутствуют в tracked files.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 8
         },
         {
           "id": "5",
           "description": "2.1 Создать enums для ticket status, close reason, message author/direction, delivery status и decision type; проверить Pest unit tests на допустимые значения и переходы lifecycle.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 12
         },
         {
           "id": "6",
           "description": "2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с безопасной `redaction_types` metadata, внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests и отсутствие поля для raw message body.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 13
         },
         {
           "id": "7",
           "description": "2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `resolved` и `closed`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 14
         },
         {
           "id": "8",
           "description": "2.4 Реализовать sanitizer до persistence для card-like sequences, контекстных SMS/OTP-кодов и явно обозначенных паролей; проверить unit dataset для evaluation case №22, OTP/password context, обычных дат/сумм/количеств без ложного маскирования и сохранения телефонного номера.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 15
         },
         {
           "id": "9",
           "description": "3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых private text message полей с успешным игнорированием legacy callback updates; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 19
         },
         {
           "id": "10",
           "description": "3.2 Обработать `/start` отдельным safety message о картах, паролях и SMS-кодах без жёсткой фиксации точной формулировки; проверить acceptance test всех четырёх смысловых пунктов предупреждения.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 20
         },
         {
           "id": "11",
           "description": "3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, атомарно записывать database jobs через `beforeCommit()` в той же PostgreSQL transaction, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 21
         },
         {
           "id": "12",
           "description": "3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 22
         },
         {
           "id": "13",
           "description": "3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 23
         },
         {
           "id": "14",
           "description": "3.6 Для participant с open/resolved прикреплять redacted сообщение к тому же ticket без AI-routing; любое сообщение в resolved возвращает open; после closed новый вопрос классифицируется заново.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 24
         },
         {
           "id": "15",
           "description": "4.1 Создать LLM contract, typed decision DTO и validator для `answer`, `escalate`, `mixed`, `refuse`; проверить unit tests для валидных, неполных, неизвестных и противоречивых structured outputs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 28
         },
         {
           "id": "16",
           "description": "4.2 Добавить отдельные versioned prompt files и loader единственного factual source `docs/assignment/promo-rules.md`; проверить, что decision сохраняет source hash, но не полный runtime system prompt.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 29
         },
         {
           "id": "17",
           "description": "4.3 Реализовать один provider adapter через Laravel HTTP client с explicit connect/response timeout и безопасным error mapping; проверить exact endpoint fakes, `Http::preventStrayRequests()`, timeout, 429, 5xx и получение только redacted participant text без реальной сети.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 30
         },
         {
           "id": "18",
           "description": "4.4 Реализовать `ProcessIncomingMessage` с queue attempts/backoff и early exit при существующем decision; проверить временный сбой с успешным retry и повтор job после сохранённого decision без второго LLM-вызова.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 31
         },
         {
           "id": "19",
           "description": "4.5 Применять валидный decision в короткой транзакции: grounded answer без ticket, unknown/participant-specific/off-topic escalation, mixed answer плюс один ticket и adversarial safe refusal; проверить acceptance cases для каждого варианта, включая requests №7, №12, №16, №23, №24 и №25.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 32
         },
         {
           "id": "20",
           "description": "4.6 Реализовать идемпотентный fallback после исчерпания retry с decision/ticket reason `llm_failure`; проверить timeout, invalid output и exhausted retries без потери message, второго ticket, второго ответа или двойного учёта.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 33
         },
         {
           "id": "21",
           "description": "5.1 Создать Telegram adapter для text messages с explicit timeout/error mapping без feedback keyboard и inline callbacks; проверить HTTP fakes и безопасное логирование.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 37
         },
         {
           "id": "22",
           "description": "5.2 Реализовать presentation номера ticket и короткой redacted quote без feedback actions; сохранить optional safety reminder и ограничение длины.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 38
         },
         {
           "id": "23",
           "description": "5.3 Реализовать `DeliverTelegramMessage` для переходов `pending -> sent|failed`, сохранения Telegram message ID и повторной отправки того же record; проверить success, permanent failure и retry уже `sent` сообщения как no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 39
         },
         {
           "id": "24",
           "description": "6.1 Реализовать session login для заранее созданного operator account без self-registration и ролей; проверить guest redirect, успешный login и отсутствие публичного registration endpoint.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 43
         },
         {
           "id": "25",
           "description": "6.2 Реализовать Livewire queue и conversation history с escaped redacted participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets, отсутствие raw HTML и отсутствие исходных card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 44
         },
         {
           "id": "26",
           "description": "6.3 Сохранять pending operator message и database delivery job атомарно; successful delivery фиксирует sent и первый response timestamp, не решает ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 45
         },
         {
           "id": "27",
           "description": "6.4 Показывать failed delivery с явными retry/cancel; unfinished operator reply блокирует следующий, retry использует прежний record.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 46
         },
         {
           "id": "28",
           "description": "7.1 Игнорировать legacy inline callbacks без side effects; ordinary participant messages применимы только к собственному active ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 50
         },
         {
           "id": "29",
           "description": "7.2 Любое новое participant message возвращает resolved в open без LLM; отдельные feedback тексты и keyboard отсутствуют.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 51
         },
         {
           "id": "30",
           "description": "7.3 Реализовать delayed AutoCloseTicket только для resolved с configurable 24-hour delay и status/resolved_since/deadline recheck; stale jobs — no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 52
         },
         {
           "id": "31",
           "description": "7.4 Ручное закрытие open/resolved с operator_closed не отменяет operator replies; отмена сообщения отдельная, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 53
         },
         {
           "id": "32",
           "description": "8.1 Реализовать изолированный statistics query/service по provisional definitions для `bot resolved`, `escalated` и average first operator response time; проверить фиксированным dataset, что mixed исключён, follow-ups не увеличивают escalated, а unanswered tickets не входят в average.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 57
         },
         {
           "id": "33",
           "description": "8.2 Добавить статистику в Livewire operator panel и проверить component test, что повторный просмотр возвращает те же значения без LLM/Telegram вызовов и изменения persisted state.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 58
         },
         {
           "id": "34",
           "description": "9.1 Создать повторяемый evaluation runner для всех 25 сообщений из `docs/assignment/requests.md` через тот же application boundary и проверить, что отчёт содержит вопрос, ответ, признак эскалации, оценку и комментарий для всех 25 строк.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 62
         },
         {
           "id": "35",
           "description": "9.2 Зафиксировать результаты evaluation, спорные mixed/off-topic cases и изменения prompt в требуемой таблице; проверить наличие строк 1–25, redaction case №22 и отсутствие raw card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 63
         },
         {
           "id": "36",
           "description": "9.3 Обновить README инструкцией запуска с нуля, assumptions, provisional definitions, известными ограничениями и production follow-ups; проверить команды README в чистом Docker Compose запуске.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 64
         },
         {
           "id": "37",
           "description": "9.4 Добавить схему PostgreSQL и краткое объяснение ключей, partial unique active-ticket constraint, transactions и delivery state; сверить диаграмму с фактическими migrations.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 65
         },
         {
           "id": "38",
           "description": "10.1 Запустить узкие Pest feature/unit suites каждого capability, затем полный `php artisan test --compact`, и устранить только дефекты поведения этого change.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 69
         },
         {
           "id": "39",
           "description": "10.2 Запустить `vendor/bin/pint --dirty --format agent`, `npm run build` и `openspec validate mvp-promo-support --strict`; проверить успешное завершение всех команд.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 70
         },
         {
           "id": "40",
           "description": "10.3 Выполнить Docker smoke flow: принять grounded question, создать escalation, ответить оператором, обработать resolved/unresolved и auto-close, затем сверить три метрики и delivery states.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 71
         },
         {
           "id": "41",
           "description": "10.4 Проверить repository secrets scan и итоговый diff: отсутствуют реальные Telegram/LLM keys, raw card/OTP/password values, sensitive message bodies в logging paths, незаявленная инфраструктура и функциональность вне specs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 72
         },
         {
           "id": "42",
           "description": "11.1 Проверить late AI attachment и delivery без lifecycle transitions; revision/snapshot механизм удалён.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 76
         },
         {
           "id": "43",
           "description": "11.2 Убрать password word whitelist, проверить указанные leak/false-positive cases по syntax/value-like признакам.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 77
         },
         {
           "id": "44",
           "description": "11.3 Зафиксировать фактический lifecycle без revision/generation/marker механизмов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 78
         },
         {
           "id": "45",
           "description": "11.4 Применить штатную ProcessIncomingMessage retry-policy в evaluation, разделить model result/infrastructure reason, повторить 25 cases; полный PostgreSQL suite, smoke, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 79
         },
         {
           "id": "46",
           "description": "12.1 Заменить analysis parts и второй LLM verifier одним structured decision с answer/evidence; deterministic PHP validation, trusted московская дата, сохранение пользовательского answer; удалить verifier prompt и ненужные production dependencies.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 88
         },
         {
           "id": "47",
           "description": "12.2 Ограничить provider attempts тремя на сообщение: один HTTP request на queue attempt, retries только transient errors; invalid result сразу использует существующую safe escalation; ticket lifecycle, operator dashboard и delivery semantics не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 89
         },
         {
           "id": "48",
           "description": "12.3 Обновить OpenSpec, README и regression tests для single-call contract, evidence validation, safe fallback и HTTP request counts; выполнить узкие Pest tests, Pint и OpenSpec validation без реальных LLM-запросов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 90
         },
         {
           "id": "49",
           "description": "13.1 Использовать open/resolved/closed, убрать legacy waiting runtime semantics, сохранить историю и индексы активных tickets.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 95
         },
         {
           "id": "50",
           "description": "13.2 Обычные последовательные operator replies не решают ticket; отдельное «Отметить решённым» запускает таймер; продолжение переписки возвращает open; closed terminal. AI pipeline не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 96
         },
         {
           "id": "51",
           "description": "13.3 Актуализировать regression tests и README; проверить delivery failures/retries, pending/new messages, stale timers, concurrent workers, migration, UI validation/auth и существующий AI contract; выполнить узкие PostgreSQL tests, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 97
         },
         {
           "id": "52",
           "description": "14.1 Ограничить ленту operator dashboard выбранным ticket_id; исключить другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, pagination и delivery action isolation. Lifecycle не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 103
         },
         {
           "id": "53",
           "description": "14.2 Отдельно проверить timestamps: выводить created_at/closed_at/messages.created_at в Europe/Moscow с пометкой «МСК», сохранить UTC в данных и таймерах; проверить переход суток и отсутствие мутаций при refresh.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 104
         },
         {
           "id": "54",
           "description": "15.1 Отделить «Отметить решённым» от отправки и delivery; атомарно создавать таймер только для resolved, удалить resolves_ticket и feedback keyboard.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 108
         },
         {
           "id": "55",
           "description": "15.2 Блокировать следующий operator reply при pending/failed; explicit retry/cancel, доставка после close и подавление stale escalation, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 109
         },
         {
           "id": "56",
           "description": "15.3 Проверить lifecycle, rollback, stale timers, queue concurrency и AI contract; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 110
         },
         {
           "id": "57",
           "description": "16.1 Зафиксировать Message IDs контекста при создании ticket, с нижней границей после предыдущего закрытия и source linkage ответов бота; отдельный read-only блок и независимая pagination, основная лента остаётся ticket-scoped.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 114
         },
         {
           "id": "58",
           "description": "16.2 Показать границу создания; атомарно создать System notice ручного/автоматического закрытия с номером обращения и существующей delivery job, сохранить guards stale notices и operator replies.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 115
         },
         {
           "id": "59",
           "description": "16.3 Проверить PostgreSQL regressions контекста A/B, immutability, sanitizer/escaping, pagination, уведомлений и delivery guards; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 116
         }
       ],
@@ -26434,7 +26434,7 @@ Pint, frontend build и строгая OpenSpec validation тоже прошли
         "If implementation reveals a specification problem, update the OpenSpec artifacts explicitly before proceeding."
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -26516,7 +26516,7 @@ Milestone 2 реализован: отдельный read-only контекст,
 
 Граница контекста: после ID уведомления о закрытии предыдущего ticket до ID сообщения эскалации включительно; для первого ticket — с начала диалога. Список фиксируется при создании, включает только participant и доставленные ответы бота на вопросы внутри границы. Старые Message не перепривязываются. Для исторических закрытий используется консервативный `closed_at`; сообщения той же секунды могут быть исключены.
 
-В [миграции](/Users/artem/Desktop/tg-promo/tg-promo/database/migrations/2026_10_03_202601_add_ticket_context_and_message_events.php) добавлены три поля, без новых таблиц:
+В [миграции](/path/to/project/database/migrations/2026_10_03_202601_add_ticket_context_and_message_events.php) добавлены три поля, без новых таблиц:
 
 - `tickets.context_message_ids` — фиксированный список ID.
 - `messages.source_message_id` — исходный вопрос для ответа бота.
@@ -28397,7 +28397,7 @@ resolves_ticket
         }
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -29349,40 +29349,40 @@ resolves_ticket
       "schemaName": "spec-driven",
       "planningHome": {
         "kind": "repo",
-        "root": "/Users/artem/Desktop/tg-promo/tg-promo",
-        "changesDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes",
+        "root": "/path/to/project",
+        "changesDir": "/path/to/project/openspec/changes",
         "defaultSchema": "spec-driven"
       },
-      "changeRoot": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeRoot": "/path/to/project/openspec/changes/mvp-promo-support",
       "artifactPaths": {
         "proposal": {
           "outputPath": "proposal.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/proposal.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
           ]
         },
         "specs": {
           "outputPath": "specs/**/*.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/**/*.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/specs/**/*.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
           ]
         },
         "design": {
           "outputPath": "design.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/design.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/design.md"
           ]
         },
         "tasks": {
           "outputPath": "tasks.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
           ]
         }
       },
@@ -29405,7 +29405,7 @@ resolves_ticket
         ],
         "linkedContext": [],
         "allowedEditRoots": [
-          "/Users/artem/Desktop/tg-promo/tg-promo"
+          "/path/to/project"
         ],
         "requiresAffectedAreaSelection": false,
         "constraints": [
@@ -29446,7 +29446,7 @@ resolves_ticket
         }
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -31800,7 +31800,7 @@ resolves_ticket
 ## Activity
 
     file changes: Completed · 1 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/README.md
+    Update { move_path: None }: /path/to/project/README.md
     @@ -2,3 +2,3 @@
      
     -MVP на PHP 8.4, Laravel 13, PostgreSQL 17, Livewire 4 и Tailwind 4. Telegram принимает private text updates; LLM отвечает по единственному источнику [правил](docs/assignment/promo-rules.md). Ответ проходит проверку цитат и отдельную LLM-проверку соответствия правилам; персональные и неизвестные вопросы передаются оператору. Данные акции вымышлены; интеграции с чеками, аккаунтами и доставкой призов нет.
@@ -31841,7 +31841,7 @@ resolves_ticket
 ## Activity
 
     file changes: Completed · 1 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/README.md
+    Update { move_path: None }: /path/to/project/README.md
     @@ -91,2 +91,3 @@
          users o|--o{ messages : operator_id
     +    messages o|--o{ messages : source_message_id
@@ -31879,7 +31879,7 @@ resolves_ticket
 ## Activity
 
     file changes: Completed · 2 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/design.md
     @@ -4,3 +4,3 @@
      
     -Мотивация и границы описаны в `proposal.md`, наблюдаемое поведение — в трёх capability specs. Проект является минимальным Laravel 13 skeleton: PostgreSQL, Livewire и Docker Compose ещё предстоит настроить. Внешними интеграциями MVP являются только Telegram Bot API и выбранный LLM provider.
@@ -31940,7 +31940,7 @@ resolves_ticket
      
     -Текущая forward migration удаляет resolves_ticket, увеличивает точность resolved_since до микросекунд и открывает прежние resolved, созданные через delivery action. Остановить webhook/workers перед обновлением schema/application, затем миграции и restart. Pending/failed operator replies и их история сохраняются. AI pipeline не меняется.
     +Исторический two-call evaluation предыдущей реализации (17 верно / 6 неверно / 2 спорно) и диагностические повторы сохранены в `docs/evaluation.md`, отдельно от результата сдаваемой single-call версии.
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md
     @@ -9,3 +9,3 @@
      ### Requirement: Provisional метрика bot resolved
     -Единицей `bot resolved` MUST считаться успешно отправленный самостоятельный ответ бота без обращения (`outbound`, `bot`, `ticket_id = null`, `sent`). Grounded answer и безопасный refuse учитываются; метрика подтверждает Telegram delivery, а не решение проблемы участником. Mixed request, уведомления об эскалации и системные предупреждения MUST NOT учитываться как `bot resolved`.
@@ -31968,14 +31968,14 @@ resolves_ticket
 ## Activity
 
     file changes: Completed · 4 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/docs/evaluation-initial.md
+    Update { move_path: None }: /path/to/project/docs/evaluation-initial.md
     @@ -1,2 +1,4 @@
     -# Evaluation обращений
     +# Исторический evaluation обращений
     +
     +Этот первый прогон относится к предыдущей реализации и сохранён для сравнения. Evaluation сдаваемой single-call версии: [24 PASS / 0 PARTIAL / 1 FAIL](evaluation.md).
      
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/docs/evaluation.md
+    Update { move_path: None }: /path/to/project/docs/evaluation.md
     @@ -1,2 +1,2 @@
     -# Финальный evaluation — single-call, 120 секунд
     +# Evaluation сдаваемой версии — single-call, 120 секунд
@@ -31985,7 +31985,7 @@ resolves_ticket
     -### Полный прогон прежнего pipeline
     +### Historical / previous implementation: полный two-call прогон
      
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/proposal.md
     @@ -28,3 +28,3 @@
      - Автозакрытие `resolved` выполняется через 24 часа по конфигурируемому `TICKET_AUTO_CLOSE_HOURS`.
     -- При `/start` бот предупреждает не отправлять банковские карты, пароли и SMS-коды, поскольку они не нужны для поддержки акции. Краткий повтор этого предупреждения при эскалации разрешён и рекомендован как presentation behavior, но не обязателен для каждого сообщения.
@@ -32012,7 +32012,7 @@ resolves_ticket
     +## Evaluation сдаваемой версии
     +
     +Финальный single-call evaluation 04.10.2026: **24 PASS / 0 PARTIAL / 1 FAIL** из 25 исходных обращений. FAIL №18 связан с неверным выводом о переносе непроверенных чеков. Исторический two-call evaluation предыдущей реализации и диагностические повторы сохранены в `docs/evaluation.md` и не являются оценкой сдаваемой версии.
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/tasks.md
     @@ -37,3 +37,3 @@
      - [x] 5.1 Создать Telegram adapter для text messages с explicit timeout/error mapping без feedback keyboard и inline callbacks; проверить HTTP fakes и безопасное логирование.
     -- [x] 5.2 Реализовать presentation номера ticket и короткой redacted quote без feedback actions; сохранить optional safety reminder и ограничение длины.
@@ -32482,7 +32482,7 @@ README и ER-схема обновлены: доставка ответа отд
 ## Activity
 
     file changes: Completed · 1 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/README.md
+    Update { move_path: None }: /path/to/project/README.md
     @@ -173,3 +173,3 @@
      
     -[Финальный evaluation всех 25 обращений](docs/evaluation.md) выполнен 04.10.2026 на окончательном single-call pipeline: OpenRouter `qwen/qwen3.8-27b:free`, текущий prompt, `json_object`, LLM timeout 120 с. Итог: **24 PASS, 0 PARTIAL, 1 FAIL**. В №18 бот передал вопрос оператору, но ошибочно исключил чеки из розыгрыша 6 октября, не учитывая перенос незавершённой проверки по 8.1. №9 и №12 больше не содержат прежних ложных утверждений; №19 дал полный ответ. Прогон прошёл настоящий HTTP kernel/webhook, ingestion, отдельные database AI/Telegram workers, реальный LLM, validator, сохранение и delivery-клиент в отдельной PostgreSQL-БД. Подменён только внешний ответ Telegram sendMessage для синтетических чатов. Выполнены 33 LLM HTTP requests: 25 HTTP 200 и 8 HTTP 429, восстановленных штатными retries; пройдены 325/325 механических проверок. Временная БД удалена. Prompt, модель и AI-код для evaluation не менялись. Полная таблица с ожиданиями по исходным правилам, причинами оценок и историей прежних прогонов сохранена в отчёте; [первый прогон](docs/evaluation-initial.md) сохранён отдельно. Это один прогон независимых вопросов, без оценки multi-turn и статистической повторяемости; проверка ID/цитат не гарантирует семантической правильности вывода.
@@ -32528,12 +32528,12 @@ README и ER-схема обновлены: доставка ответа отд
 ## Activity
 
     $ pwd
-    /Users/artem/Desktop/tg-promo/tg-promo
+    /path/to/project
     ✓ • 0ms
 
 ## Activity
 
-    $ cat /Users/artem/.codex/plugins/cache/ponytail/ponytail/1.0.0/skills/ponytail/SKILL.md
+    $ cat /path/to/home/.codex/plugins/cache/ponytail/ponytail/1.0.0/skills/ponytail/SKILL.md
     ---
     name: ponytail
     description: >
@@ -33710,7 +33710,7 @@ README и ER-схема обновлены: доставка ответа отд
 ## Activity
 
     $ ls -ld .ai/rules vendor 2>/dev/null
-    drwxr-xr-x@ 49 artem  staff  1568 Oct  1 18:23 vendor
+    drwxr-xr-x@ 49 user  staff  1568 Oct  1 18:23 vendor
     ✗ (1) • 0ms
 
 ## Activity
@@ -34206,7 +34206,7 @@ README и ER-схема обновлены: доставка ответа отд
         }
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -35201,40 +35201,40 @@ README и ER-схема обновлены: доставка ответа отд
       "schemaName": "spec-driven",
       "planningHome": {
         "kind": "repo",
-        "root": "/Users/artem/Desktop/tg-promo/tg-promo",
-        "changesDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes",
+        "root": "/path/to/project",
+        "changesDir": "/path/to/project/openspec/changes",
         "defaultSchema": "spec-driven"
       },
-      "changeRoot": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeRoot": "/path/to/project/openspec/changes/mvp-promo-support",
       "artifactPaths": {
         "proposal": {
           "outputPath": "proposal.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/proposal.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
           ]
         },
         "specs": {
           "outputPath": "specs/**/*.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/**/*.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/specs/**/*.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
           ]
         },
         "design": {
           "outputPath": "design.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/design.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/design.md"
           ]
         },
         "tasks": {
           "outputPath": "tasks.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
           ]
         }
       },
@@ -35257,7 +35257,7 @@ README и ER-схема обновлены: доставка ответа отд
         ],
         "linkedContext": [],
         "allowedEditRoots": [
-          "/Users/artem/Desktop/tg-promo/tg-promo"
+          "/path/to/project"
         ],
         "requiresAffectedAreaSelection": false,
         "constraints": [
@@ -35298,7 +35298,7 @@ README и ER-схема обновлены: доставка ответа отд
         }
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -35693,40 +35693,40 @@ README и ER-схема обновлены: доставка ответа отд
       "schemaName": "spec-driven",
       "planningHome": {
         "kind": "repo",
-        "root": "/Users/artem/Desktop/tg-promo/tg-promo",
-        "changesDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes",
+        "root": "/path/to/project",
+        "changesDir": "/path/to/project/openspec/changes",
         "defaultSchema": "spec-driven"
       },
-      "changeRoot": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeRoot": "/path/to/project/openspec/changes/mvp-promo-support",
       "artifactPaths": {
         "proposal": {
           "outputPath": "proposal.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/proposal.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
           ]
         },
         "specs": {
           "outputPath": "specs/**/*.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/**/*.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/specs/**/*.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
           ]
         },
         "design": {
           "outputPath": "design.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/design.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/design.md"
           ]
         },
         "tasks": {
           "outputPath": "tasks.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
           ]
         }
       },
@@ -35749,7 +35749,7 @@ README и ER-схема обновлены: доставка ответа отд
         ],
         "linkedContext": [],
         "allowedEditRoots": [
-          "/Users/artem/Desktop/tg-promo/tg-promo"
+          "/path/to/project"
         ],
         "requiresAffectedAreaSelection": false,
         "constraints": [
@@ -35790,7 +35790,7 @@ README и ER-схема обновлены: доставка ответа отд
         }
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -36391,22 +36391,22 @@ README и ER-схема обновлены: доставка ответа отд
     $ openspec instructions apply --change mvp-promo-support --json
     {
       "changeName": "mvp-promo-support",
-      "changeDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeDir": "/path/to/project/openspec/changes/mvp-promo-support",
       "schemaName": "spec-driven",
       "contextFiles": {
         "proposal": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
         ],
         "specs": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
         ],
         "design": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/design.md"
         ],
         "tasks": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
         ]
       },
       "progress": {
@@ -36419,413 +36419,413 @@ README и ER-схема обновлены: доставка ответа отд
           "id": "1",
           "description": "1.1 Добавить Docker Compose services для Laravel app, PostgreSQL и database queue worker, настроить health/dependency order и проверить, что `docker compose config` проходит, а `docker compose up` запускает весь MVP одной командой.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 5
         },
         {
           "id": "2",
           "description": "1.2 Перевести application и queue connections на PostgreSQL/database driver, добавить jobs/failed-jobs storage и проверить миграции внутри Docker без Redis или другого broker.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 6
         },
         {
           "id": "3",
           "description": "1.3 Добавить Livewire в рамках заданного frontend stack и проверить, что базовая Blade/Livewire/Tailwind 4/Vite страница собирается командой `npm run build`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 7
         },
         {
           "id": "4",
           "description": "1.4 Добавить environment-backed настройки Telegram, LLM, retry/timeout и `TICKET_AUTO_CLOSE_HOURS=24`, обновить безопасный `.env.example` и проверить, что populated secrets отсутствуют в tracked files.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 8
         },
         {
           "id": "5",
           "description": "2.1 Создать enums для ticket status, close reason, message author/direction, delivery status и decision type; проверить Pest unit tests на допустимые значения и переходы lifecycle.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 12
         },
         {
           "id": "6",
           "description": "2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с безопасной `redaction_types` metadata, внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests и отсутствие поля для raw message body.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 13
         },
         {
           "id": "7",
           "description": "2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `resolved` и `closed`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 14
         },
         {
           "id": "8",
           "description": "2.4 Реализовать sanitizer до persistence для card-like sequences, контекстных SMS/OTP-кодов и явно обозначенных паролей; проверить unit dataset для evaluation case №22, OTP/password context, обычных дат/сумм/количеств без ложного маскирования и сохранения телефонного номера.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 15
         },
         {
           "id": "9",
           "description": "3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых private text message полей с успешным игнорированием legacy callback updates; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 19
         },
         {
           "id": "10",
           "description": "3.2 Обработать `/start` отдельным safety message о картах, паролях и SMS-кодах без жёсткой фиксации точной формулировки; проверить acceptance test всех четырёх смысловых пунктов предупреждения.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 20
         },
         {
           "id": "11",
           "description": "3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, атомарно записывать database jobs через `beforeCommit()` в той же PostgreSQL transaction, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 21
         },
         {
           "id": "12",
           "description": "3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 22
         },
         {
           "id": "13",
           "description": "3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 23
         },
         {
           "id": "14",
           "description": "3.6 Для participant с open/resolved прикреплять redacted сообщение к тому же ticket без AI-routing; любое сообщение в resolved возвращает open; после closed новый вопрос классифицируется заново.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 24
         },
         {
           "id": "15",
           "description": "4.1 Создать LLM contract, typed decision DTO и validator для `answer`, `escalate`, `mixed`, `refuse`; проверить unit tests для валидных, неполных, неизвестных и противоречивых structured outputs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 28
         },
         {
           "id": "16",
           "description": "4.2 Добавить отдельные versioned prompt files и loader единственного factual source `docs/assignment/promo-rules.md`; проверить, что decision сохраняет source hash, но не полный runtime system prompt.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 29
         },
         {
           "id": "17",
           "description": "4.3 Реализовать один provider adapter через Laravel HTTP client с explicit connect/response timeout и безопасным error mapping; проверить exact endpoint fakes, `Http::preventStrayRequests()`, timeout, 429, 5xx и получение только redacted participant text без реальной сети.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 30
         },
         {
           "id": "18",
           "description": "4.4 Реализовать `ProcessIncomingMessage` с queue attempts/backoff и early exit при существующем decision; проверить временный сбой с успешным retry и повтор job после сохранённого decision без второго LLM-вызова.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 31
         },
         {
           "id": "19",
           "description": "4.5 Применять валидный decision в короткой транзакции: grounded answer без ticket, unknown/participant-specific/off-topic escalation, mixed answer плюс один ticket и adversarial safe refusal; проверить acceptance cases для каждого варианта, включая requests №7, №12, №16, №23, №24 и №25.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 32
         },
         {
           "id": "20",
           "description": "4.6 Реализовать идемпотентный fallback после исчерпания retry с decision/ticket reason `llm_failure`; проверить timeout, invalid output и exhausted retries без потери message, второго ticket, второго ответа или двойного учёта.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 33
         },
         {
           "id": "21",
           "description": "5.1 Создать Telegram adapter для text messages с explicit timeout/error mapping без feedback keyboard и inline callbacks; проверить HTTP fakes и безопасное логирование.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 37
         },
         {
           "id": "22",
           "description": "5.2 Реализовать presentation номера ticket и короткой redacted quote без feedback actions; соблюдать ограничение длины.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 38
         },
         {
           "id": "23",
           "description": "5.3 Реализовать `DeliverTelegramMessage` для переходов `pending -> sent|failed`, сохранения Telegram message ID и повторной отправки того же record; проверить success, permanent failure и retry уже `sent` сообщения как no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 39
         },
         {
           "id": "24",
           "description": "6.1 Реализовать session login для заранее созданного operator account без self-registration и ролей; проверить guest redirect, успешный login и отсутствие публичного registration endpoint.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 43
         },
         {
           "id": "25",
           "description": "6.2 Реализовать Livewire queue и conversation history с escaped redacted participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets, отсутствие raw HTML и отсутствие исходных card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 44
         },
         {
           "id": "26",
           "description": "6.3 Сохранять pending operator message и database delivery job атомарно; successful delivery фиксирует sent и первый response timestamp, не решает ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 45
         },
         {
           "id": "27",
           "description": "6.4 Показывать failed delivery с явными retry/cancel; unfinished operator reply блокирует следующий, retry использует прежний record.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 46
         },
         {
           "id": "28",
           "description": "7.1 Игнорировать legacy inline callbacks без side effects; ordinary participant messages применимы только к собственному active ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 50
         },
         {
           "id": "29",
           "description": "7.2 Любое новое participant message возвращает resolved в open без LLM; отдельные feedback тексты и keyboard отсутствуют.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 51
         },
         {
           "id": "30",
           "description": "7.3 Реализовать delayed AutoCloseTicket только для resolved с configurable 24-hour delay и status/resolved_since/deadline recheck; stale jobs — no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 52
         },
         {
           "id": "31",
           "description": "7.4 Ручное закрытие open/resolved с operator_closed не отменяет operator replies; отмена сообщения отдельная, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 53
         },
         {
           "id": "32",
           "description": "8.1 Реализовать изолированный statistics query/service: bot resolved учитывает только standalone bot answers с sent/delivered_at, refuse и mixed исключены, follow-ups не увеличивают escalated, average использует первую успешную operator delivery, unanswered tickets исключены; проверить фиксированным dataset.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 57
         },
         {
           "id": "33",
           "description": "8.2 Добавить статистику в Livewire operator panel и проверить component test, что повторный просмотр возвращает те же значения без LLM/Telegram вызовов и изменения persisted state.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 58
         },
         {
           "id": "34",
           "description": "9.1 Создать повторяемый evaluation runner для всех 25 сообщений из `docs/assignment/requests.md` через тот же application boundary и проверить, что отчёт содержит вопрос, ответ, признак эскалации, оценку и комментарий для всех 25 строк.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 62
         },
         {
           "id": "35",
           "description": "9.2 Зафиксировать результаты evaluation, спорные mixed/off-topic cases и изменения prompt в требуемой таблице; проверить наличие строк 1–25, redaction case №22 и отсутствие raw card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 63
         },
         {
           "id": "36",
           "description": "9.3 Обновить README инструкцией запуска с нуля, assumptions, provisional definitions, известными ограничениями и production follow-ups; проверить команды README в чистом Docker Compose запуске.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 64
         },
         {
           "id": "37",
           "description": "9.4 Добавить схему PostgreSQL и краткое объяснение ключей, partial unique active-ticket constraint, transactions и delivery state; сверить диаграмму с фактическими migrations.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 65
         },
         {
           "id": "38",
           "description": "10.1 Запустить узкие Pest feature/unit suites каждого capability, затем полный `php artisan test --compact`, и устранить только дефекты поведения этого change.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 69
         },
         {
           "id": "39",
           "description": "10.2 Запустить `vendor/bin/pint --dirty --format agent`, `npm run build` и `openspec validate mvp-promo-support --strict`; проверить успешное завершение всех команд.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 70
         },
         {
           "id": "40",
           "description": "10.3 Выполнить Docker smoke flow: принять grounded question, создать escalation, ответить оператором, отдельно отметить решённым, продолжить переписку, выполнить manual/auto close и доставить уведомления, затем сверить три метрики и delivery states.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 71
         },
         {
           "id": "41",
           "description": "10.4 Проверить repository secrets scan и итоговый diff: отсутствуют реальные Telegram/LLM keys, raw card/OTP/password values, sensitive message bodies в logging paths, незаявленная инфраструктура и функциональность вне specs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 72
         },
         {
           "id": "42",
           "description": "11.1 Проверить late AI attachment через общий attach/reopen и delivery без lifecycle transitions.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 76
         },
         {
           "id": "43",
           "description": "11.2 Убрать password word whitelist, проверить указанные leak/false-positive cases по syntax/value-like признакам.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 77
         },
         {
           "id": "44",
           "description": "11.3 Зафиксировать фактический lifecycle без revision/generation/marker механизмов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 78
         },
         {
           "id": "45",
           "description": "11.4 Применить штатную ProcessIncomingMessage retry-policy в evaluation, разделить model result/infrastructure reason, повторить 25 cases; полный PostgreSQL suite, smoke, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 79
         },
         {
           "id": "46",
           "description": "12.1 Реализовать один structured decision с answer/evidence, deterministic PHP validation и trusted московской датой; сохранять пользовательский answer без отдельного LLM verifier.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 90
         },
         {
           "id": "47",
           "description": "12.2 Ограничить provider attempts тремя на сообщение: один HTTP request на queue attempt, retries только transient errors; invalid result сразу использует существующую safe escalation; ticket lifecycle, operator dashboard и delivery semantics не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 91
         },
         {
           "id": "48",
           "description": "12.3 Обновить OpenSpec, README и regression tests для single-call contract, evidence validation, safe fallback и HTTP request counts; выполнить узкие Pest tests, Pint и OpenSpec validation без реальных LLM-запросов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 92
         },
         {
           "id": "49",
           "description": "13.1 Использовать open/resolved/closed, сохранить историю и индексы активных tickets.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 97
         },
         {
           "id": "50",
           "description": "13.2 Обычные последовательные operator replies не решают ticket; отдельное «Отметить решённым» запускает таймер; продолжение переписки возвращает open; closed terminal. AI pipeline не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 98
         },
         {
           "id": "51",
           "description": "13.3 Актуализировать regression tests и README; проверить delivery failures/retries, pending/new messages, stale timers, concurrent workers, migration, UI validation/auth и существующий AI contract; выполнить узкие PostgreSQL tests, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 99
         },
         {
           "id": "52",
           "description": "14.1 Ограничить основную ленту operator dashboard выбранным ticket_id; исключить из неё другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, pagination и delivery action isolation. Lifecycle не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 105
         },
         {
           "id": "53",
           "description": "14.2 Отдельно проверить timestamps: выводить created_at/closed_at/messages.created_at в Europe/Moscow с пометкой «МСК», сохранить UTC в данных и таймерах; проверить переход суток и отсутствие мутаций при refresh.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 106
         },
         {
           "id": "54",
           "description": "15.1 Отделить «Отметить решённым» от отправки и delivery; атомарно создавать таймер только для resolved; feedback keyboard отсутствует.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 110
         },
         {
           "id": "55",
           "description": "15.2 Блокировать следующий operator reply при pending/failed; explicit retry/cancel, доставка после close и подавление stale escalation, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 111
         },
         {
           "id": "56",
           "description": "15.3 Проверить lifecycle, rollback, stale timers, queue concurrency и AI contract; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 112
         },
         {
           "id": "57",
           "description": "16.1 Зафиксировать Message IDs контекста при создании ticket, с нижней границей после предыдущего закрытия и source linkage ответов бота; отдельный read-only блок и независимая pagination, основная лента остаётся ticket-scoped.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 116
         },
         {
           "id": "58",
           "description": "16.2 Показать границу создания; атомарно создать System notice ручного/автоматического закрытия с номером обращения и существующей delivery job, сохранить guards stale notices и operator replies.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 117
         },
         {
           "id": "59",
           "description": "16.3 Проверить PostgreSQL regressions контекста A/B, immutability, sanitizer/escaping, pagination, уведомлений и delivery guards; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 118
         }
       ],
@@ -36842,7 +36842,7 @@ README и ER-схема обновлены: доставка ответа отд
         "If implementation reveals a specification problem, update the OpenSpec artifacts explicitly before proceeding."
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -38336,13 +38336,13 @@ README и ER-схема обновлены: доставка ответа отд
 ## Activity
 
     file changes: Completed · 3 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/design.md
     @@ -188,3 +188,3 @@
      
     -Telegram adapter отправляет только `chat_id` и `text`, без ReplyKeyboardMarkup, inline buttons или callback acknowledgement. Он задаёт explicit timeout и переводит API/network errors в типизированные ошибки.
     +Telegram adapter отправляет `chat_id`, `text` и `reply_markup={"remove_keyboard": true}` (ReplyKeyboardRemove) для каждого исходящего сообщения, включая `/start`, bot/system сообщения и operator replies. Это удаляет сохранённую Telegram-клиентом старую feedback-клавиатуру при ближайшей успешной доставке, без новых сообщений, полей или lifecycle-команд. ReplyKeyboardMarkup, inline buttons и callback acknowledgement не создаются. Adapter задаёт explicit timeout и переводит API/network errors в типизированные ошибки.
      
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md
     @@ -205,2 +205,16 @@
      
     +Каждое исходящее Telegram message, включая ответ на `/start`, MUST содержать ReplyKeyboardRemove (`reply_markup={"remove_keyboard": true}`), чтобы убрать сохранённую старую клавиатуру при ближайшей успешной доставке. Удаление клавиатуры MUST NOT создавать отдельные сообщения, изменять delivery guards или lifecycle обращения.
@@ -38360,7 +38360,7 @@ README и ER-схема обновлены: доставка ответа отд
     +- **AND** обычные guards и обработка `/start` сохраняются
     +
      #### Scenario: Прежний текст кнопки после закрытия
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/tasks.md
     @@ -118 +118,6 @@
      - [x] 16.3 Проверить PostgreSQL regressions контекста A/B, immutability, sanitizer/escaping, pagination, уведомлений и delivery guards; Pint, frontend build и strict OpenSpec validation.
     +
@@ -38374,22 +38374,22 @@ README и ER-схема обновлены: доставка ответа отд
     $ openspec instructions apply --change mvp-promo-support --json
     {
       "changeName": "mvp-promo-support",
-      "changeDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeDir": "/path/to/project/openspec/changes/mvp-promo-support",
       "schemaName": "spec-driven",
       "contextFiles": {
         "proposal": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
         ],
         "specs": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
         ],
         "design": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/design.md"
         ],
         "tasks": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
         ]
       },
       "progress": {
@@ -38402,427 +38402,427 @@ README и ER-схема обновлены: доставка ответа отд
           "id": "1",
           "description": "1.1 Добавить Docker Compose services для Laravel app, PostgreSQL и database queue worker, настроить health/dependency order и проверить, что `docker compose config` проходит, а `docker compose up` запускает весь MVP одной командой.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 5
         },
         {
           "id": "2",
           "description": "1.2 Перевести application и queue connections на PostgreSQL/database driver, добавить jobs/failed-jobs storage и проверить миграции внутри Docker без Redis или другого broker.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 6
         },
         {
           "id": "3",
           "description": "1.3 Добавить Livewire в рамках заданного frontend stack и проверить, что базовая Blade/Livewire/Tailwind 4/Vite страница собирается командой `npm run build`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 7
         },
         {
           "id": "4",
           "description": "1.4 Добавить environment-backed настройки Telegram, LLM, retry/timeout и `TICKET_AUTO_CLOSE_HOURS=24`, обновить безопасный `.env.example` и проверить, что populated secrets отсутствуют в tracked files.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 8
         },
         {
           "id": "5",
           "description": "2.1 Создать enums для ticket status, close reason, message author/direction, delivery status и decision type; проверить Pest unit tests на допустимые значения и переходы lifecycle.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 12
         },
         {
           "id": "6",
           "description": "2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с безопасной `redaction_types` metadata, внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests и отсутствие поля для raw message body.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 13
         },
         {
           "id": "7",
           "description": "2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `resolved` и `closed`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 14
         },
         {
           "id": "8",
           "description": "2.4 Реализовать sanitizer до persistence для card-like sequences, контекстных SMS/OTP-кодов и явно обозначенных паролей; проверить unit dataset для evaluation case №22, OTP/password context, обычных дат/сумм/количеств без ложного маскирования и сохранения телефонного номера.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 15
         },
         {
           "id": "9",
           "description": "3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых private text message полей с успешным игнорированием legacy callback updates; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 19
         },
         {
           "id": "10",
           "description": "3.2 Обработать `/start` отдельным safety message о картах, паролях и SMS-кодах без жёсткой фиксации точной формулировки; проверить acceptance test всех четырёх смысловых пунктов предупреждения.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 20
         },
         {
           "id": "11",
           "description": "3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, атомарно записывать database jobs через `beforeCommit()` в той же PostgreSQL transaction, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 21
         },
         {
           "id": "12",
           "description": "3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 22
         },
         {
           "id": "13",
           "description": "3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 23
         },
         {
           "id": "14",
           "description": "3.6 Для participant с open/resolved прикреплять redacted сообщение к тому же ticket без AI-routing; любое сообщение в resolved возвращает open; после closed новый вопрос классифицируется заново.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 24
         },
         {
           "id": "15",
           "description": "4.1 Создать LLM contract, typed decision DTO и validator для `answer`, `escalate`, `mixed`, `refuse`; проверить unit tests для валидных, неполных, неизвестных и противоречивых structured outputs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 28
         },
         {
           "id": "16",
           "description": "4.2 Добавить отдельные versioned prompt files и loader единственного factual source `docs/assignment/promo-rules.md`; проверить, что decision сохраняет source hash, но не полный runtime system prompt.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 29
         },
         {
           "id": "17",
           "description": "4.3 Реализовать один provider adapter через Laravel HTTP client с explicit connect/response timeout и безопасным error mapping; проверить exact endpoint fakes, `Http::preventStrayRequests()`, timeout, 429, 5xx и получение только redacted participant text без реальной сети.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 30
         },
         {
           "id": "18",
           "description": "4.4 Реализовать `ProcessIncomingMessage` с queue attempts/backoff и early exit при существующем decision; проверить временный сбой с успешным retry и повтор job после сохранённого decision без второго LLM-вызова.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 31
         },
         {
           "id": "19",
           "description": "4.5 Применять валидный decision в короткой транзакции: grounded answer без ticket, unknown/participant-specific/off-topic escalation, mixed answer плюс один ticket и adversarial safe refusal; проверить acceptance cases для каждого варианта, включая requests №7, №12, №16, №23, №24 и №25.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 32
         },
         {
           "id": "20",
           "description": "4.6 Реализовать идемпотентный fallback после исчерпания retry с decision/ticket reason `llm_failure`; проверить timeout, invalid output и exhausted retries без потери message, второго ticket, второго ответа или двойного учёта.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 33
         },
         {
           "id": "21",
           "description": "5.1 Создать Telegram adapter для text messages с explicit timeout/error mapping без feedback keyboard и inline callbacks; проверить HTTP fakes и безопасное логирование.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 37
         },
         {
           "id": "22",
           "description": "5.2 Реализовать presentation номера ticket и короткой redacted quote без feedback actions; соблюдать ограничение длины.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 38
         },
         {
           "id": "23",
           "description": "5.3 Реализовать `DeliverTelegramMessage` для переходов `pending -> sent|failed`, сохранения Telegram message ID и повторной отправки того же record; проверить success, permanent failure и retry уже `sent` сообщения как no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 39
         },
         {
           "id": "24",
           "description": "6.1 Реализовать session login для заранее созданного operator account без self-registration и ролей; проверить guest redirect, успешный login и отсутствие публичного registration endpoint.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 43
         },
         {
           "id": "25",
           "description": "6.2 Реализовать Livewire queue и conversation history с escaped redacted participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets, отсутствие raw HTML и отсутствие исходных card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 44
         },
         {
           "id": "26",
           "description": "6.3 Сохранять pending operator message и database delivery job атомарно; successful delivery фиксирует sent и первый response timestamp, не решает ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 45
         },
         {
           "id": "27",
           "description": "6.4 Показывать failed delivery с явными retry/cancel; unfinished operator reply блокирует следующий, retry использует прежний record.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 46
         },
         {
           "id": "28",
           "description": "7.1 Игнорировать legacy inline callbacks без side effects; ordinary participant messages применимы только к собственному active ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 50
         },
         {
           "id": "29",
           "description": "7.2 Любое новое participant message возвращает resolved в open без LLM; отдельные feedback тексты и keyboard отсутствуют.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 51
         },
         {
           "id": "30",
           "description": "7.3 Реализовать delayed AutoCloseTicket только для resolved с configurable 24-hour delay и status/resolved_since/deadline recheck; stale jobs — no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 52
         },
         {
           "id": "31",
           "description": "7.4 Ручное закрытие open/resolved с operator_closed не отменяет operator replies; отмена сообщения отдельная, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 53
         },
         {
           "id": "32",
           "description": "8.1 Реализовать изолированный statistics query/service: bot resolved учитывает только standalone bot answers с sent/delivered_at, refuse и mixed исключены, follow-ups не увеличивают escalated, average использует первую успешную operator delivery, unanswered tickets исключены; проверить фиксированным dataset.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 57
         },
         {
           "id": "33",
           "description": "8.2 Добавить статистику в Livewire operator panel и проверить component test, что повторный просмотр возвращает те же значения без LLM/Telegram вызовов и изменения persisted state.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 58
         },
         {
           "id": "34",
           "description": "9.1 Создать повторяемый evaluation runner для всех 25 сообщений из `docs/assignment/requests.md` через тот же application boundary и проверить, что отчёт содержит вопрос, ответ, признак эскалации, оценку и комментарий для всех 25 строк.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 62
         },
         {
           "id": "35",
           "description": "9.2 Зафиксировать результаты evaluation, спорные mixed/off-topic cases и изменения prompt в требуемой таблице; проверить наличие строк 1–25, redaction case №22 и отсутствие raw card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 63
         },
         {
           "id": "36",
           "description": "9.3 Обновить README инструкцией запуска с нуля, assumptions, provisional definitions, известными ограничениями и production follow-ups; проверить команды README в чистом Docker Compose запуске.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 64
         },
         {
           "id": "37",
           "description": "9.4 Добавить схему PostgreSQL и краткое объяснение ключей, partial unique active-ticket constraint, transactions и delivery state; сверить диаграмму с фактическими migrations.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 65
         },
         {
           "id": "38",
           "description": "10.1 Запустить узкие Pest feature/unit suites каждого capability, затем полный `php artisan test --compact`, и устранить только дефекты поведения этого change.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 69
         },
         {
           "id": "39",
           "description": "10.2 Запустить `vendor/bin/pint --dirty --format agent`, `npm run build` и `openspec validate mvp-promo-support --strict`; проверить успешное завершение всех команд.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 70
         },
         {
           "id": "40",
           "description": "10.3 Выполнить Docker smoke flow: принять grounded question, создать escalation, ответить оператором, отдельно отметить решённым, продолжить переписку, выполнить manual/auto close и доставить уведомления, затем сверить три метрики и delivery states.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 71
         },
         {
           "id": "41",
           "description": "10.4 Проверить repository secrets scan и итоговый diff: отсутствуют реальные Telegram/LLM keys, raw card/OTP/password values, sensitive message bodies в logging paths, незаявленная инфраструктура и функциональность вне specs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 72
         },
         {
           "id": "42",
           "description": "11.1 Проверить late AI attachment через общий attach/reopen и delivery без lifecycle transitions.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 76
         },
         {
           "id": "43",
           "description": "11.2 Убрать password word whitelist, проверить указанные leak/false-positive cases по syntax/value-like признакам.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 77
         },
         {
           "id": "44",
           "description": "11.3 Зафиксировать фактический lifecycle без revision/generation/marker механизмов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 78
         },
         {
           "id": "45",
           "description": "11.4 Применить штатную ProcessIncomingMessage retry-policy в evaluation, разделить model result/infrastructure reason, повторить 25 cases; полный PostgreSQL suite, smoke, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 79
         },
         {
           "id": "46",
           "description": "12.1 Реализовать один structured decision с answer/evidence, deterministic PHP validation и trusted московской датой; сохранять пользовательский answer без отдельного LLM verifier.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 90
         },
         {
           "id": "47",
           "description": "12.2 Ограничить provider attempts тремя на сообщение: один HTTP request на queue attempt, retries только transient errors; invalid result сразу использует существующую safe escalation; ticket lifecycle, operator dashboard и delivery semantics не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 91
         },
         {
           "id": "48",
           "description": "12.3 Обновить OpenSpec, README и regression tests для single-call contract, evidence validation, safe fallback и HTTP request counts; выполнить узкие Pest tests, Pint и OpenSpec validation без реальных LLM-запросов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 92
         },
         {
           "id": "49",
           "description": "13.1 Использовать open/resolved/closed, сохранить историю и индексы активных tickets.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 97
         },
         {
           "id": "50",
           "description": "13.2 Обычные последовательные operator replies не решают ticket; отдельное «Отметить решённым» запускает таймер; продолжение переписки возвращает open; closed terminal. AI pipeline не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 98
         },
         {
           "id": "51",
           "description": "13.3 Актуализировать regression tests и README; проверить delivery failures/retries, pending/new messages, stale timers, concurrent workers, migration, UI validation/auth и существующий AI contract; выполнить узкие PostgreSQL tests, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 99
         },
         {
           "id": "52",
           "description": "14.1 Ограничить основную ленту operator dashboard выбранным ticket_id; исключить из неё другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, pagination и delivery action isolation. Lifecycle не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 105
         },
         {
           "id": "53",
           "description": "14.2 Отдельно проверить timestamps: выводить created_at/closed_at/messages.created_at в Europe/Moscow с пометкой «МСК», сохранить UTC в данных и таймерах; проверить переход суток и отсутствие мутаций при refresh.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 106
         },
         {
           "id": "54",
           "description": "15.1 Отделить «Отметить решённым» от отправки и delivery; атомарно создавать таймер только для resolved; feedback keyboard отсутствует.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 110
         },
         {
           "id": "55",
           "description": "15.2 Блокировать следующий operator reply при pending/failed; explicit retry/cancel, доставка после close и подавление stale escalation, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 111
         },
         {
           "id": "56",
           "description": "15.3 Проверить lifecycle, rollback, stale timers, queue concurrency и AI contract; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 112
         },
         {
           "id": "57",
           "description": "16.1 Зафиксировать Message IDs контекста при создании ticket, с нижней границей после предыдущего закрытия и source linkage ответов бота; отдельный read-only блок и независимая pagination, основная лента остаётся ticket-scoped.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 116
         },
         {
           "id": "58",
           "description": "16.2 Показать границу создания; атомарно создать System notice ручного/автоматического закрытия с номером обращения и существующей delivery job, сохранить guards stale notices и operator replies.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 117
         },
         {
           "id": "59",
           "description": "16.3 Проверить PostgreSQL regressions контекста A/B, immutability, sanitizer/escaping, pagination, уведомлений и delivery guards; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 118
         },
         {
           "id": "60",
           "description": "17.1 Добавить ReplyKeyboardRemove в общий sendMessage без создания feedback-кнопок или специальных lifecycle-команд; проверить HTTP payload и доставку `/start`, сохранить обработку прежних текстов как обычных сообщений.",
           "done": false,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 122
         },
         {
           "id": "61",
           "description": "17.2 Актуализировать README/OpenSpec; выполнить targeted PostgreSQL delivery/lifecycle tests, Pint, strict OpenSpec validation и git diff --check.",
           "done": false,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 123
         }
       ],
@@ -38839,7 +38839,7 @@ README и ER-схема обновлены: доставка ответа отд
         "If implementation reveals a specification problem, update the OpenSpec artifacts explicitly before proceeding."
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -38848,18 +38848,18 @@ README и ER-схема обновлены: доставка ответа отд
 ## Activity
 
     file changes: Completed · 4 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/README.md
+    Update { move_path: None }: /path/to/project/README.md
     @@ -43,2 +43,4 @@
      
     +Каждое исходящее Telegram сообщение, включая предупреждение на `/start`, ответы бота, системные уведомления и operator replies, содержит `ReplyKeyboardRemove` (`reply_markup={"remove_keyboard": true}`). При ближайшей успешной доставке Telegram-клиент удаляет сохранённую старую клавиатуру. Отдельные сообщения для удаления, новые поля и специальные lifecycle-команды не создаются.
     +
      Пока предыдущий operator reply имеет `pending` или `failed`, создать следующий нельзя. Для pending доступны ожидание отправки и явная отмена; для failed — «Повторить» и «Отменить». Retry использует тот же record; после `sent` или явной cancellation можно отправить следующий ответ. Ручное закрытие не требует отмены сообщения, а retry/cancel ранее созданного ответа доступны также в closed ticket. Если Telegram HTTP уже начался до закрытия, результат доставки сохраняется, ticket остаётся closed без нового таймера. Telegram timeout после фактического приёма может привести к повторной доставке: exactly-once Telegram не гарантируется.
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Services/TelegramBotApiClient.php
+    Update { move_path: None }: /path/to/project/app/Services/TelegramBotApiClient.php
     @@ -21,2 +21,3 @@
                  'text' => $message->text,
     +            'reply_markup' => ['remove_keyboard' => true],
              ]);
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Services/TelegramBotApiClientTest.php
+    Update { move_path: None }: /path/to/project/tests/Feature/Services/TelegramBotApiClientTest.php
     @@ -45,3 +45,3 @@
      
     -test('sends ordinary text without adding a keyboard', function () {
@@ -38871,7 +38871,7 @@ README и ER-схема обновлены: доставка ответа отд
     +    Http::assertSent(fn (Request $request): bool => $request['reply_markup'] === ['remove_keyboard' => true]);
     +    Http::assertSentCount(1);
      });
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Telegram/TelegramWebhookTest.php
+    Update { move_path: None }: /path/to/project/tests/Feature/Telegram/TelegramWebhookTest.php
     @@ -477,3 +477,3 @@
      
     -test('delivers the start warning without normal processing or counting it as a bot answer', function () {
@@ -39116,7 +39116,7 @@ README и ER-схема обновлены: доставка ответа отд
 ## Activity
 
     file changes: Completed · 1 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/tasks.md
     @@ -121,3 +121,3 @@
      
     -- [ ] 17.1 Добавить ReplyKeyboardRemove в общий sendMessage без создания feedback-кнопок или специальных lifecycle-команд; проверить HTTP payload и доставку `/start`, сохранить обработку прежних текстов как обычных сообщений.
@@ -39128,22 +39128,22 @@ README и ER-схема обновлены: доставка ответа отд
     $ openspec instructions apply --change mvp-promo-support --json
     {
       "changeName": "mvp-promo-support",
-      "changeDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeDir": "/path/to/project/openspec/changes/mvp-promo-support",
       "schemaName": "spec-driven",
       "contextFiles": {
         "proposal": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
         ],
         "specs": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
         ],
         "design": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/design.md"
         ],
         "tasks": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
         ]
       },
       "progress": {
@@ -39156,427 +39156,427 @@ README и ER-схема обновлены: доставка ответа отд
           "id": "1",
           "description": "1.1 Добавить Docker Compose services для Laravel app, PostgreSQL и database queue worker, настроить health/dependency order и проверить, что `docker compose config` проходит, а `docker compose up` запускает весь MVP одной командой.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 5
         },
         {
           "id": "2",
           "description": "1.2 Перевести application и queue connections на PostgreSQL/database driver, добавить jobs/failed-jobs storage и проверить миграции внутри Docker без Redis или другого broker.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 6
         },
         {
           "id": "3",
           "description": "1.3 Добавить Livewire в рамках заданного frontend stack и проверить, что базовая Blade/Livewire/Tailwind 4/Vite страница собирается командой `npm run build`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 7
         },
         {
           "id": "4",
           "description": "1.4 Добавить environment-backed настройки Telegram, LLM, retry/timeout и `TICKET_AUTO_CLOSE_HOURS=24`, обновить безопасный `.env.example` и проверить, что populated secrets отсутствуют в tracked files.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 8
         },
         {
           "id": "5",
           "description": "2.1 Создать enums для ticket status, close reason, message author/direction, delivery status и decision type; проверить Pest unit tests на допустимые значения и переходы lifecycle.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 12
         },
         {
           "id": "6",
           "description": "2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с безопасной `redaction_types` metadata, внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests и отсутствие поля для raw message body.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 13
         },
         {
           "id": "7",
           "description": "2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `resolved` и `closed`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 14
         },
         {
           "id": "8",
           "description": "2.4 Реализовать sanitizer до persistence для card-like sequences, контекстных SMS/OTP-кодов и явно обозначенных паролей; проверить unit dataset для evaluation case №22, OTP/password context, обычных дат/сумм/количеств без ложного маскирования и сохранения телефонного номера.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 15
         },
         {
           "id": "9",
           "description": "3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых private text message полей с успешным игнорированием legacy callback updates; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 19
         },
         {
           "id": "10",
           "description": "3.2 Обработать `/start` отдельным safety message о картах, паролях и SMS-кодах без жёсткой фиксации точной формулировки; проверить acceptance test всех четырёх смысловых пунктов предупреждения.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 20
         },
         {
           "id": "11",
           "description": "3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, атомарно записывать database jobs через `beforeCommit()` в той же PostgreSQL transaction, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 21
         },
         {
           "id": "12",
           "description": "3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 22
         },
         {
           "id": "13",
           "description": "3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 23
         },
         {
           "id": "14",
           "description": "3.6 Для participant с open/resolved прикреплять redacted сообщение к тому же ticket без AI-routing; любое сообщение в resolved возвращает open; после closed новый вопрос классифицируется заново.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 24
         },
         {
           "id": "15",
           "description": "4.1 Создать LLM contract, typed decision DTO и validator для `answer`, `escalate`, `mixed`, `refuse`; проверить unit tests для валидных, неполных, неизвестных и противоречивых structured outputs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 28
         },
         {
           "id": "16",
           "description": "4.2 Добавить отдельные versioned prompt files и loader единственного factual source `docs/assignment/promo-rules.md`; проверить, что decision сохраняет source hash, но не полный runtime system prompt.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 29
         },
         {
           "id": "17",
           "description": "4.3 Реализовать один provider adapter через Laravel HTTP client с explicit connect/response timeout и безопасным error mapping; проверить exact endpoint fakes, `Http::preventStrayRequests()`, timeout, 429, 5xx и получение только redacted participant text без реальной сети.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 30
         },
         {
           "id": "18",
           "description": "4.4 Реализовать `ProcessIncomingMessage` с queue attempts/backoff и early exit при существующем decision; проверить временный сбой с успешным retry и повтор job после сохранённого decision без второго LLM-вызова.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 31
         },
         {
           "id": "19",
           "description": "4.5 Применять валидный decision в короткой транзакции: grounded answer без ticket, unknown/participant-specific/off-topic escalation, mixed answer плюс один ticket и adversarial safe refusal; проверить acceptance cases для каждого варианта, включая requests №7, №12, №16, №23, №24 и №25.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 32
         },
         {
           "id": "20",
           "description": "4.6 Реализовать идемпотентный fallback после исчерпания retry с decision/ticket reason `llm_failure`; проверить timeout, invalid output и exhausted retries без потери message, второго ticket, второго ответа или двойного учёта.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 33
         },
         {
           "id": "21",
           "description": "5.1 Создать Telegram adapter для text messages с explicit timeout/error mapping без feedback keyboard и inline callbacks; проверить HTTP fakes и безопасное логирование.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 37
         },
         {
           "id": "22",
           "description": "5.2 Реализовать presentation номера ticket и короткой redacted quote без feedback actions; соблюдать ограничение длины.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 38
         },
         {
           "id": "23",
           "description": "5.3 Реализовать `DeliverTelegramMessage` для переходов `pending -> sent|failed`, сохранения Telegram message ID и повторной отправки того же record; проверить success, permanent failure и retry уже `sent` сообщения как no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 39
         },
         {
           "id": "24",
           "description": "6.1 Реализовать session login для заранее созданного operator account без self-registration и ролей; проверить guest redirect, успешный login и отсутствие публичного registration endpoint.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 43
         },
         {
           "id": "25",
           "description": "6.2 Реализовать Livewire queue и conversation history с escaped redacted participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets, отсутствие raw HTML и отсутствие исходных card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 44
         },
         {
           "id": "26",
           "description": "6.3 Сохранять pending operator message и database delivery job атомарно; successful delivery фиксирует sent и первый response timestamp, не решает ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 45
         },
         {
           "id": "27",
           "description": "6.4 Показывать failed delivery с явными retry/cancel; unfinished operator reply блокирует следующий, retry использует прежний record.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 46
         },
         {
           "id": "28",
           "description": "7.1 Игнорировать legacy inline callbacks без side effects; ordinary participant messages применимы только к собственному active ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 50
         },
         {
           "id": "29",
           "description": "7.2 Любое новое participant message возвращает resolved в open без LLM; отдельные feedback тексты и keyboard отсутствуют.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 51
         },
         {
           "id": "30",
           "description": "7.3 Реализовать delayed AutoCloseTicket только для resolved с configurable 24-hour delay и status/resolved_since/deadline recheck; stale jobs — no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 52
         },
         {
           "id": "31",
           "description": "7.4 Ручное закрытие open/resolved с operator_closed не отменяет operator replies; отмена сообщения отдельная, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 53
         },
         {
           "id": "32",
           "description": "8.1 Реализовать изолированный statistics query/service: bot resolved учитывает только standalone bot answers с sent/delivered_at, refuse и mixed исключены, follow-ups не увеличивают escalated, average использует первую успешную operator delivery, unanswered tickets исключены; проверить фиксированным dataset.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 57
         },
         {
           "id": "33",
           "description": "8.2 Добавить статистику в Livewire operator panel и проверить component test, что повторный просмотр возвращает те же значения без LLM/Telegram вызовов и изменения persisted state.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 58
         },
         {
           "id": "34",
           "description": "9.1 Создать повторяемый evaluation runner для всех 25 сообщений из `docs/assignment/requests.md` через тот же application boundary и проверить, что отчёт содержит вопрос, ответ, признак эскалации, оценку и комментарий для всех 25 строк.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 62
         },
         {
           "id": "35",
           "description": "9.2 Зафиксировать результаты evaluation, спорные mixed/off-topic cases и изменения prompt в требуемой таблице; проверить наличие строк 1–25, redaction case №22 и отсутствие raw card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 63
         },
         {
           "id": "36",
           "description": "9.3 Обновить README инструкцией запуска с нуля, assumptions, provisional definitions, известными ограничениями и production follow-ups; проверить команды README в чистом Docker Compose запуске.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 64
         },
         {
           "id": "37",
           "description": "9.4 Добавить схему PostgreSQL и краткое объяснение ключей, partial unique active-ticket constraint, transactions и delivery state; сверить диаграмму с фактическими migrations.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 65
         },
         {
           "id": "38",
           "description": "10.1 Запустить узкие Pest feature/unit suites каждого capability, затем полный `php artisan test --compact`, и устранить только дефекты поведения этого change.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 69
         },
         {
           "id": "39",
           "description": "10.2 Запустить `vendor/bin/pint --dirty --format agent`, `npm run build` и `openspec validate mvp-promo-support --strict`; проверить успешное завершение всех команд.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 70
         },
         {
           "id": "40",
           "description": "10.3 Выполнить Docker smoke flow: принять grounded question, создать escalation, ответить оператором, отдельно отметить решённым, продолжить переписку, выполнить manual/auto close и доставить уведомления, затем сверить три метрики и delivery states.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 71
         },
         {
           "id": "41",
           "description": "10.4 Проверить repository secrets scan и итоговый diff: отсутствуют реальные Telegram/LLM keys, raw card/OTP/password values, sensitive message bodies в logging paths, незаявленная инфраструктура и функциональность вне specs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 72
         },
         {
           "id": "42",
           "description": "11.1 Проверить late AI attachment через общий attach/reopen и delivery без lifecycle transitions.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 76
         },
         {
           "id": "43",
           "description": "11.2 Убрать password word whitelist, проверить указанные leak/false-positive cases по syntax/value-like признакам.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 77
         },
         {
           "id": "44",
           "description": "11.3 Зафиксировать фактический lifecycle без revision/generation/marker механизмов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 78
         },
         {
           "id": "45",
           "description": "11.4 Применить штатную ProcessIncomingMessage retry-policy в evaluation, разделить model result/infrastructure reason, повторить 25 cases; полный PostgreSQL suite, smoke, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 79
         },
         {
           "id": "46",
           "description": "12.1 Реализовать один structured decision с answer/evidence, deterministic PHP validation и trusted московской датой; сохранять пользовательский answer без отдельного LLM verifier.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 90
         },
         {
           "id": "47",
           "description": "12.2 Ограничить provider attempts тремя на сообщение: один HTTP request на queue attempt, retries только transient errors; invalid result сразу использует существующую safe escalation; ticket lifecycle, operator dashboard и delivery semantics не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 91
         },
         {
           "id": "48",
           "description": "12.3 Обновить OpenSpec, README и regression tests для single-call contract, evidence validation, safe fallback и HTTP request counts; выполнить узкие Pest tests, Pint и OpenSpec validation без реальных LLM-запросов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 92
         },
         {
           "id": "49",
           "description": "13.1 Использовать open/resolved/closed, сохранить историю и индексы активных tickets.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 97
         },
         {
           "id": "50",
           "description": "13.2 Обычные последовательные operator replies не решают ticket; отдельное «Отметить решённым» запускает таймер; продолжение переписки возвращает open; closed terminal. AI pipeline не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 98
         },
         {
           "id": "51",
           "description": "13.3 Актуализировать regression tests и README; проверить delivery failures/retries, pending/new messages, stale timers, concurrent workers, migration, UI validation/auth и существующий AI contract; выполнить узкие PostgreSQL tests, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 99
         },
         {
           "id": "52",
           "description": "14.1 Ограничить основную ленту operator dashboard выбранным ticket_id; исключить из неё другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, pagination и delivery action isolation. Lifecycle не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 105
         },
         {
           "id": "53",
           "description": "14.2 Отдельно проверить timestamps: выводить created_at/closed_at/messages.created_at в Europe/Moscow с пометкой «МСК», сохранить UTC в данных и таймерах; проверить переход суток и отсутствие мутаций при refresh.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 106
         },
         {
           "id": "54",
           "description": "15.1 Отделить «Отметить решённым» от отправки и delivery; атомарно создавать таймер только для resolved; feedback keyboard отсутствует.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 110
         },
         {
           "id": "55",
           "description": "15.2 Блокировать следующий operator reply при pending/failed; explicit retry/cancel, доставка после close и подавление stale escalation, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 111
         },
         {
           "id": "56",
           "description": "15.3 Проверить lifecycle, rollback, stale timers, queue concurrency и AI contract; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 112
         },
         {
           "id": "57",
           "description": "16.1 Зафиксировать Message IDs контекста при создании ticket, с нижней границей после предыдущего закрытия и source linkage ответов бота; отдельный read-only блок и независимая pagination, основная лента остаётся ticket-scoped.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 116
         },
         {
           "id": "58",
           "description": "16.2 Показать границу создания; атомарно создать System notice ручного/автоматического закрытия с номером обращения и существующей delivery job, сохранить guards stale notices и operator replies.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 117
         },
         {
           "id": "59",
           "description": "16.3 Проверить PostgreSQL regressions контекста A/B, immutability, sanitizer/escaping, pagination, уведомлений и delivery guards; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 118
         },
         {
           "id": "60",
           "description": "17.1 Добавить ReplyKeyboardRemove в общий sendMessage без создания feedback-кнопок или специальных lifecycle-команд; проверить HTTP payload и доставку `/start`, сохранить обработку прежних текстов как обычных сообщений.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 122
         },
         {
           "id": "61",
           "description": "17.2 Актуализировать README/OpenSpec; выполнить targeted PostgreSQL delivery/lifecycle tests, Pint, strict OpenSpec validation и git diff --check.",
           "done": false,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 123
         }
       ],
@@ -39593,7 +39593,7 @@ README и ER-схема обновлены: доставка ответа отд
         "If implementation reveals a specification problem, update the OpenSpec artifacts explicitly before proceeding."
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -39632,7 +39632,7 @@ README и ER-схема обновлены: доставка ответа отд
 ## Activity
 
     file changes: Completed · 1 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/tasks.md
     @@ -122,2 +122,2 @@
      - [x] 17.1 Добавить ReplyKeyboardRemove в общий sendMessage без создания feedback-кнопок или специальных lifecycle-команд; проверить HTTP payload и доставку `/start`, сохранить обработку прежних текстов как обычных сообщений.
     -- [ ] 17.2 Актуализировать README/OpenSpec; выполнить targeted PostgreSQL delivery/lifecycle tests, Pint, strict OpenSpec validation и git diff --check.
@@ -39643,22 +39643,22 @@ README и ER-схема обновлены: доставка ответа отд
     $ openspec instructions apply --change mvp-promo-support --json
     {
       "changeName": "mvp-promo-support",
-      "changeDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeDir": "/path/to/project/openspec/changes/mvp-promo-support",
       "schemaName": "spec-driven",
       "contextFiles": {
         "proposal": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
         ],
         "specs": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
         ],
         "design": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/design.md"
         ],
         "tasks": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
         ]
       },
       "progress": {
@@ -39671,427 +39671,427 @@ README и ER-схема обновлены: доставка ответа отд
           "id": "1",
           "description": "1.1 Добавить Docker Compose services для Laravel app, PostgreSQL и database queue worker, настроить health/dependency order и проверить, что `docker compose config` проходит, а `docker compose up` запускает весь MVP одной командой.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 5
         },
         {
           "id": "2",
           "description": "1.2 Перевести application и queue connections на PostgreSQL/database driver, добавить jobs/failed-jobs storage и проверить миграции внутри Docker без Redis или другого broker.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 6
         },
         {
           "id": "3",
           "description": "1.3 Добавить Livewire в рамках заданного frontend stack и проверить, что базовая Blade/Livewire/Tailwind 4/Vite страница собирается командой `npm run build`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 7
         },
         {
           "id": "4",
           "description": "1.4 Добавить environment-backed настройки Telegram, LLM, retry/timeout и `TICKET_AUTO_CLOSE_HOURS=24`, обновить безопасный `.env.example` и проверить, что populated secrets отсутствуют в tracked files.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 8
         },
         {
           "id": "5",
           "description": "2.1 Создать enums для ticket status, close reason, message author/direction, delivery status и decision type; проверить Pest unit tests на допустимые значения и переходы lifecycle.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 12
         },
         {
           "id": "6",
           "description": "2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с безопасной `redaction_types` metadata, внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests и отсутствие поля для raw message body.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 13
         },
         {
           "id": "7",
           "description": "2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `resolved` и `closed`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 14
         },
         {
           "id": "8",
           "description": "2.4 Реализовать sanitizer до persistence для card-like sequences, контекстных SMS/OTP-кодов и явно обозначенных паролей; проверить unit dataset для evaluation case №22, OTP/password context, обычных дат/сумм/количеств без ложного маскирования и сохранения телефонного номера.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 15
         },
         {
           "id": "9",
           "description": "3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых private text message полей с успешным игнорированием legacy callback updates; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 19
         },
         {
           "id": "10",
           "description": "3.2 Обработать `/start` отдельным safety message о картах, паролях и SMS-кодах без жёсткой фиксации точной формулировки; проверить acceptance test всех четырёх смысловых пунктов предупреждения.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 20
         },
         {
           "id": "11",
           "description": "3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, атомарно записывать database jobs через `beforeCommit()` в той же PostgreSQL transaction, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 21
         },
         {
           "id": "12",
           "description": "3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 22
         },
         {
           "id": "13",
           "description": "3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 23
         },
         {
           "id": "14",
           "description": "3.6 Для participant с open/resolved прикреплять redacted сообщение к тому же ticket без AI-routing; любое сообщение в resolved возвращает open; после closed новый вопрос классифицируется заново.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 24
         },
         {
           "id": "15",
           "description": "4.1 Создать LLM contract, typed decision DTO и validator для `answer`, `escalate`, `mixed`, `refuse`; проверить unit tests для валидных, неполных, неизвестных и противоречивых structured outputs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 28
         },
         {
           "id": "16",
           "description": "4.2 Добавить отдельные versioned prompt files и loader единственного factual source `docs/assignment/promo-rules.md`; проверить, что decision сохраняет source hash, но не полный runtime system prompt.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 29
         },
         {
           "id": "17",
           "description": "4.3 Реализовать один provider adapter через Laravel HTTP client с explicit connect/response timeout и безопасным error mapping; проверить exact endpoint fakes, `Http::preventStrayRequests()`, timeout, 429, 5xx и получение только redacted participant text без реальной сети.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 30
         },
         {
           "id": "18",
           "description": "4.4 Реализовать `ProcessIncomingMessage` с queue attempts/backoff и early exit при существующем decision; проверить временный сбой с успешным retry и повтор job после сохранённого decision без второго LLM-вызова.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 31
         },
         {
           "id": "19",
           "description": "4.5 Применять валидный decision в короткой транзакции: grounded answer без ticket, unknown/participant-specific/off-topic escalation, mixed answer плюс один ticket и adversarial safe refusal; проверить acceptance cases для каждого варианта, включая requests №7, №12, №16, №23, №24 и №25.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 32
         },
         {
           "id": "20",
           "description": "4.6 Реализовать идемпотентный fallback после исчерпания retry с decision/ticket reason `llm_failure`; проверить timeout, invalid output и exhausted retries без потери message, второго ticket, второго ответа или двойного учёта.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 33
         },
         {
           "id": "21",
           "description": "5.1 Создать Telegram adapter для text messages с explicit timeout/error mapping без feedback keyboard и inline callbacks; проверить HTTP fakes и безопасное логирование.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 37
         },
         {
           "id": "22",
           "description": "5.2 Реализовать presentation номера ticket и короткой redacted quote без feedback actions; соблюдать ограничение длины.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 38
         },
         {
           "id": "23",
           "description": "5.3 Реализовать `DeliverTelegramMessage` для переходов `pending -> sent|failed`, сохранения Telegram message ID и повторной отправки того же record; проверить success, permanent failure и retry уже `sent` сообщения как no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 39
         },
         {
           "id": "24",
           "description": "6.1 Реализовать session login для заранее созданного operator account без self-registration и ролей; проверить guest redirect, успешный login и отсутствие публичного registration endpoint.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 43
         },
         {
           "id": "25",
           "description": "6.2 Реализовать Livewire queue и conversation history с escaped redacted participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets, отсутствие raw HTML и отсутствие исходных card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 44
         },
         {
           "id": "26",
           "description": "6.3 Сохранять pending operator message и database delivery job атомарно; successful delivery фиксирует sent и первый response timestamp, не решает ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 45
         },
         {
           "id": "27",
           "description": "6.4 Показывать failed delivery с явными retry/cancel; unfinished operator reply блокирует следующий, retry использует прежний record.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 46
         },
         {
           "id": "28",
           "description": "7.1 Игнорировать legacy inline callbacks без side effects; ordinary participant messages применимы только к собственному active ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 50
         },
         {
           "id": "29",
           "description": "7.2 Любое новое participant message возвращает resolved в open без LLM; отдельные feedback тексты и keyboard отсутствуют.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 51
         },
         {
           "id": "30",
           "description": "7.3 Реализовать delayed AutoCloseTicket только для resolved с configurable 24-hour delay и status/resolved_since/deadline recheck; stale jobs — no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 52
         },
         {
           "id": "31",
           "description": "7.4 Ручное закрытие open/resolved с operator_closed не отменяет operator replies; отмена сообщения отдельная, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 53
         },
         {
           "id": "32",
           "description": "8.1 Реализовать изолированный statistics query/service: bot resolved учитывает только standalone bot answers с sent/delivered_at, refuse и mixed исключены, follow-ups не увеличивают escalated, average использует первую успешную operator delivery, unanswered tickets исключены; проверить фиксированным dataset.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 57
         },
         {
           "id": "33",
           "description": "8.2 Добавить статистику в Livewire operator panel и проверить component test, что повторный просмотр возвращает те же значения без LLM/Telegram вызовов и изменения persisted state.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 58
         },
         {
           "id": "34",
           "description": "9.1 Создать повторяемый evaluation runner для всех 25 сообщений из `docs/assignment/requests.md` через тот же application boundary и проверить, что отчёт содержит вопрос, ответ, признак эскалации, оценку и комментарий для всех 25 строк.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 62
         },
         {
           "id": "35",
           "description": "9.2 Зафиксировать результаты evaluation, спорные mixed/off-topic cases и изменения prompt в требуемой таблице; проверить наличие строк 1–25, redaction case №22 и отсутствие raw card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 63
         },
         {
           "id": "36",
           "description": "9.3 Обновить README инструкцией запуска с нуля, assumptions, provisional definitions, известными ограничениями и production follow-ups; проверить команды README в чистом Docker Compose запуске.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 64
         },
         {
           "id": "37",
           "description": "9.4 Добавить схему PostgreSQL и краткое объяснение ключей, partial unique active-ticket constraint, transactions и delivery state; сверить диаграмму с фактическими migrations.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 65
         },
         {
           "id": "38",
           "description": "10.1 Запустить узкие Pest feature/unit suites каждого capability, затем полный `php artisan test --compact`, и устранить только дефекты поведения этого change.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 69
         },
         {
           "id": "39",
           "description": "10.2 Запустить `vendor/bin/pint --dirty --format agent`, `npm run build` и `openspec validate mvp-promo-support --strict`; проверить успешное завершение всех команд.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 70
         },
         {
           "id": "40",
           "description": "10.3 Выполнить Docker smoke flow: принять grounded question, создать escalation, ответить оператором, отдельно отметить решённым, продолжить переписку, выполнить manual/auto close и доставить уведомления, затем сверить три метрики и delivery states.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 71
         },
         {
           "id": "41",
           "description": "10.4 Проверить repository secrets scan и итоговый diff: отсутствуют реальные Telegram/LLM keys, raw card/OTP/password values, sensitive message bodies в logging paths, незаявленная инфраструктура и функциональность вне specs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 72
         },
         {
           "id": "42",
           "description": "11.1 Проверить late AI attachment через общий attach/reopen и delivery без lifecycle transitions.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 76
         },
         {
           "id": "43",
           "description": "11.2 Убрать password word whitelist, проверить указанные leak/false-positive cases по syntax/value-like признакам.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 77
         },
         {
           "id": "44",
           "description": "11.3 Зафиксировать фактический lifecycle без revision/generation/marker механизмов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 78
         },
         {
           "id": "45",
           "description": "11.4 Применить штатную ProcessIncomingMessage retry-policy в evaluation, разделить model result/infrastructure reason, повторить 25 cases; полный PostgreSQL suite, smoke, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 79
         },
         {
           "id": "46",
           "description": "12.1 Реализовать один structured decision с answer/evidence, deterministic PHP validation и trusted московской датой; сохранять пользовательский answer без отдельного LLM verifier.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 90
         },
         {
           "id": "47",
           "description": "12.2 Ограничить provider attempts тремя на сообщение: один HTTP request на queue attempt, retries только transient errors; invalid result сразу использует существующую safe escalation; ticket lifecycle, operator dashboard и delivery semantics не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 91
         },
         {
           "id": "48",
           "description": "12.3 Обновить OpenSpec, README и regression tests для single-call contract, evidence validation, safe fallback и HTTP request counts; выполнить узкие Pest tests, Pint и OpenSpec validation без реальных LLM-запросов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 92
         },
         {
           "id": "49",
           "description": "13.1 Использовать open/resolved/closed, сохранить историю и индексы активных tickets.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 97
         },
         {
           "id": "50",
           "description": "13.2 Обычные последовательные operator replies не решают ticket; отдельное «Отметить решённым» запускает таймер; продолжение переписки возвращает open; closed terminal. AI pipeline не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 98
         },
         {
           "id": "51",
           "description": "13.3 Актуализировать regression tests и README; проверить delivery failures/retries, pending/new messages, stale timers, concurrent workers, migration, UI validation/auth и существующий AI contract; выполнить узкие PostgreSQL tests, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 99
         },
         {
           "id": "52",
           "description": "14.1 Ограничить основную ленту operator dashboard выбранным ticket_id; исключить из неё другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, pagination и delivery action isolation. Lifecycle не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 105
         },
         {
           "id": "53",
           "description": "14.2 Отдельно проверить timestamps: выводить created_at/closed_at/messages.created_at в Europe/Moscow с пометкой «МСК», сохранить UTC в данных и таймерах; проверить переход суток и отсутствие мутаций при refresh.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 106
         },
         {
           "id": "54",
           "description": "15.1 Отделить «Отметить решённым» от отправки и delivery; атомарно создавать таймер только для resolved; feedback keyboard отсутствует.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 110
         },
         {
           "id": "55",
           "description": "15.2 Блокировать следующий operator reply при pending/failed; explicit retry/cancel, доставка после close и подавление stale escalation, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 111
         },
         {
           "id": "56",
           "description": "15.3 Проверить lifecycle, rollback, stale timers, queue concurrency и AI contract; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 112
         },
         {
           "id": "57",
           "description": "16.1 Зафиксировать Message IDs контекста при создании ticket, с нижней границей после предыдущего закрытия и source linkage ответов бота; отдельный read-only блок и независимая pagination, основная лента остаётся ticket-scoped.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 116
         },
         {
           "id": "58",
           "description": "16.2 Показать границу создания; атомарно создать System notice ручного/автоматического закрытия с номером обращения и существующей delivery job, сохранить guards stale notices и operator replies.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 117
         },
         {
           "id": "59",
           "description": "16.3 Проверить PostgreSQL regressions контекста A/B, immutability, sanitizer/escaping, pagination, уведомлений и delivery guards; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 118
         },
         {
           "id": "60",
           "description": "17.1 Добавить ReplyKeyboardRemove в общий sendMessage без создания feedback-кнопок или специальных lifecycle-команд; проверить HTTP payload и доставку `/start`, сохранить обработку прежних текстов как обычных сообщений.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 122
         },
         {
           "id": "61",
           "description": "17.2 Актуализировать README/OpenSpec; выполнить targeted PostgreSQL delivery/lifecycle tests, Pint, strict OpenSpec validation и git diff --check.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 123
         }
       ],
@@ -40108,7 +40108,7 @@ README и ER-схема обновлены: доставка ответа отд
         "If implementation reveals a specification problem, update the OpenSpec artifacts explicitly before proceeding."
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -40149,7 +40149,7 @@ Production code не создаёт feedback-кнопки и не обрабат
 
 ## Activity
 
-    $ cat .agents/skills/laravel-best-practices/SKILL.md /Users/artem/.codex/plugins/cache/ponytail/ponytail/1.0.0/skills/ponytail/SKILL.md
+    $ cat .agents/skills/laravel-best-practices/SKILL.md /path/to/home/.codex/plugins/cache/ponytail/ponytail/1.0.0/skills/ponytail/SKILL.md
     ---
     name: laravel-best-practices
     description: "Apply this skill whenever writing, reviewing, or refactoring Laravel PHP code. This includes creating or modifying controllers, models, migrations, form requests, policies, jobs, scheduled commands, service classes, and Eloquent queries. Triggers for N+1 and query performance issues, caching strategies, authorization and security patterns, validation, error handling, queue and job configuration, route definitions, and architectural decisions. Also use for Laravel code reviews and refactoring existing Laravel code to follow best practices. Covers any task involving Laravel backend PHP code patterns."
@@ -47728,7 +47728,7 @@ Production code не создаёт feedback-кнопки и не обрабат
 
 ## Activity
 
-    $ cat /Users/artem/.codex/plugins/cache/ponytail/ponytail/1.0.0/skills/ponytail/SKILL.md
+    $ cat /path/to/home/.codex/plugins/cache/ponytail/ponytail/1.0.0/skills/ponytail/SKILL.md
     ---
     name: ponytail
     description: >
@@ -47936,7 +47936,7 @@ Production code не создаёт feedback-кнопки и не обрабат
         }
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -47950,40 +47950,40 @@ Production code не создаёт feedback-кнопки и не обрабат
       "schemaName": "spec-driven",
       "planningHome": {
         "kind": "repo",
-        "root": "/Users/artem/Desktop/tg-promo/tg-promo",
-        "changesDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes",
+        "root": "/path/to/project",
+        "changesDir": "/path/to/project/openspec/changes",
         "defaultSchema": "spec-driven"
       },
-      "changeRoot": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeRoot": "/path/to/project/openspec/changes/mvp-promo-support",
       "artifactPaths": {
         "proposal": {
           "outputPath": "proposal.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/proposal.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
           ]
         },
         "specs": {
           "outputPath": "specs/**/*.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/**/*.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/specs/**/*.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+            "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
           ]
         },
         "design": {
           "outputPath": "design.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/design.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/design.md"
           ]
         },
         "tasks": {
           "outputPath": "tasks.md",
-          "resolvedOutputPath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "resolvedOutputPath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "existingOutputPaths": [
-            "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+            "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
           ]
         }
       },
@@ -48006,7 +48006,7 @@ Production code не создаёт feedback-кнопки и не обрабат
         ],
         "linkedContext": [],
         "allowedEditRoots": [
-          "/Users/artem/Desktop/tg-promo/tg-promo"
+          "/path/to/project"
         ],
         "requiresAffectedAreaSelection": false,
         "constraints": [
@@ -48047,7 +48047,7 @@ Production code не создаёт feedback-кнопки и не обрабат
         }
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -49128,7 +49128,7 @@ Production code не создаёт feedback-кнопки и не обрабат
 ## Activity
 
     file changes: Completed · 5 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/design.md
     @@ -212,3 +212,3 @@
      
     -Feedback/reply keyboard удалены. Любой participant text, включая прежние тексты кнопок и /start, является обычным сообщением. При active ticket он сохраняется в его истории без LLM и возвращает resolved в open; /start сохраняет safety warning. Non-text private message также возвращает resolved в open и получает существующий text-only fallback. После closed новый текст проходит прежнюю обычную маршрутизацию, включая прежние тексты кнопок; старый ticket остаётся terminal. Legacy inline callbacks остаются ignored.
@@ -49139,13 +49139,13 @@ Production code не создаёт feedback-кнопки и не обрабат
     -- `/start` кратко сообщает не отправлять банковские карты, пароли и SMS-коды и объясняет, что поддержка акции их не запрашивает;
     +- `/start` представляет поддержку акции «Вкусная осень»: обычный текстовый вопрос без поиска кнопки «Создать обращение», ответ по правилам и автоматическая передача проверки конкретного чека, приза или ситуации оператору; содержит 2–3 примера, запрет отправлять номера карт, CVV/CVC, пароли и SMS/OTP-коды и просьбу описать вопрос текстом, поскольку фото/документы пока не обрабатываются; системное сообщение использует общий Telegram adapter с ReplyKeyboardRemove без изменений AI, lifecycle или delivery;
      - уведомление об эскалации сообщает о передаче вопроса оператору и показывает `Номер обращения: #...`;
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/proposal.md
     @@ -28,3 +28,3 @@
      - Автозакрытие `resolved` выполняется через 24 часа по конфигурируемому `TICKET_AUTO_CLOSE_HOURS`.
     -- При `/start` бот предупреждает не отправлять банковские карты, пароли и SMS-коды, поскольку они не нужны для поддержки акции. При redaction участник получает отдельное системное уведомление; escalation notice сообщает о передаче вопроса оператору и содержит номер обращения.
     +- При `/start` бот представляет поддержку акции «Вкусная осень», предлагает написать обычный текстовый вопрос без кнопки создания обращения, объясняет ответ по правилам и автоматическую передачу персональных вопросов оператору. Сообщение содержит 2–3 примера, предупреждение не отправлять номера карт, CVV/CVC, пароли и SMS/OTP-коды, ограничение фото/документов и ReplyKeyboardRemove. При redaction участник получает отдельное системное уведомление; escalation notice сообщает о передаче вопроса оператору и содержит номер обращения.
      
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md
     @@ -28,10 +28,12 @@
      
     -### Requirement: Предупреждение при старте
@@ -49164,13 +49164,13 @@ Production code не создаёт feedback-кнопки и не обрабат
     +- **AND** sendMessage содержит ReplyKeyboardRemove без кнопок создания обращения
     +- **AND** `/start` не создаёт ticket, не вызывает AI и не учитывается как ответ бота
      
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md
     @@ -215,3 +215,3 @@
      - **GIVEN** у участника сохранена старая feedback-клавиатура
     -- **WHEN** доставляется существующее предупреждение на `/start`
     +- **WHEN** доставляется системный onboarding на `/start`
      - **THEN** sendMessage содержит ReplyKeyboardRemove
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/tasks.md
     @@ -123 +123,6 @@
      - [x] 17.2 Актуализировать README/OpenSpec; выполнить targeted PostgreSQL delivery/lifecycle tests, Pint, strict OpenSpec validation и git diff --check.
     +
@@ -49184,22 +49184,22 @@ Production code не создаёт feedback-кнопки и не обрабат
     $ openspec instructions apply --change mvp-promo-support --json
     {
       "changeName": "mvp-promo-support",
-      "changeDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeDir": "/path/to/project/openspec/changes/mvp-promo-support",
       "schemaName": "spec-driven",
       "contextFiles": {
         "proposal": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
         ],
         "specs": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
         ],
         "design": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/design.md"
         ],
         "tasks": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
         ]
       },
       "progress": {
@@ -49212,441 +49212,441 @@ Production code не создаёт feedback-кнопки и не обрабат
           "id": "1",
           "description": "1.1 Добавить Docker Compose services для Laravel app, PostgreSQL и database queue worker, настроить health/dependency order и проверить, что `docker compose config` проходит, а `docker compose up` запускает весь MVP одной командой.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 5
         },
         {
           "id": "2",
           "description": "1.2 Перевести application и queue connections на PostgreSQL/database driver, добавить jobs/failed-jobs storage и проверить миграции внутри Docker без Redis или другого broker.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 6
         },
         {
           "id": "3",
           "description": "1.3 Добавить Livewire в рамках заданного frontend stack и проверить, что базовая Blade/Livewire/Tailwind 4/Vite страница собирается командой `npm run build`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 7
         },
         {
           "id": "4",
           "description": "1.4 Добавить environment-backed настройки Telegram, LLM, retry/timeout и `TICKET_AUTO_CLOSE_HOURS=24`, обновить безопасный `.env.example` и проверить, что populated secrets отсутствуют в tracked files.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 8
         },
         {
           "id": "5",
           "description": "2.1 Создать enums для ticket status, close reason, message author/direction, delivery status и decision type; проверить Pest unit tests на допустимые значения и переходы lifecycle.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 12
         },
         {
           "id": "6",
           "description": "2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с безопасной `redaction_types` metadata, внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests и отсутствие поля для raw message body.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 13
         },
         {
           "id": "7",
           "description": "2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `resolved` и `closed`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 14
         },
         {
           "id": "8",
           "description": "2.4 Реализовать sanitizer до persistence для card-like sequences, контекстных SMS/OTP-кодов и явно обозначенных паролей; проверить unit dataset для evaluation case №22, OTP/password context, обычных дат/сумм/количеств без ложного маскирования и сохранения телефонного номера.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 15
         },
         {
           "id": "9",
           "description": "3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых private text message полей с успешным игнорированием legacy callback updates; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 19
         },
         {
           "id": "10",
           "description": "3.2 Обработать `/start` отдельным safety message о картах, паролях и SMS-кодах без жёсткой фиксации точной формулировки; проверить acceptance test всех четырёх смысловых пунктов предупреждения.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 20
         },
         {
           "id": "11",
           "description": "3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, атомарно записывать database jobs через `beforeCommit()` в той же PostgreSQL transaction, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 21
         },
         {
           "id": "12",
           "description": "3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 22
         },
         {
           "id": "13",
           "description": "3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 23
         },
         {
           "id": "14",
           "description": "3.6 Для participant с open/resolved прикреплять redacted сообщение к тому же ticket без AI-routing; любое сообщение в resolved возвращает open; после closed новый вопрос классифицируется заново.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 24
         },
         {
           "id": "15",
           "description": "4.1 Создать LLM contract, typed decision DTO и validator для `answer`, `escalate`, `mixed`, `refuse`; проверить unit tests для валидных, неполных, неизвестных и противоречивых structured outputs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 28
         },
         {
           "id": "16",
           "description": "4.2 Добавить отдельные versioned prompt files и loader единственного factual source `docs/assignment/promo-rules.md`; проверить, что decision сохраняет source hash, но не полный runtime system prompt.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 29
         },
         {
           "id": "17",
           "description": "4.3 Реализовать один provider adapter через Laravel HTTP client с explicit connect/response timeout и безопасным error mapping; проверить exact endpoint fakes, `Http::preventStrayRequests()`, timeout, 429, 5xx и получение только redacted participant text без реальной сети.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 30
         },
         {
           "id": "18",
           "description": "4.4 Реализовать `ProcessIncomingMessage` с queue attempts/backoff и early exit при существующем decision; проверить временный сбой с успешным retry и повтор job после сохранённого decision без второго LLM-вызова.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 31
         },
         {
           "id": "19",
           "description": "4.5 Применять валидный decision в короткой транзакции: grounded answer без ticket, unknown/participant-specific/off-topic escalation, mixed answer плюс один ticket и adversarial safe refusal; проверить acceptance cases для каждого варианта, включая requests №7, №12, №16, №23, №24 и №25.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 32
         },
         {
           "id": "20",
           "description": "4.6 Реализовать идемпотентный fallback после исчерпания retry с decision/ticket reason `llm_failure`; проверить timeout, invalid output и exhausted retries без потери message, второго ticket, второго ответа или двойного учёта.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 33
         },
         {
           "id": "21",
           "description": "5.1 Создать Telegram adapter для text messages с explicit timeout/error mapping без feedback keyboard и inline callbacks; проверить HTTP fakes и безопасное логирование.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 37
         },
         {
           "id": "22",
           "description": "5.2 Реализовать presentation номера ticket и короткой redacted quote без feedback actions; соблюдать ограничение длины.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 38
         },
         {
           "id": "23",
           "description": "5.3 Реализовать `DeliverTelegramMessage` для переходов `pending -> sent|failed`, сохранения Telegram message ID и повторной отправки того же record; проверить success, permanent failure и retry уже `sent` сообщения как no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 39
         },
         {
           "id": "24",
           "description": "6.1 Реализовать session login для заранее созданного operator account без self-registration и ролей; проверить guest redirect, успешный login и отсутствие публичного registration endpoint.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 43
         },
         {
           "id": "25",
           "description": "6.2 Реализовать Livewire queue и conversation history с escaped redacted participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets, отсутствие raw HTML и отсутствие исходных card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 44
         },
         {
           "id": "26",
           "description": "6.3 Сохранять pending operator message и database delivery job атомарно; successful delivery фиксирует sent и первый response timestamp, не решает ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 45
         },
         {
           "id": "27",
           "description": "6.4 Показывать failed delivery с явными retry/cancel; unfinished operator reply блокирует следующий, retry использует прежний record.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 46
         },
         {
           "id": "28",
           "description": "7.1 Игнорировать legacy inline callbacks без side effects; ordinary participant messages применимы только к собственному active ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 50
         },
         {
           "id": "29",
           "description": "7.2 Любое новое participant message возвращает resolved в open без LLM; отдельные feedback тексты и keyboard отсутствуют.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 51
         },
         {
           "id": "30",
           "description": "7.3 Реализовать delayed AutoCloseTicket только для resolved с configurable 24-hour delay и status/resolved_since/deadline recheck; stale jobs — no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 52
         },
         {
           "id": "31",
           "description": "7.4 Ручное закрытие open/resolved с operator_closed не отменяет operator replies; отмена сообщения отдельная, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 53
         },
         {
           "id": "32",
           "description": "8.1 Реализовать изолированный statistics query/service: bot resolved учитывает только standalone bot answers с sent/delivered_at, refuse и mixed исключены, follow-ups не увеличивают escalated, average использует первую успешную operator delivery, unanswered tickets исключены; проверить фиксированным dataset.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 57
         },
         {
           "id": "33",
           "description": "8.2 Добавить статистику в Livewire operator panel и проверить component test, что повторный просмотр возвращает те же значения без LLM/Telegram вызовов и изменения persisted state.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 58
         },
         {
           "id": "34",
           "description": "9.1 Создать повторяемый evaluation runner для всех 25 сообщений из `docs/assignment/requests.md` через тот же application boundary и проверить, что отчёт содержит вопрос, ответ, признак эскалации, оценку и комментарий для всех 25 строк.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 62
         },
         {
           "id": "35",
           "description": "9.2 Зафиксировать результаты evaluation, спорные mixed/off-topic cases и изменения prompt в требуемой таблице; проверить наличие строк 1–25, redaction case №22 и отсутствие raw card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 63
         },
         {
           "id": "36",
           "description": "9.3 Обновить README инструкцией запуска с нуля, assumptions, provisional definitions, известными ограничениями и production follow-ups; проверить команды README в чистом Docker Compose запуске.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 64
         },
         {
           "id": "37",
           "description": "9.4 Добавить схему PostgreSQL и краткое объяснение ключей, partial unique active-ticket constraint, transactions и delivery state; сверить диаграмму с фактическими migrations.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 65
         },
         {
           "id": "38",
           "description": "10.1 Запустить узкие Pest feature/unit suites каждого capability, затем полный `php artisan test --compact`, и устранить только дефекты поведения этого change.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 69
         },
         {
           "id": "39",
           "description": "10.2 Запустить `vendor/bin/pint --dirty --format agent`, `npm run build` и `openspec validate mvp-promo-support --strict`; проверить успешное завершение всех команд.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 70
         },
         {
           "id": "40",
           "description": "10.3 Выполнить Docker smoke flow: принять grounded question, создать escalation, ответить оператором, отдельно отметить решённым, продолжить переписку, выполнить manual/auto close и доставить уведомления, затем сверить три метрики и delivery states.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 71
         },
         {
           "id": "41",
           "description": "10.4 Проверить repository secrets scan и итоговый diff: отсутствуют реальные Telegram/LLM keys, raw card/OTP/password values, sensitive message bodies в logging paths, незаявленная инфраструктура и функциональность вне specs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 72
         },
         {
           "id": "42",
           "description": "11.1 Проверить late AI attachment через общий attach/reopen и delivery без lifecycle transitions.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 76
         },
         {
           "id": "43",
           "description": "11.2 Убрать password word whitelist, проверить указанные leak/false-positive cases по syntax/value-like признакам.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 77
         },
         {
           "id": "44",
           "description": "11.3 Зафиксировать фактический lifecycle без revision/generation/marker механизмов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 78
         },
         {
           "id": "45",
           "description": "11.4 Применить штатную ProcessIncomingMessage retry-policy в evaluation, разделить model result/infrastructure reason, повторить 25 cases; полный PostgreSQL suite, smoke, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 79
         },
         {
           "id": "46",
           "description": "12.1 Реализовать один structured decision с answer/evidence, deterministic PHP validation и trusted московской датой; сохранять пользовательский answer без отдельного LLM verifier.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 90
         },
         {
           "id": "47",
           "description": "12.2 Ограничить provider attempts тремя на сообщение: один HTTP request на queue attempt, retries только transient errors; invalid result сразу использует существующую safe escalation; ticket lifecycle, operator dashboard и delivery semantics не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 91
         },
         {
           "id": "48",
           "description": "12.3 Обновить OpenSpec, README и regression tests для single-call contract, evidence validation, safe fallback и HTTP request counts; выполнить узкие Pest tests, Pint и OpenSpec validation без реальных LLM-запросов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 92
         },
         {
           "id": "49",
           "description": "13.1 Использовать open/resolved/closed, сохранить историю и индексы активных tickets.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 97
         },
         {
           "id": "50",
           "description": "13.2 Обычные последовательные operator replies не решают ticket; отдельное «Отметить решённым» запускает таймер; продолжение переписки возвращает open; closed terminal. AI pipeline не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 98
         },
         {
           "id": "51",
           "description": "13.3 Актуализировать regression tests и README; проверить delivery failures/retries, pending/new messages, stale timers, concurrent workers, migration, UI validation/auth и существующий AI contract; выполнить узкие PostgreSQL tests, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 99
         },
         {
           "id": "52",
           "description": "14.1 Ограничить основную ленту operator dashboard выбранным ticket_id; исключить из неё другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, pagination и delivery action isolation. Lifecycle не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 105
         },
         {
           "id": "53",
           "description": "14.2 Отдельно проверить timestamps: выводить created_at/closed_at/messages.created_at в Europe/Moscow с пометкой «МСК», сохранить UTC в данных и таймерах; проверить переход суток и отсутствие мутаций при refresh.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 106
         },
         {
           "id": "54",
           "description": "15.1 Отделить «Отметить решённым» от отправки и delivery; атомарно создавать таймер только для resolved; feedback keyboard отсутствует.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 110
         },
         {
           "id": "55",
           "description": "15.2 Блокировать следующий operator reply при pending/failed; explicit retry/cancel, доставка после close и подавление stale escalation, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 111
         },
         {
           "id": "56",
           "description": "15.3 Проверить lifecycle, rollback, stale timers, queue concurrency и AI contract; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 112
         },
         {
           "id": "57",
           "description": "16.1 Зафиксировать Message IDs контекста при создании ticket, с нижней границей после предыдущего закрытия и source linkage ответов бота; отдельный read-only блок и независимая pagination, основная лента остаётся ticket-scoped.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 116
         },
         {
           "id": "58",
           "description": "16.2 Показать границу создания; атомарно создать System notice ручного/автоматического закрытия с номером обращения и существующей delivery job, сохранить guards stale notices и operator replies.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 117
         },
         {
           "id": "59",
           "description": "16.3 Проверить PostgreSQL regressions контекста A/B, immutability, sanitizer/escaping, pagination, уведомлений и delivery guards; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 118
         },
         {
           "id": "60",
           "description": "17.1 Добавить ReplyKeyboardRemove в общий sendMessage без создания feedback-кнопок или специальных lifecycle-команд; проверить HTTP payload и доставку `/start`, сохранить обработку прежних текстов как обычных сообщений.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 122
         },
         {
           "id": "61",
           "description": "17.2 Актуализировать README/OpenSpec; выполнить targeted PostgreSQL delivery/lifecycle tests, Pint, strict OpenSpec validation и git diff --check.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 123
         },
         {
           "id": "62",
           "description": "18.1 Обновить системный текст `/start`: поддержка «Вкусной осени», обычный вопрос без поиска кнопки создания обращения, ответ по правилам и автоматическая передача персональных вопросов оператору, предупреждение о секретах, ограничение фото/документов и три примера; проверить содержание и ReplyKeyboardRemove существующим regression test без изменения AI, lifecycle и delivery.",
           "done": false,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 127
         },
         {
           "id": "63",
           "description": "18.2 Актуализировать README/OpenSpec; выполнить targeted PostgreSQL webhook/rate-limit/lifecycle tests, Pint, strict OpenSpec validation и git diff --check.",
           "done": false,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 128
         }
       ],
@@ -49663,7 +49663,7 @@ Production code не создаёт feedback-кнопки и не обрабат
         "If implementation reveals a specification problem, update the OpenSpec artifacts explicitly before proceeding."
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -49672,7 +49672,7 @@ Production code не создаёт feedback-кнопки и не обрабат
 ## Activity
 
     file changes: Completed · 3 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/README.md
+    Update { move_path: None }: /path/to/project/README.md
     @@ -43,3 +43,5 @@
      
     -Каждое исходящее Telegram сообщение, включая предупреждение на `/start`, ответы бота, системные уведомления и operator replies, содержит `ReplyKeyboardRemove` (`reply_markup={"remove_keyboard": true}`). При ближайшей успешной доставке Telegram-клиент удаляет сохранённую старую клавиатуру. Отдельные сообщения для удаления, новые поля и специальные lifecycle-команды не создаются.
@@ -49685,7 +49685,7 @@ Production code не создаёт feedback-кнопки и не обрабат
     -Предупреждение `/start` является системным сообщением и не увеличивает показатели ответов бота. Отдельная forward migration исправляет классификацию старых предупреждений, сохраняя их содержимое и delivery state.
     +Onboarding `/start` является системным сообщением и не увеличивает показатели ответов бота. Отдельная forward migration исправляет классификацию старых предупреждений, сохраняя их содержимое и delivery state.
      
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/app/Services/TelegramIngestionService.php
+    Update { move_path: None }: /path/to/project/app/Services/TelegramIngestionService.php
     @@ -21,4 +21,14 @@
      {
     -    private const string StartWarning = 'Не отправляйте данные банковских карт, пароли или коды из SMS: они не нужны для поддержки акции.';
@@ -49707,7 +49707,7 @@ Production code не создаёт feedback-кнопки и не обрабат
     -            $this->createPendingMessage($participant, $activeTicket?->id, MessageAuthor::System, self::StartWarning);
     +            $this->createPendingMessage($participant, $activeTicket?->id, MessageAuthor::System, self::StartOnboarding);
      
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/tests/Feature/Telegram/TelegramWebhookTest.php
+    Update { move_path: None }: /path/to/project/tests/Feature/Telegram/TelegramWebhookTest.php
     @@ -477,3 +477,3 @@
      
     -test('delivers the start warning and removes a saved keyboard without normal processing or counting it as a bot answer', function () {
@@ -50209,7 +50209,7 @@ Production code не создаёт feedback-кнопки и не обрабат
 ## Activity
 
     file changes: Completed · 1 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/tasks.md
     @@ -19,3 +19,3 @@
      - [x] 3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых private text message полей с успешным игнорированием legacy callback updates; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.
     -- [x] 3.2 Обработать `/start` отдельным safety message о картах, паролях и SMS-кодах без жёсткой фиксации точной формулировки; проверить acceptance test всех четырёх смысловых пунктов предупреждения.
@@ -50226,22 +50226,22 @@ Production code не создаёт feedback-кнопки и не обрабат
     $ openspec instructions apply --change mvp-promo-support --json
     {
       "changeName": "mvp-promo-support",
-      "changeDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeDir": "/path/to/project/openspec/changes/mvp-promo-support",
       "schemaName": "spec-driven",
       "contextFiles": {
         "proposal": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
         ],
         "specs": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
         ],
         "design": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/design.md"
         ],
         "tasks": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
         ]
       },
       "progress": {
@@ -50254,441 +50254,441 @@ Production code не создаёт feedback-кнопки и не обрабат
           "id": "1",
           "description": "1.1 Добавить Docker Compose services для Laravel app, PostgreSQL и database queue worker, настроить health/dependency order и проверить, что `docker compose config` проходит, а `docker compose up` запускает весь MVP одной командой.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 5
         },
         {
           "id": "2",
           "description": "1.2 Перевести application и queue connections на PostgreSQL/database driver, добавить jobs/failed-jobs storage и проверить миграции внутри Docker без Redis или другого broker.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 6
         },
         {
           "id": "3",
           "description": "1.3 Добавить Livewire в рамках заданного frontend stack и проверить, что базовая Blade/Livewire/Tailwind 4/Vite страница собирается командой `npm run build`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 7
         },
         {
           "id": "4",
           "description": "1.4 Добавить environment-backed настройки Telegram, LLM, retry/timeout и `TICKET_AUTO_CLOSE_HOURS=24`, обновить безопасный `.env.example` и проверить, что populated secrets отсутствуют в tracked files.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 8
         },
         {
           "id": "5",
           "description": "2.1 Создать enums для ticket status, close reason, message author/direction, delivery status и decision type; проверить Pest unit tests на допустимые значения и переходы lifecycle.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 12
         },
         {
           "id": "6",
           "description": "2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с безопасной `redaction_types` metadata, внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests и отсутствие поля для raw message body.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 13
         },
         {
           "id": "7",
           "description": "2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `resolved` и `closed`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 14
         },
         {
           "id": "8",
           "description": "2.4 Реализовать sanitizer до persistence для card-like sequences, контекстных SMS/OTP-кодов и явно обозначенных паролей; проверить unit dataset для evaluation case №22, OTP/password context, обычных дат/сумм/количеств без ложного маскирования и сохранения телефонного номера.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 15
         },
         {
           "id": "9",
           "description": "3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых private text message полей с успешным игнорированием legacy callback updates; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 19
         },
         {
           "id": "10",
           "description": "3.2 Обработать `/start` отдельным системным onboarding с предупреждением о секретах без жёсткой фиксации точной формулировки; проверить содержание и отсутствие AI-обработки acceptance test.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 20
         },
         {
           "id": "11",
           "description": "3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, атомарно записывать database jobs через `beforeCommit()` в той же PostgreSQL transaction, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 21
         },
         {
           "id": "12",
           "description": "3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 22
         },
         {
           "id": "13",
           "description": "3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 23
         },
         {
           "id": "14",
           "description": "3.6 Для participant с open/resolved прикреплять redacted сообщение к тому же ticket без AI-routing; любое сообщение в resolved возвращает open; после closed новый вопрос классифицируется заново.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 24
         },
         {
           "id": "15",
           "description": "4.1 Создать LLM contract, typed decision DTO и validator для `answer`, `escalate`, `mixed`, `refuse`; проверить unit tests для валидных, неполных, неизвестных и противоречивых structured outputs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 28
         },
         {
           "id": "16",
           "description": "4.2 Добавить отдельные versioned prompt files и loader единственного factual source `docs/assignment/promo-rules.md`; проверить, что decision сохраняет source hash, но не полный runtime system prompt.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 29
         },
         {
           "id": "17",
           "description": "4.3 Реализовать один provider adapter через Laravel HTTP client с explicit connect/response timeout и безопасным error mapping; проверить exact endpoint fakes, `Http::preventStrayRequests()`, timeout, 429, 5xx и получение только redacted participant text без реальной сети.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 30
         },
         {
           "id": "18",
           "description": "4.4 Реализовать `ProcessIncomingMessage` с queue attempts/backoff и early exit при существующем decision; проверить временный сбой с успешным retry и повтор job после сохранённого decision без второго LLM-вызова.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 31
         },
         {
           "id": "19",
           "description": "4.5 Применять валидный decision в короткой транзакции: grounded answer без ticket, unknown/participant-specific/off-topic escalation, mixed answer плюс один ticket и adversarial safe refusal; проверить acceptance cases для каждого варианта, включая requests №7, №12, №16, №23, №24 и №25.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 32
         },
         {
           "id": "20",
           "description": "4.6 Реализовать идемпотентный fallback после исчерпания retry с decision/ticket reason `llm_failure`; проверить timeout, invalid output и exhausted retries без потери message, второго ticket, второго ответа или двойного учёта.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 33
         },
         {
           "id": "21",
           "description": "5.1 Создать Telegram adapter для text messages с explicit timeout/error mapping без feedback keyboard и inline callbacks; проверить HTTP fakes и безопасное логирование.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 37
         },
         {
           "id": "22",
           "description": "5.2 Реализовать presentation номера ticket и короткой redacted quote без feedback actions; соблюдать ограничение длины.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 38
         },
         {
           "id": "23",
           "description": "5.3 Реализовать `DeliverTelegramMessage` для переходов `pending -> sent|failed`, сохранения Telegram message ID и повторной отправки того же record; проверить success, permanent failure и retry уже `sent` сообщения как no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 39
         },
         {
           "id": "24",
           "description": "6.1 Реализовать session login для заранее созданного operator account без self-registration и ролей; проверить guest redirect, успешный login и отсутствие публичного registration endpoint.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 43
         },
         {
           "id": "25",
           "description": "6.2 Реализовать Livewire queue и conversation history с escaped redacted participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets, отсутствие raw HTML и отсутствие исходных card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 44
         },
         {
           "id": "26",
           "description": "6.3 Сохранять pending operator message и database delivery job атомарно; successful delivery фиксирует sent и первый response timestamp, не решает ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 45
         },
         {
           "id": "27",
           "description": "6.4 Показывать failed delivery с явными retry/cancel; unfinished operator reply блокирует следующий, retry использует прежний record.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 46
         },
         {
           "id": "28",
           "description": "7.1 Игнорировать legacy inline callbacks без side effects; ordinary participant messages применимы только к собственному active ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 50
         },
         {
           "id": "29",
           "description": "7.2 Любое новое participant message возвращает resolved в open без LLM; отдельные feedback тексты и keyboard отсутствуют.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 51
         },
         {
           "id": "30",
           "description": "7.3 Реализовать delayed AutoCloseTicket только для resolved с configurable 24-hour delay и status/resolved_since/deadline recheck; stale jobs — no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 52
         },
         {
           "id": "31",
           "description": "7.4 Ручное закрытие open/resolved с operator_closed не отменяет operator replies; отмена сообщения отдельная, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 53
         },
         {
           "id": "32",
           "description": "8.1 Реализовать изолированный statistics query/service: bot resolved учитывает только standalone bot answers с sent/delivered_at, refuse и mixed исключены, follow-ups не увеличивают escalated, average использует первую успешную operator delivery, unanswered tickets исключены; проверить фиксированным dataset.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 57
         },
         {
           "id": "33",
           "description": "8.2 Добавить статистику в Livewire operator panel и проверить component test, что повторный просмотр возвращает те же значения без LLM/Telegram вызовов и изменения persisted state.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 58
         },
         {
           "id": "34",
           "description": "9.1 Создать повторяемый evaluation runner для всех 25 сообщений из `docs/assignment/requests.md` через тот же application boundary и проверить, что отчёт содержит вопрос, ответ, признак эскалации, оценку и комментарий для всех 25 строк.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 62
         },
         {
           "id": "35",
           "description": "9.2 Зафиксировать результаты evaluation, спорные mixed/off-topic cases и изменения prompt в требуемой таблице; проверить наличие строк 1–25, redaction case №22 и отсутствие raw card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 63
         },
         {
           "id": "36",
           "description": "9.3 Обновить README инструкцией запуска с нуля, assumptions, provisional definitions, известными ограничениями и production follow-ups; проверить команды README в чистом Docker Compose запуске.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 64
         },
         {
           "id": "37",
           "description": "9.4 Добавить схему PostgreSQL и краткое объяснение ключей, partial unique active-ticket constraint, transactions и delivery state; сверить диаграмму с фактическими migrations.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 65
         },
         {
           "id": "38",
           "description": "10.1 Запустить узкие Pest feature/unit suites каждого capability, затем полный `php artisan test --compact`, и устранить только дефекты поведения этого change.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 69
         },
         {
           "id": "39",
           "description": "10.2 Запустить `vendor/bin/pint --dirty --format agent`, `npm run build` и `openspec validate mvp-promo-support --strict`; проверить успешное завершение всех команд.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 70
         },
         {
           "id": "40",
           "description": "10.3 Выполнить Docker smoke flow: принять grounded question, создать escalation, ответить оператором, отдельно отметить решённым, продолжить переписку, выполнить manual/auto close и доставить уведомления, затем сверить три метрики и delivery states.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 71
         },
         {
           "id": "41",
           "description": "10.4 Проверить repository secrets scan и итоговый diff: отсутствуют реальные Telegram/LLM keys, raw card/OTP/password values, sensitive message bodies в logging paths, незаявленная инфраструктура и функциональность вне specs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 72
         },
         {
           "id": "42",
           "description": "11.1 Проверить late AI attachment через общий attach/reopen и delivery без lifecycle transitions.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 76
         },
         {
           "id": "43",
           "description": "11.2 Убрать password word whitelist, проверить указанные leak/false-positive cases по syntax/value-like признакам.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 77
         },
         {
           "id": "44",
           "description": "11.3 Зафиксировать фактический lifecycle без revision/generation/marker механизмов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 78
         },
         {
           "id": "45",
           "description": "11.4 Применить штатную ProcessIncomingMessage retry-policy в evaluation, разделить model result/infrastructure reason, повторить 25 cases; полный PostgreSQL suite, smoke, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 79
         },
         {
           "id": "46",
           "description": "12.1 Реализовать один structured decision с answer/evidence, deterministic PHP validation и trusted московской датой; сохранять пользовательский answer без отдельного LLM verifier.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 90
         },
         {
           "id": "47",
           "description": "12.2 Ограничить provider attempts тремя на сообщение: один HTTP request на queue attempt, retries только transient errors; invalid result сразу использует существующую safe escalation; ticket lifecycle, operator dashboard и delivery semantics не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 91
         },
         {
           "id": "48",
           "description": "12.3 Обновить OpenSpec, README и regression tests для single-call contract, evidence validation, safe fallback и HTTP request counts; выполнить узкие Pest tests, Pint и OpenSpec validation без реальных LLM-запросов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 92
         },
         {
           "id": "49",
           "description": "13.1 Использовать open/resolved/closed, сохранить историю и индексы активных tickets.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 97
         },
         {
           "id": "50",
           "description": "13.2 Обычные последовательные operator replies не решают ticket; отдельное «Отметить решённым» запускает таймер; продолжение переписки возвращает open; closed terminal. AI pipeline не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 98
         },
         {
           "id": "51",
           "description": "13.3 Актуализировать regression tests и README; проверить delivery failures/retries, pending/new messages, stale timers, concurrent workers, migration, UI validation/auth и существующий AI contract; выполнить узкие PostgreSQL tests, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 99
         },
         {
           "id": "52",
           "description": "14.1 Ограничить основную ленту operator dashboard выбранным ticket_id; исключить из неё другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, pagination и delivery action isolation. Lifecycle не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 105
         },
         {
           "id": "53",
           "description": "14.2 Отдельно проверить timestamps: выводить created_at/closed_at/messages.created_at в Europe/Moscow с пометкой «МСК», сохранить UTC в данных и таймерах; проверить переход суток и отсутствие мутаций при refresh.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 106
         },
         {
           "id": "54",
           "description": "15.1 Отделить «Отметить решённым» от отправки и delivery; атомарно создавать таймер только для resolved; feedback keyboard отсутствует.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 110
         },
         {
           "id": "55",
           "description": "15.2 Блокировать следующий operator reply при pending/failed; explicit retry/cancel, доставка после close и подавление stale escalation, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 111
         },
         {
           "id": "56",
           "description": "15.3 Проверить lifecycle, rollback, stale timers, queue concurrency и AI contract; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 112
         },
         {
           "id": "57",
           "description": "16.1 Зафиксировать Message IDs контекста при создании ticket, с нижней границей после предыдущего закрытия и source linkage ответов бота; отдельный read-only блок и независимая pagination, основная лента остаётся ticket-scoped.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 116
         },
         {
           "id": "58",
           "description": "16.2 Показать границу создания; атомарно создать System notice ручного/автоматического закрытия с номером обращения и существующей delivery job, сохранить guards stale notices и operator replies.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 117
         },
         {
           "id": "59",
           "description": "16.3 Проверить PostgreSQL regressions контекста A/B, immutability, sanitizer/escaping, pagination, уведомлений и delivery guards; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 118
         },
         {
           "id": "60",
           "description": "17.1 Добавить ReplyKeyboardRemove в общий sendMessage без создания feedback-кнопок или специальных lifecycle-команд; проверить HTTP payload и доставку `/start`, сохранить обработку прежних текстов как обычных сообщений.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 122
         },
         {
           "id": "61",
           "description": "17.2 Актуализировать README/OpenSpec; выполнить targeted PostgreSQL delivery/lifecycle tests, Pint, strict OpenSpec validation и git diff --check.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 123
         },
         {
           "id": "62",
           "description": "18.1 Обновить системный текст `/start`: поддержка «Вкусной осени», обычный вопрос без поиска кнопки создания обращения, ответ по правилам и автоматическая передача персональных вопросов оператору, предупреждение о секретах, ограничение фото/документов и три примера; проверить содержание и ReplyKeyboardRemove существующим regression test без изменения AI, lifecycle и delivery.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 127
         },
         {
           "id": "63",
           "description": "18.2 Актуализировать README/OpenSpec; выполнить targeted PostgreSQL webhook/rate-limit/lifecycle tests, Pint, strict OpenSpec validation и git diff --check.",
           "done": false,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 128
         }
       ],
@@ -50705,7 +50705,7 @@ Production code не создаёт feedback-кнопки и не обрабат
         "If implementation reveals a specification problem, update the OpenSpec artifacts explicitly before proceeding."
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
@@ -50714,7 +50714,7 @@ Production code не создаёт feedback-кнопки и не обрабат
 ## Activity
 
     file changes: Completed · 1 changes
-    Update { move_path: None }: /Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md
+    Update { move_path: None }: /path/to/project/openspec/changes/mvp-promo-support/tasks.md
     @@ -127,2 +127,2 @@
      - [x] 18.1 Обновить системный текст `/start`: поддержка «Вкусной осени», обычный вопрос без поиска кнопки создания обращения, ответ по правилам и автоматическая передача персональных вопросов оператору, предупреждение о секретах, ограничение фото/документов и три примера; проверить содержание и ReplyKeyboardRemove существующим regression test без изменения AI, lifecycle и delivery.
     -- [ ] 18.2 Актуализировать README/OpenSpec; выполнить targeted PostgreSQL webhook/rate-limit/lifecycle tests, Pint, strict OpenSpec validation и git diff --check.
@@ -50725,22 +50725,22 @@ Production code не создаёт feedback-кнопки и не обрабат
     $ openspec instructions apply --change mvp-promo-support --json
     {
       "changeName": "mvp-promo-support",
-      "changeDir": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support",
+      "changeDir": "/path/to/project/openspec/changes/mvp-promo-support",
       "schemaName": "spec-driven",
       "contextFiles": {
         "proposal": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/proposal.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/proposal.md"
         ],
         "specs": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/grounded-participant-support/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/operator-assisted-conversations/spec.md",
+          "/path/to/project/openspec/changes/mvp-promo-support/specs/support-statistics/spec.md"
         ],
         "design": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/design.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/design.md"
         ],
         "tasks": [
-          "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md"
+          "/path/to/project/openspec/changes/mvp-promo-support/tasks.md"
         ]
       },
       "progress": {
@@ -50753,441 +50753,441 @@ Production code не создаёт feedback-кнопки и не обрабат
           "id": "1",
           "description": "1.1 Добавить Docker Compose services для Laravel app, PostgreSQL и database queue worker, настроить health/dependency order и проверить, что `docker compose config` проходит, а `docker compose up` запускает весь MVP одной командой.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 5
         },
         {
           "id": "2",
           "description": "1.2 Перевести application и queue connections на PostgreSQL/database driver, добавить jobs/failed-jobs storage и проверить миграции внутри Docker без Redis или другого broker.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 6
         },
         {
           "id": "3",
           "description": "1.3 Добавить Livewire в рамках заданного frontend stack и проверить, что базовая Blade/Livewire/Tailwind 4/Vite страница собирается командой `npm run build`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 7
         },
         {
           "id": "4",
           "description": "1.4 Добавить environment-backed настройки Telegram, LLM, retry/timeout и `TICKET_AUTO_CLOSE_HOURS=24`, обновить безопасный `.env.example` и проверить, что populated secrets отсутствуют в tracked files.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 8
         },
         {
           "id": "5",
           "description": "2.1 Создать enums для ticket status, close reason, message author/direction, delivery status и decision type; проверить Pest unit tests на допустимые значения и переходы lifecycle.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 12
         },
         {
           "id": "6",
           "description": "2.2 Создать migrations и models/factories для Telegram participants, updates, tickets, messages и support decisions с безопасной `redaction_types` metadata, внешними ключами, unique constraints и PostgreSQL partial unique index активного ticket; проверить migration/model feature tests и отсутствие поля для raw message body.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 13
         },
         {
           "id": "7",
           "description": "2.3 Реализовать минимальные domain/application services для поиска/создания активного ticket и state transitions под row lock; проверить конкурентно значимые guard cases для `open`, `resolved` и `closed`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 14
         },
         {
           "id": "8",
           "description": "2.4 Реализовать sanitizer до persistence для card-like sequences, контекстных SMS/OTP-кодов и явно обозначенных паролей; проверить unit dataset для evaluation case №22, OTP/password context, обычных дат/сумм/количеств без ложного маскирования и сохранения телефонного номера.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 15
         },
         {
           "id": "9",
           "description": "3.1 Реализовать Telegram webhook endpoint и parser минимально необходимых private text message полей с успешным игнорированием legacy callback updates; проверить HTTP feature tests для валидного update, невалидного payload и отсутствия внешних HTTP-вызовов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 19
         },
         {
           "id": "10",
           "description": "3.2 Обработать `/start` отдельным системным onboarding с предупреждением о секретах без жёсткой фиксации точной формулировки; проверить содержание и отсутствие AI-обработки acceptance test.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 20
         },
         {
           "id": "11",
           "description": "3.3 Сохранять unique Telegram update, participant, только redacted inbound message и safe redaction types одной транзакцией, атомарно записывать database jobs через `beforeCommit()` в той же PostgreSQL transaction, и проверить отсутствие raw card/OTP/password values в DB и queue payload до AI-обработки.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 21
         },
         {
           "id": "12",
           "description": "3.4 При обнаруженном redaction создать краткое уведомление участнику без исходного значения; проверить один notification независимо от числа скрытых значений и metadata только из `payment_card`, `otp`, `password`.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 22
         },
         {
           "id": "13",
           "description": "3.5 Сделать duplicate update успешным idempotent no-op и проверить, что повторный payload не создаёт второе message, ticket, job, redaction notification или статистический результат.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 23
         },
         {
           "id": "14",
           "description": "3.6 Для participant с open/resolved прикреплять redacted сообщение к тому же ticket без AI-routing; любое сообщение в resolved возвращает open; после closed новый вопрос классифицируется заново.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 24
         },
         {
           "id": "15",
           "description": "4.1 Создать LLM contract, typed decision DTO и validator для `answer`, `escalate`, `mixed`, `refuse`; проверить unit tests для валидных, неполных, неизвестных и противоречивых structured outputs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 28
         },
         {
           "id": "16",
           "description": "4.2 Добавить отдельные versioned prompt files и loader единственного factual source `docs/assignment/promo-rules.md`; проверить, что decision сохраняет source hash, но не полный runtime system prompt.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 29
         },
         {
           "id": "17",
           "description": "4.3 Реализовать один provider adapter через Laravel HTTP client с explicit connect/response timeout и безопасным error mapping; проверить exact endpoint fakes, `Http::preventStrayRequests()`, timeout, 429, 5xx и получение только redacted participant text без реальной сети.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 30
         },
         {
           "id": "18",
           "description": "4.4 Реализовать `ProcessIncomingMessage` с queue attempts/backoff и early exit при существующем decision; проверить временный сбой с успешным retry и повтор job после сохранённого decision без второго LLM-вызова.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 31
         },
         {
           "id": "19",
           "description": "4.5 Применять валидный decision в короткой транзакции: grounded answer без ticket, unknown/participant-specific/off-topic escalation, mixed answer плюс один ticket и adversarial safe refusal; проверить acceptance cases для каждого варианта, включая requests №7, №12, №16, №23, №24 и №25.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 32
         },
         {
           "id": "20",
           "description": "4.6 Реализовать идемпотентный fallback после исчерпания retry с decision/ticket reason `llm_failure`; проверить timeout, invalid output и exhausted retries без потери message, второго ticket, второго ответа или двойного учёта.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 33
         },
         {
           "id": "21",
           "description": "5.1 Создать Telegram adapter для text messages с explicit timeout/error mapping без feedback keyboard и inline callbacks; проверить HTTP fakes и безопасное логирование.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 37
         },
         {
           "id": "22",
           "description": "5.2 Реализовать presentation номера ticket и короткой redacted quote без feedback actions; соблюдать ограничение длины.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 38
         },
         {
           "id": "23",
           "description": "5.3 Реализовать `DeliverTelegramMessage` для переходов `pending -> sent|failed`, сохранения Telegram message ID и повторной отправки того же record; проверить success, permanent failure и retry уже `sent` сообщения как no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 39
         },
         {
           "id": "24",
           "description": "6.1 Реализовать session login для заранее созданного operator account без self-registration и ролей; проверить guest redirect, успешный login и отсутствие публичного registration endpoint.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 43
         },
         {
           "id": "25",
           "description": "6.2 Реализовать Livewire queue и conversation history с escaped redacted participant content и delivery state; проверить component tests на порядок сообщений, фильтрацию незакрытых tickets, отсутствие raw HTML и отсутствие исходных card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 44
         },
         {
           "id": "26",
           "description": "6.3 Сохранять pending operator message и database delivery job атомарно; successful delivery фиксирует sent и первый response timestamp, не решает ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 45
         },
         {
           "id": "27",
           "description": "6.4 Показывать failed delivery с явными retry/cancel; unfinished operator reply блокирует следующий, retry использует прежний record.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 46
         },
         {
           "id": "28",
           "description": "7.1 Игнорировать legacy inline callbacks без side effects; ordinary participant messages применимы только к собственному active ticket.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 50
         },
         {
           "id": "29",
           "description": "7.2 Любое новое participant message возвращает resolved в open без LLM; отдельные feedback тексты и keyboard отсутствуют.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 51
         },
         {
           "id": "30",
           "description": "7.3 Реализовать delayed AutoCloseTicket только для resolved с configurable 24-hour delay и status/resolved_since/deadline recheck; stale jobs — no-op.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 52
         },
         {
           "id": "31",
           "description": "7.4 Ручное закрытие open/resolved с operator_closed не отменяет operator replies; отмена сообщения отдельная, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 53
         },
         {
           "id": "32",
           "description": "8.1 Реализовать изолированный statistics query/service: bot resolved учитывает только standalone bot answers с sent/delivered_at, refuse и mixed исключены, follow-ups не увеличивают escalated, average использует первую успешную operator delivery, unanswered tickets исключены; проверить фиксированным dataset.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 57
         },
         {
           "id": "33",
           "description": "8.2 Добавить статистику в Livewire operator panel и проверить component test, что повторный просмотр возвращает те же значения без LLM/Telegram вызовов и изменения persisted state.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 58
         },
         {
           "id": "34",
           "description": "9.1 Создать повторяемый evaluation runner для всех 25 сообщений из `docs/assignment/requests.md` через тот же application boundary и проверить, что отчёт содержит вопрос, ответ, признак эскалации, оценку и комментарий для всех 25 строк.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 62
         },
         {
           "id": "35",
           "description": "9.2 Зафиксировать результаты evaluation, спорные mixed/off-topic cases и изменения prompt в требуемой таблице; проверить наличие строк 1–25, redaction case №22 и отсутствие raw card/OTP/password values.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 63
         },
         {
           "id": "36",
           "description": "9.3 Обновить README инструкцией запуска с нуля, assumptions, provisional definitions, известными ограничениями и production follow-ups; проверить команды README в чистом Docker Compose запуске.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 64
         },
         {
           "id": "37",
           "description": "9.4 Добавить схему PostgreSQL и краткое объяснение ключей, partial unique active-ticket constraint, transactions и delivery state; сверить диаграмму с фактическими migrations.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 65
         },
         {
           "id": "38",
           "description": "10.1 Запустить узкие Pest feature/unit suites каждого capability, затем полный `php artisan test --compact`, и устранить только дефекты поведения этого change.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 69
         },
         {
           "id": "39",
           "description": "10.2 Запустить `vendor/bin/pint --dirty --format agent`, `npm run build` и `openspec validate mvp-promo-support --strict`; проверить успешное завершение всех команд.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 70
         },
         {
           "id": "40",
           "description": "10.3 Выполнить Docker smoke flow: принять grounded question, создать escalation, ответить оператором, отдельно отметить решённым, продолжить переписку, выполнить manual/auto close и доставить уведомления, затем сверить три метрики и delivery states.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 71
         },
         {
           "id": "41",
           "description": "10.4 Проверить repository secrets scan и итоговый diff: отсутствуют реальные Telegram/LLM keys, raw card/OTP/password values, sensitive message bodies в logging paths, незаявленная инфраструктура и функциональность вне specs.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 72
         },
         {
           "id": "42",
           "description": "11.1 Проверить late AI attachment через общий attach/reopen и delivery без lifecycle transitions.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 76
         },
         {
           "id": "43",
           "description": "11.2 Убрать password word whitelist, проверить указанные leak/false-positive cases по syntax/value-like признакам.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 77
         },
         {
           "id": "44",
           "description": "11.3 Зафиксировать фактический lifecycle без revision/generation/marker механизмов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 78
         },
         {
           "id": "45",
           "description": "11.4 Применить штатную ProcessIncomingMessage retry-policy в evaluation, разделить model result/infrastructure reason, повторить 25 cases; полный PostgreSQL suite, smoke, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 79
         },
         {
           "id": "46",
           "description": "12.1 Реализовать один structured decision с answer/evidence, deterministic PHP validation и trusted московской датой; сохранять пользовательский answer без отдельного LLM verifier.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 90
         },
         {
           "id": "47",
           "description": "12.2 Ограничить provider attempts тремя на сообщение: один HTTP request на queue attempt, retries только transient errors; invalid result сразу использует существующую safe escalation; ticket lifecycle, operator dashboard и delivery semantics не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 91
         },
         {
           "id": "48",
           "description": "12.3 Обновить OpenSpec, README и regression tests для single-call contract, evidence validation, safe fallback и HTTP request counts; выполнить узкие Pest tests, Pint и OpenSpec validation без реальных LLM-запросов.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 92
         },
         {
           "id": "49",
           "description": "13.1 Использовать open/resolved/closed, сохранить историю и индексы активных tickets.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 97
         },
         {
           "id": "50",
           "description": "13.2 Обычные последовательные operator replies не решают ticket; отдельное «Отметить решённым» запускает таймер; продолжение переписки возвращает open; closed terminal. AI pipeline не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 98
         },
         {
           "id": "51",
           "description": "13.3 Актуализировать regression tests и README; проверить delivery failures/retries, pending/new messages, stale timers, concurrent workers, migration, UI validation/auth и существующий AI contract; выполнить узкие PostgreSQL tests, Pint, build и OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 99
         },
         {
           "id": "52",
           "description": "14.1 Ограничить основную ленту operator dashboard выбранным ticket_id; исключить из неё другие обращения того же participant и unticketed context, сохранить привязки Messages. Проверить регрессию A → переписка → close → B → переписка, refresh, pagination и delivery action isolation. Lifecycle не менять.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 105
         },
         {
           "id": "53",
           "description": "14.2 Отдельно проверить timestamps: выводить created_at/closed_at/messages.created_at в Europe/Moscow с пометкой «МСК», сохранить UTC в данных и таймерах; проверить переход суток и отсутствие мутаций при refresh.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 106
         },
         {
           "id": "54",
           "description": "15.1 Отделить «Отметить решённым» от отправки и delivery; атомарно создавать таймер только для resolved; feedback keyboard отсутствует.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 110
         },
         {
           "id": "55",
           "description": "15.2 Блокировать следующий operator reply при pending/failed; explicit retry/cancel, доставка после close и подавление stale escalation, closed terminal.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 111
         },
         {
           "id": "56",
           "description": "15.3 Проверить lifecycle, rollback, stale timers, queue concurrency и AI contract; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 112
         },
         {
           "id": "57",
           "description": "16.1 Зафиксировать Message IDs контекста при создании ticket, с нижней границей после предыдущего закрытия и source linkage ответов бота; отдельный read-only блок и независимая pagination, основная лента остаётся ticket-scoped.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 116
         },
         {
           "id": "58",
           "description": "16.2 Показать границу создания; атомарно создать System notice ручного/автоматического закрытия с номером обращения и существующей delivery job, сохранить guards stale notices и operator replies.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 117
         },
         {
           "id": "59",
           "description": "16.3 Проверить PostgreSQL regressions контекста A/B, immutability, sanitizer/escaping, pagination, уведомлений и delivery guards; Pint, frontend build и strict OpenSpec validation.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 118
         },
         {
           "id": "60",
           "description": "17.1 Добавить ReplyKeyboardRemove в общий sendMessage без создания feedback-кнопок или специальных lifecycle-команд; проверить HTTP payload и доставку `/start`, сохранить обработку прежних текстов как обычных сообщений.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 122
         },
         {
           "id": "61",
           "description": "17.2 Актуализировать README/OpenSpec; выполнить targeted PostgreSQL delivery/lifecycle tests, Pint, strict OpenSpec validation и git diff --check.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 123
         },
         {
           "id": "62",
           "description": "18.1 Обновить системный текст `/start`: поддержка «Вкусной осени», обычный вопрос без поиска кнопки создания обращения, ответ по правилам и автоматическая передача персональных вопросов оператору, предупреждение о секретах, ограничение фото/документов и три примера; проверить содержание и ReplyKeyboardRemove существующим regression test без изменения AI, lifecycle и delivery.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 127
         },
         {
           "id": "63",
           "description": "18.2 Актуализировать README/OpenSpec; выполнить targeted PostgreSQL webhook/rate-limit/lifecycle tests, Pint, strict OpenSpec validation и git diff --check.",
           "done": true,
-          "sourcePath": "/Users/artem/Desktop/tg-promo/tg-promo/openspec/changes/mvp-promo-support/tasks.md",
+          "sourcePath": "/path/to/project/openspec/changes/mvp-promo-support/tasks.md",
           "line": 128
         }
       ],
@@ -51204,7 +51204,7 @@ Production code не создаёт feedback-кнопки и не обрабат
         "If implementation reveals a specification problem, update the OpenSpec artifacts explicitly before proceeding."
       ],
       "root": {
-        "path": "/Users/artem/Desktop/tg-promo/tg-promo",
+        "path": "/path/to/project",
         "source": "nearest"
       }
     }
